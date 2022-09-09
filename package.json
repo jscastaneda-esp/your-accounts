@@ -16,8 +16,10 @@
 		"@playwright/test": "^1.25.0",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
+		"@tailwindcss/forms": "^0.5.3",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
+		"@zerodevx/svelte-toast": "^0.7.2",
 		"autoprefixer": "^10.4.8",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -35,6 +37,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"firebase": "^9.9.4"
+		"@felte/validator-yup": "^1.0.9",
+		"felte": "^1.2.3",
+		"firebase": "^9.9.4",
+		"yup": "^0.32.11"
 	}
 }
