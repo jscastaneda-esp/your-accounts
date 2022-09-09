@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-image-auth {
+	background-image: url('./lib/assets/images/background-image.svg');
+	background-repeat: no-repeat;
+	background-position: bottom;
+}

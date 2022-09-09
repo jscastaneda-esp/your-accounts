@@ -15,8 +15,10 @@ import {
 	type User,
 	type Auth,
 	type ActionCodeSettings,
-	type PopupRedirectResolver
+	type PopupRedirectResolver,
+	AuthErrorCodes
 } from 'firebase/auth';
+import { FirebaseProviderEnum } from '../enums/firebaseProvider.enum';
 
 // FIXME Dejar por variable de entorno
 const firebaseConfig: FirebaseOptions = {
@@ -27,11 +29,6 @@ const firebaseConfig: FirebaseOptions = {
 	messagingSenderId: '1017011775128',
 	appId: '1:1017011775128:web:1d21c6ab8c6cb53bd492ed'
 };
-
-enum FirebaseProvider {
-	GOOGLE = 'google',
-	FACEBOOK = 'facebook'
-}
 
 class FirebaseAuth {
 	private readonly _googleAuthProvider: GoogleAuthProvider;
@@ -56,8 +53,8 @@ class FirebaseAuth {
 		return signInWithEmailAndPasswordFB(this._auth, email, password);
 	}
 
-	signInWithPopup(provider: FirebaseProvider, resolver?: PopupRedirectResolver | undefined) {
-		if (FirebaseProvider.GOOGLE === provider) {
+	signInWithPopup(provider: FirebaseProviderEnum, resolver?: PopupRedirectResolver | undefined) {
+		if (FirebaseProviderEnum.GOOGLE === provider) {
 			return signInWithPopupFB(this._auth, this._googleAuthProvider, resolver);
 		}
 
@@ -76,6 +73,42 @@ class FirebaseAuth {
 
 	sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings | undefined) {
 		return sendPasswordResetEmailFB(this._auth, email, actionCodeSettings);
+	}
+
+	getError(code: string | null | undefined, tags?: { [key: string]: string }): string {
+		/*
+    EXPIRED_POPUP_REQUEST: "auth/cancelled-popup-request"
+    POPUP_BLOCKED: "auth/popup-blocked"
+    POPUP_CLOSED_BY_USER: "auth/popup-closed-by-user"
+    USER_DELETED: "auth/user-not-found"
+    INVALID_PASSWORD: "auth/wrong-password"
+		CREDENTIAL_ALREADY_IN_USE: "auth/credential-already-in-use"
+    EMAIL_EXISTS: "auth/email-already-in-use"
+		*/
+
+		// SignIn Popup External Provider
+		let msg = 'Error inesperado. Por favor vuelva a intentarlo';
+		if (
+			AuthErrorCodes.EXPIRED_POPUP_REQUEST === code ||
+			AuthErrorCodes.POPUP_BLOCKED === code ||
+			AuthErrorCodes.POPUP_CLOSED_BY_USER === code
+		) {
+			msg = 'Se presento un error al autenticar con {PROVIDER}';
+		} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
+			msg = 'Usuario o contraseña inválidos';
+		} else if (
+			AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||
+			AuthErrorCodes.EMAIL_EXISTS === code
+		) {
+			msg = 'Email ya se encuentra registrado';
+		}
+
+		if (tags) {
+			Object.keys(tags).forEach((key) => {
+				msg = msg.replace(`{${key}}`, tags[key]);
+			});
+		}
+		return msg;
 	}
 }
 
@@ -104,4 +137,4 @@ class Firebase {
 }
 
 // Initialize Firebase
-export const firebase = new Firebase();
+export default new Firebase();
