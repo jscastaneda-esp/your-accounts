@@ -25,7 +25,7 @@
 	// Utilities
 	import firebase from '../configs/firebase.client';
 	import Toast from '../utils/toast';
-	import yup, { email, password } from '../utils/shema.validator';
+	import yup, { email, password } from '../utils/schema.validator';
 
 	// Form Definition
 	const validationSchema = yup.object().shape({

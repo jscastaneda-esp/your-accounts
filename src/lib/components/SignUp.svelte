@@ -21,7 +21,7 @@
 	// Utilities
 	import firebase from '../configs/firebase.client';
 	import Toast from '../utils/toast';
-	import yup, { defaultText, email, password } from '../utils/shema.validator';
+	import yup, { defaultText, email, password } from '../utils/schema.validator';
 	import type { UserCredential } from 'firebase/auth';
 
 	// Form Definition
