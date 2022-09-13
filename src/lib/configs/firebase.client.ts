@@ -75,7 +75,7 @@ class FirebaseAuth {
 		return sendPasswordResetEmailFB(this._auth, email, actionCodeSettings);
 	}
 
-	getError(code: string | null | undefined, tags?: { [key: string]: string }): string {
+	getError(code: string | null | undefined, tags?: { [key: string]: string }): [string, boolean] {
 		/*
     EXPIRED_POPUP_REQUEST: "auth/cancelled-popup-request"
     POPUP_BLOCKED: "auth/popup-blocked"
@@ -86,8 +86,8 @@ class FirebaseAuth {
     EMAIL_EXISTS: "auth/email-already-in-use"
 		*/
 
-		// SignIn Popup External Provider
 		let msg = 'Error inesperado. Por favor vuelva a intentarlo';
+		let isError = true;
 		if (
 			AuthErrorCodes.EXPIRED_POPUP_REQUEST === code ||
 			AuthErrorCodes.POPUP_BLOCKED === code ||
@@ -96,11 +96,13 @@ class FirebaseAuth {
 			msg = 'Se presento un error al autenticar con {PROVIDER}';
 		} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
 			msg = 'Usuario o contraseña inválidos';
+			isError = false;
 		} else if (
 			AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||
 			AuthErrorCodes.EMAIL_EXISTS === code
 		) {
 			msg = 'Email ya se encuentra registrado';
+			isError = false;
 		}
 
 		if (tags) {
@@ -108,7 +110,7 @@ class FirebaseAuth {
 				msg = msg.replace(`{${key}}`, tags[key]);
 			});
 		}
-		return msg;
+		return [msg, isError];
 	}
 }
 

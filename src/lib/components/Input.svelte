@@ -5,6 +5,7 @@
 	export let name: string;
 	export let type: 'text' | 'email' | 'password' = 'text';
 	export let placeholder: string;
+	export let disabled: boolean = false;
 	export let classInput: string = '';
 	export let errors: string[] | null = null;
 
@@ -13,16 +14,17 @@
 	});
 </script>
 
-<fieldset>
+<fieldset {disabled}>
 	<label
 		class="bg-white relative block p-2 px-3 border-2 border-gray-200"
+		class:bg-gray-300={disabled}
 		class:border-0={errors}
 		class:ring-2={errors}
 		class:ring-red-500={errors}
 		for={id}
 	>
 		<input
-			class={`w-full px-0 pt-3.5 pb-0 text-sm placeholder-transparent border-none focus:ring-0 peer ${classInput}`}
+			class={`bg-transparent w-full px-0 pt-3.5 pb-0 text-sm placeholder-transparent border-none focus:ring-0 peer ${classInput}`}
 			{id}
 			{name}
 			{type}
