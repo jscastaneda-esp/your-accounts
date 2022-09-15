@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 
 	export let id: string;
 	export let name: string;
-	export let type: 'text' | 'email' | 'password' = 'text';
 	export let placeholder: string;
-	export let disabled: boolean = false;
-	export let classInput: string = '';
+	export let type: 'text' | 'email' | 'password' = 'text';
+	export let classInput = '';
+	export let disabled = false;
 	export let errors: string[] | null = null;
 
 	onMount(() => {
@@ -16,7 +17,7 @@
 
 <fieldset {disabled}>
 	<label
-		class="bg-white relative block p-2 px-3 border-2 border-gray-200"
+		class="bg-white relative block p-2 px-3 border-2 border-gray-200 transition-all ease-in-out"
 		class:bg-gray-300={disabled}
 		class:border-0={errors}
 		class:ring-2={errors}
@@ -41,7 +42,9 @@
 	</label>
 	{#if errors}
 		<div
+			transition:slide={{ duration: 150 }}
 			class="flex items-center text-xs text-red-500 bg-red-200 opacity-80 py-1 px-2 gap-2 rounded-b"
+			role="alert"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

@@ -6,11 +6,13 @@
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';
 	import { session } from '$lib/stores/user.store';
+	import Toast from '$lib/utils/toast';
+	import type { FirebaseError } from 'firebase/app';
 
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
-	let loading: boolean = true;
+	let loading = true;
 
 	onMount(() =>
 		setTimeout(() => {
@@ -26,7 +28,14 @@
 		try {
 			await firebase.authFunctions.signOut();
 			goto('/auth/login');
-		} catch (error: any) {}
+		} catch (error) {
+			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code);
+			if (isError) {
+				Toast.error(msg);
+			} else {
+				Toast.warn(msg);
+			}
+		}
 	}
 </script>
 

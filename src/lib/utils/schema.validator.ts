@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import type { LocaleObject } from 'yup/lib/locale';
 
 yup.setLocale({
 	mixed: {

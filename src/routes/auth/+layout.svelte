@@ -9,7 +9,7 @@
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
-	let loading: boolean = true;
+	let loading = true;
 
 	onMount(() =>
 		setTimeout(() => {

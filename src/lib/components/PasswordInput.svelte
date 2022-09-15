@@ -4,10 +4,10 @@
 	export let id: string;
 	export let name: string;
 	export let placeholder: string;
-	export let disabled: boolean = false;
+	export let disabled = false;
 	export let errors: string[] | null = null;
 
-	let show: boolean = false;
+	let show = false;
 
 	function toggle() {
 		show = !show;

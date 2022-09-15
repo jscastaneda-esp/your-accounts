@@ -2,7 +2,7 @@
 	import Button from './Button.svelte';
 
 	export let value: string;
-	export let loading: boolean = false;
+	export let loading = false;
 </script>
 
 <Button

@@ -1,2 +1,3 @@
 # your-accounts
-Project from register  of personal financial accounts
+
+Project from register of personal financial accounts
