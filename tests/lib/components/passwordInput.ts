@@ -11,7 +11,10 @@ describe('PasswordInput', () => {
 	const name = 'test';
 	const placeholder = 'Test';
 
-	afterEach(() => cleanup());
+	afterEach(() => {
+		cleanup();
+		vi.clearAllMocks();
+	});
 
 	it('required properties', () => {
 		render(PasswordInput, {

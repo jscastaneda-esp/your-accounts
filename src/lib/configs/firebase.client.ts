@@ -95,7 +95,7 @@ class FirebaseAuth {
 		) {
 			msg = 'Se presento un error al autenticar con {PROVIDER}';
 		} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
-			msg = 'Usuario o contraseña inválidos';
+			msg = 'Usuario y/o contraseña inválidos';
 			isError = false;
 		} else if (
 			AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||

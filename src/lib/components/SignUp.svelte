@@ -11,6 +11,7 @@
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
+	import type { UserCredential } from 'firebase/auth';
 
 	// Components
 	import Input from './Input.svelte';
@@ -20,9 +21,8 @@
 
 	// Utilities
 	import firebase from '../configs/firebase.client';
-	import Toast from '../utils/toast';
-	import yup, { defaultText, email, password } from '../utils/schema.validator';
-	import type { UserCredential } from 'firebase/auth';
+	import Toast from '../utils/toast.utils';
+	import yup, { defaultText, email, password } from '../utils/yup.utils';
 
 	// Form Definition
 	const validationSchema = yup.object().shape({

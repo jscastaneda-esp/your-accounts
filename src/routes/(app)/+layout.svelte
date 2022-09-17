@@ -6,7 +6,7 @@
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';
 	import { session } from '$lib/stores/user.store';
-	import Toast from '$lib/utils/toast';
+	import Toast from '$lib/utils/toast.utils';
 	import type { FirebaseError } from 'firebase/app';
 
 	// Components
