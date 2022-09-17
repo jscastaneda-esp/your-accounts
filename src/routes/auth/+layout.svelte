@@ -9,7 +9,7 @@
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
-	let loading: boolean = true;
+	let loading = true;
 
 	onMount(() =>
 		setTimeout(() => {
@@ -25,7 +25,7 @@
 {#if loading}
 	<ScreenLoading />
 {:else}
-	<div class="flex justify-center items-center">
+	<div class="flex justify-center items-center h-full">
 		<slot />
 	</div>
 {/if}

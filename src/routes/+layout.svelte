@@ -12,7 +12,7 @@
 	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } };
 </script>
 
-<main class="container m-auto">
+<main class="flex justify-center items-center h-screen">
 	<slot />
 </main>
 
