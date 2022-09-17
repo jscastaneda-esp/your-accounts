@@ -9,11 +9,12 @@
 	// Assets
 	import logo from '../assets/images/logo.png';
 	import logoGoogle from '../assets/images/logo-google.png';
-	import forgotPassword from '../assets/images/forgot-password.png';
+	import forgotPassword from '../assets/images/forgot-password-icon.png';
 
 	// Enums, Classes, Types
 	import { FirebaseProviderEnum } from '../enums/firebaseProvider.enum';
 	import type { FirebaseError } from 'firebase/app';
+	import { TypeAuthEnum } from '$lib/enums/typeAuth.enum';
 
 	// Components
 	import ButtonExternalAuth from './ButtonExternalAuth.svelte';
@@ -43,7 +44,10 @@
 		onError: (error: unknown) => {
 			Toast.clear();
 
-			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code);
+			const [msg, isError] = firebase.authFunctions.getError(
+				TypeAuthEnum.LOGIN,
+				(error as FirebaseError).code
+			);
 			if (isError) {
 				Toast.error(msg);
 			} else {
@@ -63,9 +67,13 @@
 		} catch (error: unknown) {
 			Toast.clear();
 
-			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code, {
-				PROVIDER: FirebaseProviderEnum.GOOGLE
-			});
+			const [msg, isError] = firebase.authFunctions.getError(
+				TypeAuthEnum.LOGIN,
+				(error as FirebaseError).code,
+				{
+					PROVIDER: FirebaseProviderEnum.GOOGLE
+				}
+			);
 			if (isError) {
 				Toast.error(msg);
 			} else {

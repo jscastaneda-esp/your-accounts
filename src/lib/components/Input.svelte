@@ -43,7 +43,7 @@
 	{#if errors}
 		<div
 			transition:slide={{ duration: 150 }}
-			class="flex items-center text-xs text-red-500 bg-red-200 opacity-80 py-1 px-2 gap-2 rounded-b"
+			class="grid grid-cols-[max-content_auto] items-center text-xs text-red-600 bg-red-300 opacity-90 py-1 px-2 gap-2 rounded-b"
 			role="alert"
 		>
 			<svg

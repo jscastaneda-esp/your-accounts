@@ -12,6 +12,7 @@
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
 	import type { UserCredential } from 'firebase/auth';
+	import { TypeAuthEnum } from '$lib/enums/typeAuth.enum';
 
 	// Components
 	import Input from './Input.svelte';
@@ -54,7 +55,10 @@
 		onError: (error: unknown) => {
 			Toast.clear();
 
-			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code);
+			const [msg, isError] = firebase.authFunctions.getError(
+				TypeAuthEnum.SIGNUP,
+				(error as FirebaseError).code
+			);
 			if (isError) {
 				Toast.error(msg);
 			} else {
@@ -110,7 +114,7 @@
 			text="Iniciar Sesión"
 			href="/auth/login"
 			disabled={$isSubmitting}
-			className="text-gray-400"
+			className="bg-white"
 			on:click={reset}
 		>
 			<i class="fa-solid fa-angles-left text-black" />

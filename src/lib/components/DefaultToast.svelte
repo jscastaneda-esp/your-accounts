@@ -2,7 +2,7 @@
 	export let message: string;
 </script>
 
-<div class="flex items-center p-3 gap-2" role="alert">
+<div class="grid grid-cols-[max-content_auto] items-center p-3 gap-2" role="alert">
 	<slot>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -20,5 +20,5 @@
 		</svg>
 	</slot>
 
-	<strong class="text-sm font-bold">{message}</strong>
+	<span class="text-sm">{message}</span>
 </div>

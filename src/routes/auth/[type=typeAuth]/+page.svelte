@@ -36,7 +36,7 @@
 
 <style lang="postcss">
 	div > div {
-		@apply flex justify-center w-full min-w-[320px] lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md overflow-hidden shadow-gray-500 transition-all duration-200 ease-in-out;
+		@apply flex justify-center w-full min-w-[320px] lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md shadow-gray-500 transition-all duration-200 ease-in-out;
 	}
 
 	.blur-content {

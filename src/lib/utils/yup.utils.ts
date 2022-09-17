@@ -2,12 +2,11 @@ import * as yup from 'yup';
 
 yup.setLocale({
 	mixed: {
-		required: 'Campo requerido'
+		required: 'Ingresa un contenido válido'
 	},
 	string: {
-		trim: 'Campo requerido',
-		email: 'Email invalido',
-		min: ({ min }) => `Mínimo ${min} caracteres`
+		email: 'Ingresa un correo electrónico válido',
+		min: ({ min }) => `Ingresa ${min} caracteres como mínimo`
 	}
 });
 

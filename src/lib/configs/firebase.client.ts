@@ -1,3 +1,4 @@
+import { TypeAuthEnum } from '$lib/enums/typeAuth.enum';
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import {
 	getAuth,
@@ -75,7 +76,11 @@ class FirebaseAuth {
 		return sendPasswordResetEmailFB(this._auth, email, actionCodeSettings);
 	}
 
-	getError(code: string | null | undefined, tags?: { [key: string]: string }): [string, boolean] {
+	getError(
+		type: TypeAuthEnum,
+		code: string | null | undefined,
+		tags?: { [key: string]: string }
+	): [string, boolean] {
 		/*
     EXPIRED_POPUP_REQUEST: "auth/cancelled-popup-request"
     POPUP_BLOCKED: "auth/popup-blocked"
@@ -85,24 +90,36 @@ class FirebaseAuth {
 		CREDENTIAL_ALREADY_IN_USE: "auth/credential-already-in-use"
     EMAIL_EXISTS: "auth/email-already-in-use"
 		*/
+		console.log(code);
 
 		let msg = 'Error inesperado. Por favor vuelva a intentarlo';
 		let isError = true;
-		if (
-			AuthErrorCodes.EXPIRED_POPUP_REQUEST === code ||
-			AuthErrorCodes.POPUP_BLOCKED === code ||
-			AuthErrorCodes.POPUP_CLOSED_BY_USER === code
-		) {
-			msg = 'Se presento un error al autenticar con {PROVIDER}';
-		} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
-			msg = 'Usuario y/o contraseña inválidos';
-			isError = false;
-		} else if (
-			AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||
-			AuthErrorCodes.EMAIL_EXISTS === code
-		) {
-			msg = 'Email ya se encuentra registrado';
-			isError = false;
+		if (TypeAuthEnum.FORGOT_PASSWORD === type) {
+			if (AuthErrorCodes.USER_DELETED === code) {
+				msg = 'Correo electrónico no existe';
+				isError = false;
+			} else if (AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER === code) {
+				msg =
+					'Excedió el número de intentos para recuperar contraseña. Por favor intente más tarde';
+				isError = false;
+			}
+		} else {
+			if (
+				AuthErrorCodes.EXPIRED_POPUP_REQUEST === code ||
+				AuthErrorCodes.POPUP_BLOCKED === code ||
+				AuthErrorCodes.POPUP_CLOSED_BY_USER === code
+			) {
+				msg = 'Se presento un error al autenticar con {PROVIDER}';
+			} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
+				msg = 'Correo electrónico y/o contraseña inválidos';
+				isError = false;
+			} else if (
+				AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||
+				AuthErrorCodes.EMAIL_EXISTS === code
+			) {
+				msg = 'Correo electrónico ya se encuentra registrado';
+				isError = false;
+			}
 		}
 
 		if (tags) {
