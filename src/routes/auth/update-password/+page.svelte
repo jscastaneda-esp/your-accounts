@@ -88,7 +88,7 @@
 </script>
 
 <svelte:head>
-	<title>Recuperar Contraseña</title>
+	<title>Asignar Nueva Contraseña</title>
 </svelte:head>
 
 <div class="flex justify-center items-center">
