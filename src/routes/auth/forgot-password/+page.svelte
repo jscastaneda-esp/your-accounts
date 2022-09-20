@@ -8,7 +8,7 @@
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '$lib/enums/typeAuth.enum';
+	import { TypeAuthEnum } from '$lib/enums/TypeAuth.enum';
 
 	// Components
 	import Input from '$lib/components/Input.svelte';
@@ -29,7 +29,7 @@
 			email: ''
 		},
 		onSubmit: (values) => firebase.authFunctions.sendPasswordResetEmail(values.email),
-		onSuccess: async (response: unknown) => {
+		onSuccess: () => {
 			Toast.clear();
 			Toast.success(
 				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados'
@@ -76,7 +76,12 @@
 					errors={$errors.email}
 				/>
 
-				<Button type="submit" value="Registrarse" disabled={!$isValid} loading={$isSubmitting} />
+				<Button
+					type="submit"
+					value="Recuperar contraseña"
+					disabled={!$isValid}
+					loading={$isSubmitting}
+				/>
 			</section>
 
 			<section class="flex flex-col gap-2 w-full items-center">

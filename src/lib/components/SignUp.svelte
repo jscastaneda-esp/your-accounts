@@ -12,7 +12,7 @@
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
 	import type { UserCredential } from 'firebase/auth';
-	import { TypeAuthEnum } from '$lib/enums/typeAuth.enum';
+	import { TypeAuthEnum } from '../enums/TypeAuth.enum';
 
 	// Components
 	import Input from './Input.svelte';
