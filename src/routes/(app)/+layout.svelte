@@ -11,6 +11,7 @@
 
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
+	import { TypeAuthEnum } from '$lib/enums/TypeAuth.enum';
 
 	let loading = true;
 
@@ -29,7 +30,10 @@
 			await firebase.authFunctions.signOut();
 			goto('/auth/login');
 		} catch (error) {
-			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code);
+			const [msg, isError] = firebase.authFunctions.getError(
+				TypeAuthEnum.SIGNOUT,
+				(error as FirebaseError).code
+			);
 			if (isError) {
 				Toast.error(msg);
 			} else {

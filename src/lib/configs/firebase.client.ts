@@ -8,6 +8,8 @@ import {
 	signInWithPopup as signInWithPopupFB,
 	signOut as signOutFB,
 	updateProfile as updateProfileFB,
+	verifyPasswordResetCode as verifyPasswordResetCodeFB,
+	confirmPasswordReset as confirmPasswordResetFB,
 	GoogleAuthProvider,
 	type NextOrObserver,
 	type ErrorFn,
@@ -18,19 +20,40 @@ import {
 	type PopupRedirectResolver,
 	AuthErrorCodes
 } from 'firebase/auth';
-import { FirebaseProviderEnum } from '../enums/firebaseProvider.enum';
-
-// FIXME Dejar por variable de entorno
-const firebaseConfig: FirebaseOptions = {
-	apiKey: 'AIzaSyApkPBNW6koMFOMcK8lSVABgHFXbDvaQEA',
-	authDomain: 'your-accounts-dev-9b1ae.firebaseapp.com',
-	projectId: 'your-accounts-dev-9b1ae',
-	storageBucket: 'your-accounts-dev-9b1ae.appspot.com',
-	messagingSenderId: '1017011775128',
-	appId: '1:1017011775128:web:1d21c6ab8c6cb53bd492ed'
-};
+import { FirebaseProviderEnum } from '../enums/FirebaseProvider.enum';
+import { TypeAuthEnum } from '../enums/TypeAuth.enum';
 
 class FirebaseAuth {
+	private readonly ERROR_MESSAGES: { [key: string]: { [key: string]: [string, boolean] } } = {
+		[TypeAuthEnum.FORGOT_PASSWORD]: {
+			[AuthErrorCodes.USER_DELETED]: ['Correo electrónico no existe', false],
+			[AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER]: [
+				'Excedió el número de intentos para recuperar contraseña. Por favor intente más tarde',
+				false
+			],
+			[AuthErrorCodes.EXPIRED_OOB_CODE]: ['La URL es invalida o ya expiro', true],
+			[AuthErrorCodes.INVALID_OOB_CODE]: ['La URL es invalida o ya expiro', true]
+		},
+		other: {
+			[AuthErrorCodes.EXPIRED_POPUP_REQUEST]: [
+				'Se presento un error al autenticar con {PROVIDER}',
+				true
+			],
+			[AuthErrorCodes.POPUP_BLOCKED]: ['Se presento un error al autenticar con {PROVIDER}', true],
+			[AuthErrorCodes.POPUP_CLOSED_BY_USER]: [
+				'Se presento un error al autenticar con {PROVIDER}',
+				true
+			],
+			[AuthErrorCodes.USER_DELETED]: ['Correo electrónico y/o contraseña inválidos', false],
+			[AuthErrorCodes.INVALID_PASSWORD]: ['Correo electrónico y/o contraseña inválidos', false],
+			[AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE]: [
+				'Correo electrónico ya se encuentra registrado',
+				false
+			],
+			[AuthErrorCodes.EMAIL_EXISTS]: ['Correo electrónico ya se encuentra registrado', false]
+		}
+	};
+
 	private readonly _googleAuthProvider: GoogleAuthProvider;
 
 	constructor(private readonly _auth: Auth) {
@@ -75,41 +98,50 @@ class FirebaseAuth {
 		return sendPasswordResetEmailFB(this._auth, email, actionCodeSettings);
 	}
 
-	getError(code: string | null | undefined, tags?: { [key: string]: string }): [string, boolean] {
-		/*
-    EXPIRED_POPUP_REQUEST: "auth/cancelled-popup-request"
-    POPUP_BLOCKED: "auth/popup-blocked"
-    POPUP_CLOSED_BY_USER: "auth/popup-closed-by-user"
-    USER_DELETED: "auth/user-not-found"
-    INVALID_PASSWORD: "auth/wrong-password"
-		CREDENTIAL_ALREADY_IN_USE: "auth/credential-already-in-use"
-    EMAIL_EXISTS: "auth/email-already-in-use"
-		*/
+	verifyPasswordResetCode(code: string) {
+		return verifyPasswordResetCodeFB(this._auth, code);
+	}
 
-		let msg = 'Error inesperado. Por favor vuelva a intentarlo';
+	confirmPasswordReset(oobCode: string, newPassword: string) {
+		return confirmPasswordResetFB(this._auth, oobCode, newPassword);
+	}
+
+	getError(
+		type: TypeAuthEnum,
+		code: string | null | undefined,
+		tags?: { [key: string]: string }
+	): [string, boolean] {
+		let msg: string | null = null;
 		let isError = true;
-		if (
-			AuthErrorCodes.EXPIRED_POPUP_REQUEST === code ||
-			AuthErrorCodes.POPUP_BLOCKED === code ||
-			AuthErrorCodes.POPUP_CLOSED_BY_USER === code
-		) {
-			msg = 'Se presento un error al autenticar con {PROVIDER}';
-		} else if (AuthErrorCodes.USER_DELETED === code || AuthErrorCodes.INVALID_PASSWORD === code) {
-			msg = 'Usuario y/o contraseña inválidos';
-			isError = false;
-		} else if (
-			AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE === code ||
-			AuthErrorCodes.EMAIL_EXISTS === code
-		) {
-			msg = 'Email ya se encuentra registrado';
-			isError = false;
+		if (type && code) {
+			const messagesType = this.ERROR_MESSAGES[type];
+			let messageCode: [string, boolean] | null | undefined = null;
+			if (messagesType) {
+				messageCode = messagesType[code];
+			}
+
+			if (!messageCode) {
+				messageCode = this.ERROR_MESSAGES.other[code];
+			}
+
+			if (messageCode) {
+				msg = messageCode[0];
+				isError = messageCode[1];
+			}
+
+			if (msg && tags) {
+				msg = Object.keys(tags).reduce(
+					(previous, current) => previous.replace(`{${current}}`, tags[current]),
+					msg
+				);
+			}
 		}
 
-		if (tags) {
-			Object.keys(tags).forEach((key) => {
-				msg = msg.replace(`{${key}}`, tags[key]);
-			});
+		if (!msg) {
+			msg = 'Error inesperado. Por favor vuelva a intentarlo';
+			isError = true;
 		}
+
 		return [msg, isError];
 	}
 }
@@ -120,6 +152,16 @@ class Firebase {
 	private readonly _authFunctions: FirebaseAuth;
 
 	constructor() {
+		// FIXME Dejar por variable de entorno
+		const firebaseConfig: FirebaseOptions = {
+			apiKey: 'AIzaSyApkPBNW6koMFOMcK8lSVABgHFXbDvaQEA',
+			authDomain: 'your-accounts-dev-9b1ae.firebaseapp.com',
+			projectId: 'your-accounts-dev-9b1ae',
+			storageBucket: 'your-accounts-dev-9b1ae.appspot.com',
+			messagingSenderId: '1017011775128',
+			appId: '1:1017011775128:web:1d21c6ab8c6cb53bd492ed'
+		};
+
 		this._app = initializeApp(firebaseConfig);
 		this._auth = getAuth(this._app);
 		this._authFunctions = new FirebaseAuth(this._auth);

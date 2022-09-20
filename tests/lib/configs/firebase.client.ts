@@ -1,7 +1,8 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { AuthErrorCodes } from 'firebase/auth';
 import firebase from '../../../src/lib/configs/firebase.client';
-import { FirebaseProviderEnum } from '../../../src/lib/enums/firebaseProvider.enum';
+import { FirebaseProviderEnum } from '../../../src/lib/enums/FirebaseProvider.enum';
+import { TypeAuthEnum } from '../../../src/lib/enums/TypeAuth.enum';
 
 vi.mock('firebase/app', () => ({
 	initializeApp: vi.fn(() => ({
@@ -60,7 +61,11 @@ describe('firebase.client', () => {
 		const tags = {
 			PROVIDER: FirebaseProviderEnum.GOOGLE
 		};
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.POPUP_BLOCKED, tags);
+		const [msg, isError] = firebase.authFunctions.getError(
+			TypeAuthEnum.LOGIN,
+			AuthErrorCodes.POPUP_BLOCKED,
+			tags
+		);
 
 		expect(msg).toBeTruthy();
 		expect(msg).toEqual(`Se presento un error al autenticar con ${tags.PROVIDER}`);
@@ -70,27 +75,33 @@ describe('firebase.client', () => {
 	});
 
 	it('auth functions getError User/Password Invalid', () => {
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.USER_DELETED);
+		const [msg, isError] = firebase.authFunctions.getError(
+			TypeAuthEnum.LOGIN,
+			AuthErrorCodes.USER_DELETED
+		);
 
 		expect(msg).toBeTruthy();
-		expect(msg).toEqual('Usuario y/o contraseña inválidos');
+		expect(msg).toEqual('Correo electrónico y/o contraseña inválidos');
 		expect(msg).toBeTypeOf('string');
 		expect(isError).toBeFalsy();
 		expect(isError).toBeTypeOf('boolean');
 	});
 
 	it('auth functions getError Email already exists', () => {
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.EMAIL_EXISTS);
+		const [msg, isError] = firebase.authFunctions.getError(
+			TypeAuthEnum.SIGNUP,
+			AuthErrorCodes.EMAIL_EXISTS
+		);
 
 		expect(msg).toBeTruthy();
-		expect(msg).toEqual('Email ya se encuentra registrado');
+		expect(msg).toEqual('Correo electrónico ya se encuentra registrado');
 		expect(msg).toBeTypeOf('string');
 		expect(isError).toBeFalsy();
 		expect(isError).toBeTypeOf('boolean');
 	});
 
 	it('auth functions getError without code', () => {
-		const [msg, isError] = firebase.authFunctions.getError(null);
+		const [msg, isError] = firebase.authFunctions.getError(TypeAuthEnum.LOGIN, null);
 
 		expect(msg).toBeTruthy();
 		expect(msg).toEqual('Error inesperado. Por favor vuelva a intentarlo');

@@ -11,7 +11,11 @@
 	export let errors: string[] | null = null;
 
 	onMount(() => {
-		id = `${id}_${crypto.randomUUID()}`;
+		if (crypto.randomUUID) {
+			id = `${id}_${crypto.randomUUID()}`;
+		} else {
+			id = `${id}_${new Date().getTime()}`;
+		}
 	});
 </script>
 
@@ -33,7 +37,7 @@
 		/>
 
 		<span
-			class="absolute text-xs font-medium text-gray-500 transition-all left-3 peer-focus:text-xs peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm"
+			class="absolute text-xs font-medium text-gray-500 transition-all left-3 top-2 peer-focus:text-xs peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm"
 		>
 			{placeholder}
 		</span>
@@ -43,7 +47,7 @@
 	{#if errors}
 		<div
 			transition:slide={{ duration: 150 }}
-			class="flex items-center text-xs text-red-500 bg-red-200 opacity-80 py-1 px-2 gap-2 rounded-b"
+			class="grid grid-cols-[max-content_auto] items-center text-xs text-red-600 bg-red-300 opacity-90 py-1 px-2 gap-2 rounded-b"
 			role="alert"
 		>
 			<svg

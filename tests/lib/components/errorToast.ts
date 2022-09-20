@@ -15,10 +15,10 @@ describe('ErrorToast', () => {
 		});
 
 		const alert = screen.getByRole('alert');
-		const strong = alert.querySelector('strong');
-		expect(strong).toBeTruthy();
-		if (strong) {
-			expect(strong.textContent).toEqual(message);
+		const span = alert.querySelector('span');
+		expect(span).toBeTruthy();
+		if (span) {
+			expect(span.textContent).toEqual(message);
 		}
 
 		const svg = alert.querySelector('svg');
