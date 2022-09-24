@@ -109,6 +109,28 @@ describe('Input', () => {
 		expect(group.disabled).toBeTruthy();
 	});
 
+	it('readonly property', () => {
+		render(Input, {
+			props: {
+				id,
+				name,
+				placeholder,
+				readonly: true
+			}
+		});
+
+		const group = screen.getByRole('group');
+		const label: HTMLLabelElement | null = group.querySelector('label');
+		expect(label).toBeTruthy();
+		if (label) {
+			const input: HTMLInputElement | null = label.querySelector('input');
+			expect(input).toBeTruthy();
+			if (input) {
+				expect(input.readOnly).toBeTruthy();
+			}
+		}
+	});
+
 	it('errors property', () => {
 		const errors = ['Error in the field'];
 

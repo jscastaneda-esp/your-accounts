@@ -19,6 +19,7 @@
 	{name}
 	{placeholder}
 	{disabled}
+	readonly={show}
 	type={show ? 'text' : 'password'}
 	classInput="pr-9"
 	{errors}
@@ -26,7 +27,8 @@
 	<button
 		tabindex="-1"
 		type="button"
-		class="absolute text-gray-500 cursor-pointer -translate-y-1/2 top-1/2 right-4 disabled:pointer-events-none"
+		class="absolute text-gray-500 cursor-pointer -translate-y-1/2 top-1/2 right-4"
+		class:pointer-events-none={disabled}
 		on:click={toggle}
 	>
 		<i class="fa-solid text-gray-500" class:fa-eye={!show} class:fa-eye-slash={show} />
