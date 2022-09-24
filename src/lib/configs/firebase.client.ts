@@ -1,3 +1,4 @@
+import { PUBLIC_FIREBASE_OPTIONS } from '$env/static/public';
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import {
 	getAuth,
@@ -152,17 +153,8 @@ class Firebase {
 	private readonly _authFunctions: FirebaseAuth;
 
 	constructor() {
-		// FIXME Dejar por variable de entorno
-		const firebaseConfig: FirebaseOptions = {
-			apiKey: 'AIzaSyApkPBNW6koMFOMcK8lSVABgHFXbDvaQEA',
-			authDomain: 'your-accounts-dev-9b1ae.firebaseapp.com',
-			projectId: 'your-accounts-dev-9b1ae',
-			storageBucket: 'your-accounts-dev-9b1ae.appspot.com',
-			messagingSenderId: '1017011775128',
-			appId: '1:1017011775128:web:1d21c6ab8c6cb53bd492ed'
-		};
-
-		this._app = initializeApp(firebaseConfig);
+		const firebaseOptions: FirebaseOptions = JSON.parse(PUBLIC_FIREBASE_OPTIONS);
+		this._app = initializeApp(firebaseOptions);
 		this._auth = getAuth(this._app);
 		this._authFunctions = new FirebaseAuth(this._auth);
 	}

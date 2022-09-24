@@ -8,6 +8,7 @@
 	export let type: 'text' | 'email' | 'password' = 'text';
 	export let classInput = '';
 	export let disabled = false;
+	export let readonly = false;
 	export let errors: string[] | null = null;
 
 	onMount(() => {
@@ -34,10 +35,11 @@
 			{name}
 			{type}
 			{placeholder}
+			{readonly}
 		/>
 
 		<span
-			class="absolute text-xs font-medium text-gray-500 transition-all left-3 top-2 peer-focus:text-xs peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm"
+			class="absolute text-xs font-medium text-gray-500 transition-all left-3 top-2 peer-focus:text-xs peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm select-none"
 		>
 			{placeholder}
 		</span>
