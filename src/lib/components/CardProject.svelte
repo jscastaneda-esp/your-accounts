@@ -2,10 +2,13 @@
 	import budgetImage from '../assets/images/budget.png';
 
 	import { createEventDispatcher } from 'svelte';
+
+	import { TypeProject } from '../enums/TypeProject.enum';
+	import { zeroPad } from '../utils/numberFormat.utils';
+
 	import CardBase from './CardBase.svelte';
-	import { TypeProject } from '$lib/enums/TypeProject.enum';
-	import { zeroPad } from '$lib/utils/numberFormat.utils';
 	import CardValue from './CardValue.svelte';
+	import ButtonRounded from './ButtonRounded.svelte';
 
 	export let id: number;
 	export let name: string;
@@ -61,22 +64,24 @@
 			{/if}
 		</div>
 		<div class="flex items-center -space-x-3 hover:space-x-1">
-			<button
-				type="button"
-				class="h-[30px] px-2 z-20 block text-center text-[10px] text-red-500 transition-all bg-red-300 border border-white rounded-full active:bg-red-200 hover:scale-110 focus:outline-none focus:ring"
+			<ButtonRounded
+				value="Borrar"
+				textColor="text-red-500"
+				backgroundColor="bg-red-300"
+				activeBackgroundColor="active:bg-red-200"
 				on:click={() => dispatch('delete', { id, type })}
 			>
-				<span class="font-bold tracking-wide">Borrar</span>
-				<i class="fa-solid fa-trash" />
-			</button>
-			<button
-				type="button"
-				class="h-[30px] px-2 z-10 block text-center text-[10px] text-blue-500 transition-all bg-blue-300 border border-white rounded-full active:bg-blue-200 hover:scale-110 focus:outline-none focus:ring"
-				on:click={() => dispatch('clone', { id, type })}
+				<i class="fa-solid fa-trash" slot="right" />
+			</ButtonRounded>
+			<ButtonRounded
+				value="Duplicar"
+				textColor="text-blue-500"
+				backgroundColor="bg-blue-300"
+				activeBackgroundColor="active:bg-blue-200"
+				on:click={() => dispatch('delete', { id, type })}
 			>
-				<i class="fa-solid fa-copy" />
-				<span class="font-bold tracking-wide">Duplicar</span>
-			</button>
+				<i class="fa-solid fa-copy" slot="left" />
+			</ButtonRounded>
 		</div>
 	</footer>
 </CardBase>

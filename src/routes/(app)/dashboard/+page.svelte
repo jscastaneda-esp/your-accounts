@@ -2,16 +2,16 @@
 	// Components
 	import CardBase from '$lib/components/CardBase.svelte';
 	import CardProject from '$lib/components/CardProject.svelte';
-	import PopUp from '$lib/components/PopUp.svelte';
+	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
 
-	// Types / Enums
-	import type { PopUpInfo } from '$lib/types/PopUpInfo';
+	// Types, Enums
+	import type { ConfirmPopupInfo } from '$lib/types/ConfirmPopupInfo';
 	import { TypeProject } from '$lib/enums/TypeProject.enum';
 
 	let awaitLoad = [1, 2, 3, 4];
 	let projects: any = [];
 	let showNewProject = false;
-	const popUpInfo: PopUpInfo = {
+	const confirmPopupInfo: ConfirmPopupInfo = {
 		show: false,
 		question: '',
 		description: undefined,
@@ -22,47 +22,51 @@
 		.then((response) => response.json())
 		.then((data) => (projects = data));
 
+	function handleNewProject(type: TypeProject) {
+		alert('Creando proyecto ' + type);
+	}
+
 	function handleDelete(event: any) {
-		popUpInfo.show = true;
-		popUpInfo.question = '¿Realmente desea eliminar el ';
-		popUpInfo.type = 'delete';
-		popUpInfo.detail = event.detail.id;
+		confirmPopupInfo.show = true;
+		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
+		confirmPopupInfo.type = 'delete';
+		confirmPopupInfo.detail = event.detail.id;
 
 		if (TypeProject.BUDGET === event.detail.type) {
-			popUpInfo.question += 'presupuesto?';
-			popUpInfo.description =
+			confirmPopupInfo.question += 'presupuesto?';
+			confirmPopupInfo.description =
 				'Se eliminará toda la información asociada y no será posible recuperarla';
 		}
 	}
 
 	function handleClone(event: any) {
-		popUpInfo.show = true;
-		popUpInfo.question = '¿Realmente desea duplicar el ';
-		popUpInfo.type = 'clone';
-		popUpInfo.detail = event.detail.id;
+		confirmPopupInfo.show = true;
+		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
+		confirmPopupInfo.type = 'clone';
+		confirmPopupInfo.detail = event.detail.id;
 
 		if (TypeProject.BUDGET === event.detail.type) {
-			popUpInfo.question += 'presupuesto?';
-			popUpInfo.description =
+			confirmPopupInfo.question += 'presupuesto?';
+			confirmPopupInfo.description =
 				'Se duplicará la información principal. Las transacciones no serán duplicadas';
 		}
 	}
 
 	function handlePopUpAccept() {
-		alert(popUpInfo.type + ': ' + popUpInfo.detail);
-		popUpInfo.show = false;
-		popUpInfo.question = '';
-		popUpInfo.description = undefined;
-		popUpInfo.type = '';
-		popUpInfo.detail = undefined;
+		alert(confirmPopupInfo.type + ': ' + confirmPopupInfo.detail);
+		resetConfirmPopupInfo();
 	}
 
 	function handlePopUpCancel() {
-		popUpInfo.show = false;
-		popUpInfo.question = '';
-		popUpInfo.description = undefined;
-		popUpInfo.type = '';
-		popUpInfo.detail = undefined;
+		resetConfirmPopupInfo();
+	}
+
+	function resetConfirmPopupInfo() {
+		confirmPopupInfo.show = false;
+		confirmPopupInfo.question = '';
+		confirmPopupInfo.description = undefined;
+		confirmPopupInfo.type = '';
+		confirmPopupInfo.detail = undefined;
 	}
 </script>
 
@@ -88,13 +92,15 @@
 					class="absolute -right-3 z-30 mt-4 origin-top-right rounded-md border border-gray-100 bg-white shadow-lg p-[6px] w-48 text-sm"
 					role="menu"
 				>
-					<div
-						class="block rounded-lg py-[6px] px-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+					<a
+						class="block rounded-lg py-[6px] px-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 no-underline"
 						role="menuitem"
+						on:click={() => handleNewProject(TypeProject.BUDGET)}
+						href={'#'}
 					>
 						<i class="fa-solid fa-cash-register" />
 						<span class="ml-2 tracking-wider font-semibold">Presupuesto</span>
-					</div>
+					</a>
 				</div>
 			</div>
 		</CardBase>
@@ -128,6 +134,6 @@
 	{/if}
 </section>
 
-{#if popUpInfo.show}
-	<PopUp {...popUpInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
+{#if confirmPopupInfo.show}
+	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
 {/if}
