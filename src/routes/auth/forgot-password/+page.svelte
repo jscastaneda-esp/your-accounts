@@ -57,9 +57,7 @@
 </svelte:head>
 
 <div class="flex justify-center items-center">
-	<div
-		class="bg-white bg-image-auth flex justify-center w-full min-w-[320px] lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md shadow-gray-500"
-	>
+	<div class="bg-white auth-container">
 		<form class="flex flex-col justify-center items-center min-w-[238px] max-w-[238px]" use:form>
 			<section class="flex justify-center items-center gap-2 mb-[10px] w-full">
 				<img src={forgotPassword} alt="Logo" class="w-12 h-12" />

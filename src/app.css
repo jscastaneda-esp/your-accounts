@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-image-auth {
-	background-image: url('./lib/assets/images/background-image.svg');
-	background-repeat: no-repeat;
-	background-position: bottom;
+@layer components {
+	.auth-container {
+		@apply flex justify-center w-screen min-w-[320px] md:w-full lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md shadow-gray-500 bg-[url('/background-image.svg')] bg-no-repeat bg-bottom;
+	}
 }

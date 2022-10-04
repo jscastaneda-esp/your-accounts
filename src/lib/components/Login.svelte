@@ -38,12 +38,12 @@
 			email: '',
 			password: ''
 		},
-		onSubmit: (values) =>
-			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password),
+		onSubmit: (values) => {
+			Toast.clear();
+			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password);
+		},
 		onSuccess: () => goto('/dashboard'),
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.LOGIN,
 				(error as FirebaseError).code
@@ -60,13 +60,13 @@
 	let loading = false;
 
 	async function signInGoogle() {
+		Toast.clear();
 		loading = true;
+
 		try {
 			await firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE);
 			goto('/dashboard');
 		} catch (error: unknown) {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.LOGIN,
 				(error as FirebaseError).code,
