@@ -38,13 +38,15 @@
 </script>
 
 <header
-	class="z-20 fixed w-full h-14 md:h-[66px] bg-blue-400 px-3 shadow shadow-gray-700 flex justify-between items-center"
+	class="z-20 w-full h-14 md:h-[66px] bg-blue-400 px-3 shadow shadow-gray-700 flex justify-between items-center"
 >
 	<section class="w-full md:w-max flex justify-between items-center gap-2">
 		<a class="flex items-center gap-3" href="/dashboard">
 			<img src={logo} alt="Logo" class="w-12 h-12" />
 		</a>
-		<span class="text-center text-black font-semibold text-2xl leading-6">Tus Cuentas</span>
+		<span class="text-center text-black font-semibold text-2xl leading-6 tracking-wider"
+			>Tus Cuentas</span
+		>
 		<button class="text-blue-200 text-2xl md:hidden" on:click={toggleMenu}>
 			<i
 				class="fa-solid transition-transform w-6"
@@ -57,19 +59,19 @@
 	</section>
 
 	<nav class="hidden md:block">
-		<ul id="menu" class="flex h-full items-center gap-3">
-			<li class:active={$page.routeId === '(app)/dashboard'}>
-				<a href="/dashboard">
+		<ul id="menu" class="flex h-full items-center gap-1">
+			<a href="/dashboard">
+				<li class:active={$page.routeId === '(app)/dashboard'}>
 					<i class="fa-solid fa-hand-holding-dollar" />
 					<span>Proyectos</span>
-				</a>
-			</li>
-			<li class:active={$page.routeId === '(app)/reports'}>
-				<a href="/reports">
+				</li>
+			</a>
+			<!-- <a href="/reports">
+				<li class:active={$page.routeId === '(app)/reports'}>
 					<i class="fa-solid fa-chart-pie" />
 					<span>Reportes</span>
-				</a>
-			</li>
+				</li>
+			</a> -->
 		</ul>
 	</nav>
 
@@ -95,24 +97,28 @@
 	</div>
 </header>
 
-<div class="relative h-[calc(100%-3.5rem)] md:h-[calc(100%-66px)] top-14 md:top-[66px]">
+<div
+	class="relative h-[calc(100%-3.5rem)] md:h-[calc(100%-66px)] overflow-y-auto"
+	class:overflow-y-hidden={showMenu}
+>
 	<nav
-		class="z-10 absolute w-full max-w-[300px] h-full bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin] duration-300 -ml-[300px] md:hidden"
+		class="z-50 absolute w-full max-w-[320px] h-full bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin] duration-300 md:hidden"
 		class:ml-0={showMenu}
+		class:-ml-[320px]={!showMenu}
 	>
 		<ul id="toggle">
-			<li class:active={$page.routeId === '(app)/dashboard'}>
-				<a href="/dashboard">
+			<a href="/dashboard">
+				<li class:active={$page.routeId === '(app)/dashboard'}>
 					<i class="fa-solid fa-hand-holding-dollar" />
 					<span>Proyectos</span>
-				</a>
-			</li>
-			<li class:active={$page.routeId === '(app)/reports'}>
-				<a href="/reports">
+				</li>
+			</a>
+			<!-- <a href="/reports">
+				<li class:active={$page.routeId === '(app)/reports'}>
 					<i class="fa-solid fa-chart-pie" />
 					<span>Reportes</span>
-				</a>
-			</li>
+				</li>
+			</a> -->
 		</ul>
 
 		<button
@@ -132,19 +138,19 @@
 </div>
 
 <style lang="postcss">
-	#toggle > li {
+	#toggle li {
 		@apply h-11 px-4 py-3 rounded-tr-full rounded-br-full hover:border-l-4 hover:border-blue-400 hover:bg-blue-200 hover:font-semibold transition-all duration-100;
 	}
 
-	#toggle > li.active {
+	#toggle li.active {
 		@apply !border-l-8 border-blue-400 bg-blue-200 font-semibold;
 	}
 
-	#menu > li {
+	#menu li {
 		@apply h-11 px-4 py-3 rounded-t-lg hover:border-b-2 hover:border-blue-600 hover:bg-blue-200 hover:font-semibold hover:pb-4 hover:pt-2 transition-all duration-100;
 	}
 
-	#menu > li.active {
+	#menu li.active {
 		@apply !border-b-4 border-blue-600 bg-blue-200 font-semibold pb-4 pt-2;
 	}
 </style>

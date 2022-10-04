@@ -19,14 +19,14 @@
 
 <div class="flex justify-center items-center">
 	<div
-		class="bg-blue-400 bg-image-auth"
+		class="bg-blue-400"
 		class:blur-content={TypeAuthEnum.SIGNUP === data.type}
 		class:login={TypeAuthEnum.SIGNUP === data.type}
 	>
 		<Login />
 	</div>
 	<div
-		class="bg-white bg-image-auth"
+		class="bg-white"
 		class:blur-content={TypeAuthEnum.LOGIN === data.type}
 		class:signup={TypeAuthEnum.LOGIN === data.type}
 	>
@@ -36,7 +36,7 @@
 
 <style lang="postcss">
 	div > div {
-		@apply flex justify-center w-full min-w-[320px] lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md shadow-gray-500 transition-all duration-200 ease-in-out;
+		@apply auth-container transition-all duration-200 ease-in-out;
 	}
 
 	.blur-content {

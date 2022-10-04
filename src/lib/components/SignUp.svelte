@@ -45,16 +45,16 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) =>
-			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password),
+		onSubmit: (values) => {
+			Toast.clear();
+			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password);
+		},
 		onSuccess: async (response: unknown) => {
 			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user);
 			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password);
 			goto('/dashboard');
 		},
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.SIGNUP,
 				(error as FirebaseError).code
