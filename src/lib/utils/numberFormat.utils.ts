@@ -1,5 +1,3 @@
-import { number } from 'yup';
-
 const pesosCOLocale = Intl.NumberFormat('en-CO');
 
 export function money(value: number) {

@@ -5,7 +5,7 @@
 	export let id: string;
 	export let name: string;
 	export let placeholder: string;
-	export let type: 'text' | 'email' | 'password' = 'text';
+	export let type: 'text' | 'number' | 'email' | 'password' | 'month' = 'text';
 	export let classInput = '';
 	export let disabled = false;
 	export let readonly = false;
@@ -36,6 +36,7 @@
 			{type}
 			{placeholder}
 			{readonly}
+			step={type === 'number' ? '0.01' : undefined}
 		/>
 
 		<span

@@ -1,72 +1,29 @@
 <script lang="ts">
+	// Utilities
+	import { goto } from '$app/navigation';
+
 	// Components
 	import CardBase from '$lib/components/CardBase.svelte';
 	import CardProject from '$lib/components/CardProject.svelte';
-	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
 
 	// Types, Enums
-	import type { ConfirmPopupInfo } from '$lib/types/ConfirmPopupInfo';
 	import { TypeProject } from '$lib/enums/TypeProject.enum';
 
-	let awaitLoad = [1, 2, 3, 4];
+	let awaitLoad = [1, 2, 3];
 	let projects: any = [];
 	let showNewProject = false;
-	const confirmPopupInfo: ConfirmPopupInfo = {
-		show: false,
-		question: '',
-		description: undefined,
-		type: ''
-	};
 
 	fetch('/api/dashboard')
 		.then((response) => response.json())
 		.then((data) => (projects = data));
 
 	function handleNewProject(type: TypeProject) {
-		alert('Creando proyecto ' + type);
-	}
-
-	function handleDelete(event: any) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
-		confirmPopupInfo.type = 'delete';
-		confirmPopupInfo.detail = event.detail.id;
-
-		if (TypeProject.BUDGET === event.detail.type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se eliminará toda la información asociada y no será posible recuperarla';
+		let url: string | undefined = undefined;
+		if (TypeProject.BUDGET === type) {
+			url = '/budget';
 		}
-	}
-
-	function handleClone(event: any) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
-		confirmPopupInfo.type = 'clone';
-		confirmPopupInfo.detail = event.detail.id;
-
-		if (TypeProject.BUDGET === event.detail.type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se duplicará la información principal. Las transacciones no serán duplicadas';
-		}
-	}
-
-	function handlePopUpAccept() {
-		alert(confirmPopupInfo.type + ': ' + confirmPopupInfo.detail);
-		resetConfirmPopupInfo();
-	}
-
-	function handlePopUpCancel() {
-		resetConfirmPopupInfo();
-	}
-
-	function resetConfirmPopupInfo() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '';
-		confirmPopupInfo.description = undefined;
-		confirmPopupInfo.type = '';
-		confirmPopupInfo.detail = undefined;
+		alert('Creando proyecto');
+		goto(`${url}/${new Date().getTime()}`);
 	}
 </script>
 
@@ -74,7 +31,7 @@
 	<title>Dashboard</title>
 </svelte:head>
 
-<section
+<div
 	class="container mx-auto justify-center grid grid-cols-[repeat(auto-fit,_minmax(276px,_300px))] gap-[22px] p-[22px]"
 >
 	{#if projects && projects.length > 0}
@@ -105,15 +62,15 @@
 			</div>
 		</CardBase>
 
-		{#each projects as project}
-			<CardProject
-				{...project}
-				on:edit={() => alert('Not implemented')}
-				on:delete={handleDelete}
-				on:clone={handleClone}
-			/>
+		{#each projects as project (project.id)}
+			<CardProject {...project} />
 		{/each}
 	{:else}
+		<CardBase>
+			<div class="animate-pulse">
+				<div class="bg-slate-400 w-full h-[140px]" />
+			</div>
+		</CardBase>
 		{#each awaitLoad as _}
 			<CardBase>
 				<div class="animate-pulse">
@@ -124,16 +81,12 @@
 					<div class="rounded-lg bg-slate-400 w-full h-7" />
 					<div class="w-full flex justify-end mt-4">
 						<div class="flex items-center -space-x-4">
-							<div class="z-10 block w-[30px] h-[30px] rounded-full bg-slate-400" />
-							<div class="z-10 block w-[30px] h-[30px] rounded-full bg-slate-400" />
+							<div class="z-10 block w-[70px] h-[30px] rounded-full bg-slate-400" />
+							<div class="z-10 block w-[70px] h-[30px] rounded-full bg-slate-400" />
 						</div>
 					</div>
 				</div>
 			</CardBase>
 		{/each}
 	{/if}
-</section>
-
-{#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
-{/if}
+</div>

@@ -120,10 +120,21 @@
 	</section>
 
 	<section class="flex flex-col gap-2 w-full items-center">
-		<ButtonLink text="Recuperar contraseña" href="/auth/forgot-password" disabled={loadingEvent}>
+		<ButtonLink
+			text="Recuperar contraseña"
+			href="/auth/forgot-password"
+			disabled={loadingEvent}
+			className="bg-blue-400"
+		>
 			<img src={forgotPassword} alt="Forgot Password" />
 		</ButtonLink>
-		<ButtonLink text="Registrarse" href="/auth/signup" disabled={loadingEvent} on:click={reset}>
+		<ButtonLink
+			text="Registrarse"
+			href="/auth/signup"
+			disabled={loadingEvent}
+			className="bg-blue-400"
+			on:click={reset}
+		>
 			<i class="fa-solid fa-angles-right text-black" />
 		</ButtonLink>
 	</section>

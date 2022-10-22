@@ -23,6 +23,9 @@ node_modules
 /.svelte-kit
 /package
 
+# Vitest
+/coverage
+
 # dotenv environment variables file
 .env
 .env.*

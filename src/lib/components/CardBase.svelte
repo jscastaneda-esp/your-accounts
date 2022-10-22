@@ -3,7 +3,7 @@
 </script>
 
 <article
-	class="shadow-sm shadow-gray-400 rounded-lg w-full min-h-[140px] p-3"
+	class="bg-white shadow-sm shadow-gray-400 rounded-lg w-full min-h-[140px] p-3"
 	style:background-image={img ? `url(${img})` : ''}
 >
 	<slot />
