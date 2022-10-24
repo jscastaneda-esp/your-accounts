@@ -12,9 +12,9 @@
 	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
 	import SummaryValue from '$lib/components/SummaryValue.svelte';
 	import Transactions from '$lib/components/Transactions.svelte';
-	import CardBudgetStadistics from '$lib/components/CardBudgetStadistics.svelte';
 	import CardBudgetAvailable from '$lib/components/CardBudgetAvailable.svelte';
 	import CardBudgetBills from '$lib/components/CardBudgetBills.svelte';
+	import CardBudgetStadistics from '$lib/components/CardBudgetStadistics.svelte';
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -37,11 +37,13 @@
 		extend: [validator({ schema: validationSchema })]
 	});
 
+	let isValidAvailables = true;
 	let loading = false;
 	let showSummary = false;
 	const confirmPopupInfo: ConfirmPopupInfo = {
 		show: false,
-		question: ''
+		question: '¿Realmente desea salir?',
+		description: 'Al salir se pueden perder cambios. Se recomienda primero guardar'
 	};
 
 	function handleSave() {
@@ -50,25 +52,19 @@
 
 	function handleExit() {
 		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea salir?';
-		confirmPopupInfo.description =
-			'Al salir se pueden perder cambios. Se recomienda primero guardar';
 	}
 
 	function handlePopUpAccept() {
 		goto('/dashboard');
-		resetConfirmPopupInfo();
+		confirmPopupInfo.show = false;
 	}
 
 	function handlePopUpCancel() {
-		resetConfirmPopupInfo();
+		confirmPopupInfo.show = false;
 	}
 
-	function resetConfirmPopupInfo() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '';
-		confirmPopupInfo.description = undefined;
-		confirmPopupInfo.detail = undefined;
+	function handleValidAvailables({ detail }: { detail: { isValid: boolean } }) {
+		isValidAvailables = detail.isValid;
 	}
 </script>
 
@@ -104,16 +100,16 @@
 			<div class="bg-slate-400 w-10 h-10 rounded-full" />
 		</section>
 		<div class="min-h-[33px] bg-slate-400">
-			<div class="hidden md:grid h-20" class:!grid={showSummary} />
+			<div class="hidden md:grid h-20" />
 		</div>
 	</div>
 {:else}
-	<div class="px-2 py-3 flex flex-col gap-[10px]">
+	<div class="px-2 py-3 flex flex-col gap-[10px] mb-[5.3rem] md:mb-[7.3rem]">
 		<section class="px-1 flex justify-between">
 			<ButtonLink
 				text="Guardar"
 				className="text-gray-500 before:bg-gray-500 text-base"
-				disabled={!$isValidMain}
+				disabled={!$isValidMain || !isValidAvailables}
 				on:click={handleSave}
 			>
 				<i class="fa-solid fa-floppy-disk" />
@@ -154,7 +150,7 @@
 			/>
 		</form>
 		<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
-			<CardBudgetAvailable />
+			<CardBudgetAvailable list={[]} on:isValid={handleValidAvailables} />
 			<CardBudgetBills />
 		</section>
 		<CardBudgetStadistics />
