@@ -19,14 +19,14 @@
 
 <div class="flex justify-center items-center">
 	<div
-		class="bg-blue-400"
+		class="bg-blue-400 auth-container"
 		class:blur-content={TypeAuthEnum.SIGNUP === data.type}
 		class:login={TypeAuthEnum.SIGNUP === data.type}
 	>
 		<Login />
 	</div>
 	<div
-		class="bg-white"
+		class="bg-white auth-container"
 		class:blur-content={TypeAuthEnum.LOGIN === data.type}
 		class:signup={TypeAuthEnum.LOGIN === data.type}
 	>
@@ -36,7 +36,7 @@
 
 <style lang="postcss">
 	div > div {
-		@apply auth-container transition-all duration-200 ease-in-out;
+		@apply transition-all duration-200 ease-in-out;
 	}
 
 	.blur-content {
