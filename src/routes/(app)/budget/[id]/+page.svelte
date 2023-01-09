@@ -1,10 +1,12 @@
 <script lang="ts">
 	// Enums, Types, Utilities
+	import { setContext } from 'svelte';
 	import { goto } from '$app/navigation';
-	import type { ConfirmPopupInfo } from '$lib/types/ConfirmPopupInfo';
+	import type { ConfirmPopupInfo, BudgetContext } from '$lib/types';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '$lib/utils/yup.utils';
+	import { Context } from '$lib/enums';
 
 	// Components
 	import Input from '$lib/components/Input.svelte';
@@ -15,6 +17,9 @@
 	import CardBudgetAvailable from '$lib/components/CardBudgetAvailable.svelte';
 	import CardBudgetBills from '$lib/components/CardBudgetBills.svelte';
 	import CardBudgetStadistics from '$lib/components/CardBudgetStadistics.svelte';
+	import { writable } from 'svelte/store';
+	import { page } from '$app/stores';
+	import { DateTime } from 'luxon';
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -26,18 +31,26 @@
 	const {
 		form: formMain,
 		errors,
+		data: dataMain,
 		isValid: isValidMain
 	} = createForm({
 		initialValues: {
+			id: Number($page.params.id),
 			name: '',
-			month: '',
+			month: DateTime.now().toFormat('yyyy-MM'),
 			fixed_income: 0,
 			additional_income: 0
 		},
 		extend: [validator({ schema: validationSchema })]
 	});
 
-	let isValidAvailables = true;
+	// Context General
+	setContext(Context.BUDGET_DATA_MAIN, dataMain);
+	const dataAvailable = writable<BudgetContext>({ isValid: false, data: {} });
+	setContext(Context.BUDGET_DATA_AVAILABLE, dataAvailable);
+	const dataBills = writable<BudgetContext>({ isValid: false, data: {} });
+	setContext(Context.BUDGET_DATA_BILLS, dataBills);
+
 	let loading = false;
 	let showSummary = false;
 	const confirmPopupInfo: ConfirmPopupInfo = {
@@ -61,10 +74,6 @@
 
 	function handlePopUpCancel() {
 		confirmPopupInfo.show = false;
-	}
-
-	function handleValidAvailables({ detail }: { detail: { isValid: boolean } }) {
-		isValidAvailables = detail.isValid;
 	}
 </script>
 
@@ -109,7 +118,7 @@
 			<ButtonLink
 				text="Guardar"
 				className="text-gray-500 before:bg-gray-500 text-base"
-				disabled={!$isValidMain || !isValidAvailables}
+				disabled={!$isValidMain || !$dataAvailable.isValid || !$dataBills.isValid}
 				on:click={handleSave}
 			>
 				<i class="fa-solid fa-floppy-disk" />
@@ -150,8 +159,8 @@
 			/>
 		</form>
 		<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
-			<CardBudgetAvailable list={[]} on:isValid={handleValidAvailables} />
-			<CardBudgetBills />
+			<CardBudgetAvailable list={[]} />
+			<CardBudgetBills list={[]} />
 		</section>
 		<CardBudgetStadistics />
 	</div>

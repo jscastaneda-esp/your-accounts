@@ -1,6 +1,10 @@
 const pesosCOLocale = Intl.NumberFormat('en-CO');
 
 export function money(value: number) {
+	if (isNaN(value)) {
+		value = 0;
+	}
+
 	const isNegative = value < 0;
 	if (isNegative) {
 		return `$(${pesosCOLocale.format(value * -1)})`;

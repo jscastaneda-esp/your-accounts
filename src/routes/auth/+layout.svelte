@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	// Utilities
-	import { session } from '$lib/stores/user.store';
+	import { session } from '$lib/stores';
 
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';

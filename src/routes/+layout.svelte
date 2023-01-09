@@ -3,13 +3,16 @@
 
 	import '../app.css';
 	import firebase from '$lib/configs/firebase.client';
-	import { session } from '$lib/stores/user.store';
+	import { session } from '$lib/stores';
+	import { Settings } from 'luxon';
 
 	firebase.authFunctions.onAuthStateChanged((user) => {
 		$session = user;
 	});
 
 	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } };
+
+	Settings.defaultLocale = 'es-CO';
 </script>
 
 <main class="h-screen w-full">
@@ -20,13 +23,18 @@
 
 <style>
 	:root {
-		--toastContainerTop: auto;
-		--toastContainerRight: auto;
-		--toastContainerBottom: 1rem;
-		--toastContainerLeft: calc(50vw - 8rem);
+		--toastContainerTop: 5rem;
 		--toastPadding: 0;
 		--toastMsgPadding: 0;
 		--toastMinHeight: auto;
 		--toastColor: #4b5563;
+	}
+
+	@media (max-width: 768px) {
+		:root {
+			--toastContainerTop: auto;
+			--toastContainerBottom: 2.5rem;
+			--toastContainerLeft: calc(50vw - 8rem);
+		}
 	}
 </style>

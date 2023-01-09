@@ -3,8 +3,8 @@
 
 	import { goto } from '$app/navigation';
 
-	import type { ConfirmPopupInfo } from '../types/ConfirmPopupInfo';
-	import { TypeProject } from '../enums/TypeProject.enum';
+	import type { ConfirmPopupInfo } from '../types';
+	import { TypeProject } from '../enums';
 	import { zeroPad } from '../utils/numberFormat.utils';
 
 	import CardBase from './CardBase.svelte';
@@ -89,14 +89,15 @@
 
 <CardBase {img}>
 	<section class="w-full flex justify-end">
-		<span
+		<button
+			type="button"
 			class="flex justify-center items-center gap-1 rounded-full min-w-[43px] max-w-max py-[3px] px-1 text-[10px] transition-all hover:scale-110 cursor-pointer"
 			class:bg-blue-300={TypeProject.BUDGET == type}
 			on:click={handleEdit}
 		>
 			#{id}
 			<i class="fa-solid fa-pen" />
-		</span>
+		</button>
 	</section>
 	<header class="flex flex-col -mt-1 mb-1 bg-white w-max">
 		<section class="flex items-end gap-1">

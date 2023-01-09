@@ -3,7 +3,9 @@
 	export let showBody = false;
 </script>
 
-<article class={`bg-white w-full shadow-sm shadow-gray-400 rounded-lg ${classNameContainer}`}>
+<article
+	class={`bg-white w-full shadow-sm shadow-gray-400 rounded-lg transition-all ${classNameContainer}`}
+>
 	<header class="p-[11px]">
 		<slot name="header" />
 	</header>

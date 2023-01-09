@@ -10,8 +10,8 @@
 	import type { FirebaseError } from 'firebase/app';
 	import firebase from '../configs/firebase.client';
 	import Toast from '../utils/toast.utils';
-	import { TypeAuthEnum } from '../enums/TypeAuth.enum';
-	import { session } from '../stores/user.store';
+	import { TypeAuthEnum } from '../enums';
+	import { session } from '../stores';
 
 	let showMenu = false;
 
@@ -38,7 +38,7 @@
 </script>
 
 <header
-	class="z-20 w-full h-14 md:h-[66px] bg-blue-400 px-3 shadow shadow-gray-700 flex justify-between items-center"
+	class="fixed z-20 w-full h-14 md:h-[66px] bg-blue-400 px-3 shadow shadow-gray-700 flex justify-between items-center"
 >
 	<section class="w-full md:w-max flex justify-between items-center gap-2">
 		<a class="flex items-center gap-3" href="/dashboard">
@@ -61,7 +61,7 @@
 	<nav class="hidden md:block">
 		<ul id="menu" class="flex h-full items-center gap-1">
 			<a href="/dashboard">
-				<li class:active={$page.routeId === '(app)/dashboard'}>
+				<li class:active={$page.route.id === '(app)/dashboard'}>
 					<i class="fa-solid fa-hand-holding-dollar" />
 					<span>Proyectos</span>
 				</li>
@@ -97,43 +97,43 @@
 	</div>
 </header>
 
-<div
-	class="relative h-[calc(100%-3.5rem)] md:h-[calc(100%-66px)] overflow-y-auto"
-	class:overflow-y-hidden={showMenu}
+<nav
+	class="z-50 absolute top-14 h-full w-full max-w-[320px] bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin] duration-300 md:hidden"
+	class:ml-0={showMenu}
+	class:-ml-[320px]={!showMenu}
 >
-	<nav
-		class="z-50 absolute w-full max-w-[320px] h-full bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin] duration-300 md:hidden"
-		class:ml-0={showMenu}
-		class:-ml-[320px]={!showMenu}
-	>
-		<ul id="toggle">
-			<a href="/dashboard">
-				<li class:active={$page.routeId === '(app)/dashboard'}>
-					<i class="fa-solid fa-hand-holding-dollar" />
-					<span>Proyectos</span>
-				</li>
-			</a>
-			<!-- <a href="/reports">
+	<ul id="toggle">
+		<a href="/dashboard">
+			<li class:active={$page.route.id === '(app)/dashboard'}>
+				<i class="fa-solid fa-hand-holding-dollar" />
+				<span>Proyectos</span>
+			</li>
+		</a>
+		<!-- <a href="/reports">
 				<li class:active={$page.routeId === '(app)/reports'}>
 					<i class="fa-solid fa-chart-pie" />
 					<span>Reportes</span>
 				</li>
 			</a> -->
-		</ul>
+	</ul>
 
-		<button
-			class="flex flex-col justify-start px-4 py-1 text-left hover:bg-blue-200 rounded-tr-full transition-all duration-100"
-			on:click={signOut}
-		>
-			<span class="text-lg font-bold">{$session?.displayName}</span>
-			<span class="text-sm text-gray-500">{$session?.email}</span>
-			<section class="text-sm">
-				<i class="fa-solid fa-right-from-bracket" />
-				&nbsp; Cerrar sesión
-			</section>
-		</button>
-	</nav>
+	<button
+		class="flex flex-col justify-start px-4 py-1 text-left hover:bg-blue-200 rounded-tr-full transition-all duration-100"
+		on:click={signOut}
+	>
+		<span class="text-lg font-bold">{$session?.displayName}</span>
+		<span class="text-sm text-gray-500">{$session?.email}</span>
+		<section class="text-sm">
+			<i class="fa-solid fa-right-from-bracket" />
+			&nbsp; Cerrar sesión
+		</section>
+	</button>
+</nav>
 
+<div
+	class="absolute w-full h-full top-14 md:top-[66px] overflow-y-auto"
+	class:overflow-y-hidden={showMenu}
+>
 	<slot />
 </div>
 

@@ -8,7 +8,7 @@
 	import CardProject from '$lib/components/CardProject.svelte';
 
 	// Types, Enums
-	import { TypeProject } from '$lib/enums/TypeProject.enum';
+	import { TypeProject } from '$lib/enums';
 
 	const awaitLoad = [1, 2, 3];
 	let showNewProject = false;
@@ -71,13 +71,14 @@
 		{/each}
 	{:then data}
 		<CardBase>
-			<section
+			<button
+				type="button"
 				class="flex justify-center items-center gap-2 text-gray-400 font-bold w-full h-full select-none cursor-pointer"
 				on:click={() => (showNewProject = !showNewProject)}
 			>
 				<i class="fa-solid fa-plus text-6xl" />
 				<span class="text-3xl text-center w-min">Crear Proyecto</span>
-			</section>
+			</button>
 
 			<div class="relative block transition-[display]" class:hidden={!showNewProject}>
 				<div

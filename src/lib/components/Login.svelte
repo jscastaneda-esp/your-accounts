@@ -12,9 +12,8 @@
 	import forgotPassword from '../assets/images/forgot-password-icon.png';
 
 	// Enums, Classes, Types
-	import { FirebaseProviderEnum } from '../enums/FirebaseProvider.enum';
+	import { FirebaseProviderEnum, TypeAuthEnum } from '../enums';
 	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '../enums/TypeAuth.enum';
 
 	// Components
 	import ButtonExternalAuth from './ButtonExternalAuth.svelte';

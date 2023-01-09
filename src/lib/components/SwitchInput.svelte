@@ -5,11 +5,8 @@
 
 	export let id: string;
 	export let name: string;
-	export let placeholder: string;
-	export let type: 'text' | 'number' | 'email' | 'password' | 'month' = 'text';
-	export let classInput = '';
+	export let text: string;
 	export let disabled = false;
-	export let readonly = false;
 	export let errors: FelteError = null;
 	export let className = '';
 
@@ -23,32 +20,18 @@
 </script>
 
 <fieldset {disabled} class={className}>
-	<label
-		class="bg-white relative block p-[0.4rem] px-3 border-2 border-gray-200 transition-all ease-in-out"
-		class:bg-gray-300={disabled}
-		class:border-0={errors}
-		class:ring-2={errors}
-		class:ring-red-500={errors}
-		for={id}
-	>
-		<input
-			class={`bg-transparent w-full px-0 pt-3.5 pb-0 text-sm placeholder-transparent border-none focus:ring-0 peer ${classInput}`}
-			{id}
-			{name}
-			{type}
-			{placeholder}
-			{readonly}
-			step={type === 'number' ? '0.01' : undefined}
-		/>
+	<div class="flex gap-1 items-center">
+		<span class="text-sm text-gray-500">{text}</span>
+		<label for={id} class="relative h-6 w-10 cursor-pointer">
+			<input type="checkbox" {id} {name} class="peer sr-only" />
 
-		<span
-			class="absolute text-xs font-medium text-gray-500 transition-all left-3 top-2 peer-focus:text-xs peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm select-none"
-		>
-			{placeholder}
-		</span>
+			<span class="absolute inset-0 rounded-full bg-white transition" />
 
-		<slot />
-	</label>
+			<span
+				class="absolute inset-0 m-1 h-4 w-4 rounded-full bg-gray-300 transition peer-checked:translate-x-4 peer-checked:bg-blue-400"
+			/>
+		</label>
+	</div>
 	{#if errors}
 		<div
 			transition:slide={{ duration: 150 }}

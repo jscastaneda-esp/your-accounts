@@ -12,7 +12,7 @@
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '$lib/enums/TypeAuth.enum';
+	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
@@ -22,7 +22,7 @@
 	import firebase from '$lib/configs/firebase.client';
 	import Toast from '$lib/utils/toast.utils';
 	import yup, { password } from '$lib/utils/yup.utils';
-	import type { PageDataUserManagementAction } from '$lib/types/PageDataUserManagementAction';
+	import type { PageDataUserManagementAction } from '$lib/types';
 
 	export let data: PageDataUserManagementAction;
 

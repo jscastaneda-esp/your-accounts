@@ -1,17 +1,22 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
 	import CardBudget from './CardBudget.svelte';
 	import ComposeHeaderCardBudget from './ComposeHeaderCardBudget.svelte';
 	import SummaryValue from './SummaryValue.svelte';
-	import BudgetAvailableItem from './BudgetAvailableItem.svelte';
+	import ItemBudgetAvailable from './ItemBudgetAvailable.svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
-	import { createEventDispatcher } from 'svelte';
-	import Toast from '$lib/utils/toast.utils';
+	import Toast from '../utils/toast.utils';
+	import { Context } from '../enums';
+	import type { Writable } from 'svelte/store';
+	import type { BudgetAvailable, BudgetContext, BudgetMainData } from '../types';
 
-	export let list: any[];
+	export let list: BudgetAvailable[];
 
-	const dispatch = createEventDispatcher();
+	const dataMain: Writable<BudgetMainData> = getContext('dataMain');
+
+	let ctx = getContext<Writable<BudgetContext>>(Context.BUDGET_DATA_AVAILABLE);
 	let show = false;
 
 	// Form Definition
@@ -19,7 +24,8 @@
 		availables: yup.array().of(
 			yup.object().shape({
 				name: defaultText.max(40),
-				amount: defaultNumber.min(0).max(9999999999.99)
+				amount: defaultNumber.min(0).max(9999999999.99),
+				budget_id: defaultNumber.min(1)
 			})
 		)
 	});
@@ -32,7 +38,7 @@
 
 	function add() {
 		if ($isValid) {
-			addField('availables', { name: '', amount: 0 }, availables.length);
+			addField('availables', { name: '', amount: 0, budget_id: $dataMain.id }, availables.length);
 		}
 	}
 
@@ -45,7 +51,10 @@
 	}
 
 	$: availables = $data.availables;
-	$: dispatch('isValid', { isValid: $isValid });
+	$: $ctx = {
+		isValid: $isValid,
+		data: $data
+	};
 </script>
 
 <div class="px-1">
@@ -74,9 +83,9 @@
 		</ComposeHeaderCardBudget>
 		<form slot="body" class="flex flex-col overflow-y-auto max-h-[210px]" use:form>
 			{#each availables as available, index (`available_${index}`)}
-				<BudgetAvailableItem
-					{...available}
+				<ItemBudgetAvailable
 					{index}
+					id={available.id}
 					errors={$errors.availables?.[index]}
 					on:delete={del}
 				/>
@@ -84,7 +93,7 @@
 			{#if $isValid}
 				<button
 					type="button"
-					class="bg-gray-200 py-[6px] px-3 flex items-center gap-1 text-xs text-gray-500 shadow-inner"
+					class="bg-gray-200 py-[6px] px-3 flex items-center gap-1 text-xs text-gray-500 shadow-inner shadow-gray-300"
 					on:click={add}
 				>
 					<i class="fa-solid fa-plus" />

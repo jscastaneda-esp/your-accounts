@@ -3,11 +3,16 @@
 	import ButtonRounded from './ButtonRounded.svelte';
 	import Input from './Input.svelte';
 	import ConfirmPopup from './ConfirmPopup.svelte';
-	import type { ConfirmPopupInfo } from '../types/ConfirmPopupInfo';
+	import type { ConfirmPopupInfo, FelteError, FelteOptionalError } from '../types';
 
 	export let index: number;
 	export let id: number | null | undefined;
-	export let errors: { name: string[] | null | undefined; amount: string[] | null | undefined };
+	export let errors: {
+		id?: FelteOptionalError;
+		name: FelteError;
+		amount: FelteError;
+		budget_id?: FelteOptionalError;
+	};
 
 	const dispatch = createEventDispatcher();
 	const prefixFieldName = `availables.${index}`;
@@ -25,6 +30,7 @@
 			id,
 			index
 		});
+		handlePopUpCancel();
 	}
 
 	function handlePopUpCancel() {
@@ -33,7 +39,7 @@
 </script>
 
 <article
-	class="bg-gray-200 p-[6px] flex justify-between items-center gap-2 border-b-2 border-gray-300"
+	class="bg-gray-200 p-[6px] flex justify-between items-center gap-2 border-b-2 border-b-gray-300"
 >
 	<section class="w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-x-2">
 		<Input

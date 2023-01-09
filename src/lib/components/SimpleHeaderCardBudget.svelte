@@ -4,8 +4,9 @@
 	export let iconAction: string;
 </script>
 
-<section
-	class="flex justify-between items-center text-gray-500 text-base select-none cursor-pointer"
+<button
+	type="button"
+	class="flex justify-between items-center text-gray-500 text-base select-none cursor-pointer w-full"
 	on:click
 >
 	<div class="flex items-center gap-1">
@@ -13,4 +14,4 @@
 		<span>{title}</span>
 	</div>
 	<i class={`fa-solid fa-${iconAction}`} />
-</section>
+</button>

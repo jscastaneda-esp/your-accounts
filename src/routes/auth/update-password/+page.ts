@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad, PageData } from './$types';
-import type { PageDataUserManagementAction } from '$lib/types/PageDataUserManagementAction';
-import { UserManagementActionsEnum } from '$lib/enums/UserManagementActions.enum';
+import type { PageDataUserManagementAction } from '$lib/types';
+import { UserManagementActionsEnum } from '$lib/enums';
 
 export const load: PageLoad<PageData> = async ({ url }): Promise<PageDataUserManagementAction> => {
 	let modeStr: string | null = null;

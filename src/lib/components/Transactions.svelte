@@ -6,8 +6,8 @@
 </script>
 
 {#if show}
-	<section class="flex justify-end p-2 pb-3">
-		<CardBudget classNameContainer="md:max-w-[50%]" showBody={true}>
+	<section class="absolute right-0 -top-52 p-2 pb-3 md:max-w-[50%] md:w-1/2">
+		<CardBudget showBody={true}>
 			<SimpleHeaderCardBudget
 				slot="header"
 				title="Transacciones"
@@ -23,14 +23,12 @@
 					</tr>
 				</thead>
 				<tbody
-					class="divide-y divide-gray-200 inline-block overflow-y-auto min-h-[104px] h-[104px]"
+					class="divide-y divide-gray-200 inline-block overflow-y-auto min-h-[104px] h-[104px] w-full"
 				>
 					<tr class="grid grid-cols-[100px_1fr]">
 						<td class="px-4 py-2 text-gray-900">26/08/2022</td>
 						<td class="px-4 py-2 text-gray-700 max-h-[50px] text-clip overflow-hidden">
-							Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur explicabo
-							aliquid perferendis maxime illo dolorem distinctio repudiandae itaque rem voluptatum,
-							earum maiores animi soluta voluptates autem consectetur, modi aspernatur nihil.
+							Lorem ipsum
 						</td>
 					</tr>
 					<tr class="grid grid-cols-[100px_1fr]">
@@ -56,7 +54,7 @@
 		</CardBudget>
 	</section>
 {:else}
-	<section class="flex justify-end p-3">
+	<section class="absolute right-0 -top-16 p-3">
 		<button class="w-10 h-10 bg-blue-400 text-lg rounded-full" on:click={() => (show = true)}>
 			<i class="fa-solid fa-list" />
 		</button>
