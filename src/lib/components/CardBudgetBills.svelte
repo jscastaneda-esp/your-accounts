@@ -153,7 +153,7 @@
 				<span class="leading-none text-gray-500">Pagos pendientes</span>
 			</div>
 		</ComposeHeaderCardBudget>
-		<div slot="body" class="relative">
+		<div slot="body">
 			<form class="flex flex-col overflow-y-auto max-h-[400px]" use:form>
 				{#each bills as bill, index (`bill_${index}`)}
 					<ItemBudgetBill

@@ -18,7 +18,7 @@
 
 	let img: string | undefined = undefined;
 	let additionalName: string | undefined = undefined;
-	const confirmPopupInfo: ConfirmPopupInfo = {
+	const confirmPopupInfo: ConfirmPopupInfo<string | null> = {
 		show: false,
 		question: ''
 	};

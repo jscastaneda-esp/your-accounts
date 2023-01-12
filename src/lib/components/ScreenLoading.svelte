@@ -1,4 +1,4 @@
-<main class="h-full flex justify-center items-center">
+<main class="h-screen w-full flex justify-center items-center">
 	<div class="items-center p-4 rounded-md text-white bg-blue-400">
 		<svg
 			class="animate-spin h-10 w-10 text-white"

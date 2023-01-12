@@ -15,9 +15,7 @@
 	Settings.defaultLocale = 'es-CO';
 </script>
 
-<main class="h-screen w-full">
-	<slot />
-</main>
+<slot />
 
 <SvelteToast options={toastOptions} />
 

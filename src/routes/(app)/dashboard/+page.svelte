@@ -43,8 +43,8 @@
 	<title>Dashboard</title>
 </svelte:head>
 
-<div
-	class="container mx-auto justify-around grid grid-cols-[repeat(auto-fit,_minmax(276px,_300px))] gap-[22px] p-[22px]"
+<section
+	class="w-full justify-evenly grid grid-cols-[repeat(auto-fit,_minmax(276px,_300px))] gap-[22px] p-[22px]"
 >
 	{#await getProjects()}
 		<CardBase>
@@ -102,4 +102,4 @@
 			<CardProject {...project} />
 		{/each}
 	{/await}
-</div>
+</section>

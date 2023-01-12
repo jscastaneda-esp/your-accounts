@@ -1,10 +1,10 @@
 import type { TypeAuthEnum, UserManagementActionsEnum } from './enums';
 
-export type ConfirmPopupInfo = {
+export type ConfirmPopupInfo<D = null> = {
 	show: boolean;
 	question: string;
 	description?: string;
-	detail?: string | number | object;
+	detail?: D;
 };
 
 export type PageDataAuth = {
@@ -52,6 +52,13 @@ export type CategoryBill = {
 	id: number;
 	name: string;
 	color: string;
+};
+
+export type BudgetBillShared = {
+	id?: number;
+	description: string;
+	amount: number;
+	budget_bill_id: number;
 };
 
 export type FelteError = string[] | null;

@@ -39,32 +39,34 @@
 </script>
 
 <article
-	class="bg-gray-200 p-[6px] flex justify-between items-center gap-2 border-b-2 border-b-gray-300"
+	class="bg-gray-200 p-[6px] grid grid-cols-6 gap-2 items-center border-b-2 border-b-gray-300"
 >
-	<section class="w-full grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-x-2">
-		<Input
-			id={`${prefixFieldName}.name`}
-			name={`${prefixFieldName}.name`}
-			placeholder="Nombre"
-			errors={errors.name}
-		/>
-		<Input
-			id={`${prefixFieldName}.amount`}
-			name={`${prefixFieldName}.amount`}
-			placeholder="Monto ($)"
-			type="number"
-			errors={errors.amount}
-		/>
-	</section>
-	<ButtonRounded
-		textColor="text-red-500"
-		backgroundColor="bg-red-300"
-		activeBackgroundColor="active:bg-red-200"
-		className="w-[30px]"
-		on:click={del}
-	>
-		<i class="fa-solid fa-trash" slot="left" />
-	</ButtonRounded>
+	<Input
+		id={`${prefixFieldName}.name`}
+		name={`${prefixFieldName}.name`}
+		placeholder="Nombre"
+		className="col-span-3"
+		errors={errors.name}
+	/>
+	<Input
+		id={`${prefixFieldName}.amount`}
+		name={`${prefixFieldName}.amount`}
+		placeholder="Monto ($)"
+		type="number"
+		className="col-span-2"
+		errors={errors.amount}
+	/>
+	<div class="flex justify-center">
+		<ButtonRounded
+			textColor="text-red-500"
+			backgroundColor="bg-red-300"
+			activeBackgroundColor="active:bg-red-200"
+			className="col-span-1"
+			on:click={del}
+		>
+			<i class="fa-solid fa-trash" slot="left" />
+		</ButtonRounded>
+	</div>
 </article>
 
 {#if confirmPopupInfo.show}

@@ -16,7 +16,7 @@
 	import Transactions from '$lib/components/Transactions.svelte';
 	import CardBudgetAvailable from '$lib/components/CardBudgetAvailable.svelte';
 	import CardBudgetBills from '$lib/components/CardBudgetBills.svelte';
-	import CardBudgetStadistics from '$lib/components/CardBudgetStadistics.svelte';
+	import CardBudgetStatistics from '$lib/components/CardBudgetStatistics.svelte';
 	import { writable } from 'svelte/store';
 	import { page } from '$app/stores';
 	import { DateTime } from 'luxon';
@@ -78,7 +78,7 @@
 </script>
 
 {#if loading}
-	<div class="px-2 py-3 flex flex-col gap-[10px] animate-pulse">
+	<article class="px-2 py-3 flex flex-col gap-[10px] animate-pulse">
 		<section class="px-1 flex justify-between">
 			<div class="bg-slate-400 h-6 w-14 rounded-lg" />
 			<div class="bg-slate-400 h-6 w-14 rounded-lg" />
@@ -102,7 +102,7 @@
 		<div class="px-1">
 			<div class="bg-slate-400 h-12 w-full px-1 rounded-lg" />
 		</div>
-	</div>
+	</article>
 
 	<div class="fixed flex flex-col bottom-0 w-full animate-pulse">
 		<section class="flex justify-end p-3">
@@ -113,7 +113,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="px-2 py-3 flex flex-col gap-[10px] mb-[5.3rem] md:mb-[7.3rem]">
+	<article class="px-2 py-3 flex flex-col gap-[10px] mb-[5.2rem] md:mb-[7.6rem]">
 		<section class="px-1 flex justify-between">
 			<ButtonLink
 				text="Guardar"
@@ -162,15 +162,17 @@
 			<CardBudgetAvailable list={[]} />
 			<CardBudgetBills list={[]} />
 		</section>
-		<CardBudgetStadistics />
-	</div>
+		<CardBudgetStatistics />
+	</article>
 
-	<div class="fixed flex flex-col bottom-0 w-full">
-		<Transactions />
-		<div
+	<footer class="fixed bottom-0 flex flex-col w-full">
+		<div class="relative">
+			<Transactions />
+		</div>
+		<article
 			class="flex flex-col min-h-[33px] shadow-[1px_0_3px_0_rgb(0_0_0_/_0.1)] shadow-gray-700 bg-white"
 		>
-			<div
+			<section
 				class="hidden md:grid grid-cols-[repeat(auto-fit,_minmax(136px,_1fr))] items-center gap-y-[6px] gap-x-3 p-3 pb-[6px] md:pb-3"
 				class:!grid={showSummary}
 			>
@@ -199,7 +201,7 @@
 					value={0}
 					className="!text-lg font-bold"
 				/>
-			</div>
+			</section>
 			<button
 				class="flex flex-col items-center justify-center h-[33px] md:hidden"
 				on:click={() => (showSummary = !showSummary)}
@@ -216,8 +218,8 @@
 					{/if}
 				</span>
 			</button>
-		</div>
-	</div>
+		</article>
+	</footer>
 
 	{#if confirmPopupInfo.show}
 		<ConfirmPopup

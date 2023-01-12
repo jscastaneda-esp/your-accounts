@@ -26,7 +26,8 @@
 {#if loading}
 	<ScreenLoading />
 {:else}
-	<Header>
+	<Header />
+	<main class="min-h-full">
 		<slot />
-	</Header>
+	</main>
 {/if}

@@ -23,12 +23,12 @@
 	<div class="flex gap-1 items-center">
 		<span class="text-sm text-gray-500">{text}</span>
 		<label for={id} class="relative h-6 w-10 cursor-pointer">
-			<input type="checkbox" {id} {name} class="peer sr-only" />
+			<input type="checkbox" {id} {name} class="peer sr-only" on:change />
 
-			<span class="absolute inset-0 rounded-full bg-white transition" />
+			<span class="absolute inset-0 rounded-full bg-gray-300 transition" />
 
 			<span
-				class="absolute inset-0 m-1 h-4 w-4 rounded-full bg-gray-300 transition peer-checked:translate-x-4 peer-checked:bg-blue-400"
+				class="absolute inset-0 m-1 h-4 w-4 rounded-full bg-gray-400 transition peer-checked:translate-x-4 peer-checked:bg-blue-400"
 			/>
 		</label>
 	</div>

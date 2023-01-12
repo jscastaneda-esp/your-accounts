@@ -5,6 +5,7 @@
 	import ConfirmPopup from './ConfirmPopup.svelte';
 	import type {
 		BudgetBill,
+		BudgetBillShared,
 		CategoryBill,
 		ConfirmPopupInfo,
 		FelteError,
@@ -13,7 +14,8 @@
 	import SummaryValue from './SummaryValue.svelte';
 	import type { DateTime } from 'luxon';
 	import SwitchInput from './SwitchInput.svelte';
-	import BillRegister from './BillRegister.svelte';
+	import BillRegisterPopup from './BillRegisterPopup.svelte';
+	import BillSharedPopup from './BillSharedPopup.svelte';
 
 	export let now: DateTime;
 	export let index: number;
@@ -39,6 +41,7 @@
 		show: false,
 		question: '¿Está seguro que desea eliminar el registro?'
 	};
+	let optionRegister = 0;
 
 	function del() {
 		confirmPopupInfo.show = true;
@@ -54,6 +57,14 @@
 
 	function handlePopUpCancel() {
 		confirmPopupInfo.show = false;
+	}
+
+	function handleShowOption(option: number) {
+		if (optionRegister != option) {
+			optionRegister = option;
+		} else {
+			optionRegister = 0;
+		}
 	}
 
 	$: pending = data.amount - data.payment;
@@ -127,11 +138,11 @@
 		/>
 	</section>
 
-	<section class="flex items-center -space-x-2 hover:space-x-1">
+	<section class="flex items-center space-x-1 sm:-space-x-2 hover:space-x-1">
 		<select
 			id={`${prefixFieldName}.category_id`}
 			name={`${prefixFieldName}.category_id`}
-			class="h-[23px] p-1 pr-7 leading-none rounded-tl rounded-bl border-none outline-none text-xs"
+			class="h-[23px] p-1 pr-7 leading-none rounded border-none outline-none text-xs"
 		>
 			<option value="" disabled>Seleccione</option>
 			{#each categories as category (category.id)}
@@ -142,18 +153,16 @@
 			textColor="text-blue-500"
 			backgroundColor="bg-blue-300"
 			activeBackgroundColor="active:bg-blue-200"
-			className="w-[30px]"
-			on:click={() => {}}
+			on:click={() => handleShowOption(1)}
 		>
-			<i class="fa-solid fa-cash-register" slot="right" />
+			<i class="fa-solid fa-plus" slot="right" />
 		</ButtonRounded>
 		{#if data.shared}
 			<ButtonRounded
 				textColor="text-blue-500"
 				backgroundColor="bg-blue-300"
 				activeBackgroundColor="active:bg-blue-200"
-				className="w-[30px]"
-				on:click={() => {}}
+				on:click={() => handleShowOption(2)}
 			>
 				<i class="fa-solid fa-share-nodes" slot="right" />
 			</ButtonRounded>
@@ -162,17 +171,20 @@
 			textColor="text-red-500"
 			backgroundColor="bg-red-300"
 			activeBackgroundColor="active:bg-red-200"
-			className="w-[30px]"
 			on:click={del}
 		>
 			<i class="fa-solid fa-trash" slot="left" />
 		</ButtonRounded>
 	</section>
-
-	<div class="absolute z-10 -bottom-[200px] left-0 right-0 flex justify-center">
-		<BillRegister />
-	</div>
 </article>
+
+{#if optionRegister == 1}
+	<BillRegisterPopup pendingBill={pending} on:click={() => handleShowOption(1)} />
+{/if}
+
+{#if optionRegister == 2}
+	<BillSharedPopup budgetBillId={1} list={[]} on:click={() => handleShowOption(2)} />
+{/if}
 
 {#if confirmPopupInfo.show}
 	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
