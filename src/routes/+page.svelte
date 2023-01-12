@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { session } from '$lib/stores/user.store';
+	import { session } from '$lib/stores';
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
 	onMount(() =>

@@ -8,11 +8,11 @@
 	import { validator } from '@felte/validator-yup';
 
 	// Assets
-	import updtePassword from '$lib/assets/images/update-password.png';
+	import updatePassword from '$lib/assets/images/update-password.png';
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '$lib/enums/TypeAuth.enum';
+	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
 	import PasswordInput from '$lib/components/PasswordInput.svelte';
@@ -22,7 +22,7 @@
 	import firebase from '$lib/configs/firebase.client';
 	import Toast from '$lib/utils/toast.utils';
 	import yup, { password } from '$lib/utils/yup.utils';
-	import type { PageDataUserManagementAction } from '$lib/types/PageDataUserManagementAction';
+	import type { PageDataUserManagementAction } from '$lib/types';
 
 	export let data: PageDataUserManagementAction;
 
@@ -95,7 +95,7 @@
 	<div class="bg-white auth-container">
 		<form class="flex flex-col justify-center items-center min-w-[238px] max-w-[238px]" use:form>
 			<section class="flex justify-center items-center gap-2 mb-[10px] w-full">
-				<img src={updtePassword} alt="Logo" class="w-12 h-12" />
+				<img src={updatePassword} alt="Logo" class="w-12 h-12" />
 				<span class="text-center text-black text-xl leading-6">Asignar nueva contraseña</span>
 			</section>
 

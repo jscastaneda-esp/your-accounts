@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Enums, Classes, Types
-	import type { PageDataAuth } from '$lib/types/PageDataAuth';
-	import { TypeAuthEnum } from '$lib/enums/TypeAuth.enum';
+	import type { PageDataAuth } from '$lib/types';
+	import { TypeAuthEnum } from '$lib/enums';
 
 	import Login from '$lib/components/Login.svelte';
 	import SignUp from '$lib/components/SignUp.svelte';
@@ -19,14 +19,14 @@
 
 <div class="flex justify-center items-center">
 	<div
-		class="bg-blue-400 auth-container"
+		class="bg-blue-400 auth-container transition-all duration-200 ease-in-out"
 		class:blur-content={TypeAuthEnum.SIGNUP === data.type}
 		class:login={TypeAuthEnum.SIGNUP === data.type}
 	>
 		<Login />
 	</div>
 	<div
-		class="bg-white auth-container"
+		class="bg-white auth-container transition-all duration-200 ease-in-out"
 		class:blur-content={TypeAuthEnum.LOGIN === data.type}
 		class:signup={TypeAuthEnum.LOGIN === data.type}
 	>
@@ -35,10 +35,6 @@
 </div>
 
 <style lang="postcss">
-	div > div {
-		@apply transition-all duration-200 ease-in-out;
-	}
-
 	.blur-content {
 		@apply max-w-[405px] max-h-[489px] blur-md pointer-events-none select-none -z-10 shadow-none hidden;
 	}

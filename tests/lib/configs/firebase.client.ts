@@ -1,8 +1,7 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { AuthErrorCodes } from 'firebase/auth';
 import firebase from '../../../src/lib/configs/firebase.client';
-import { FirebaseProviderEnum } from '../../../src/lib/enums/FirebaseProvider.enum';
-import { TypeAuthEnum } from '../../../src/lib/enums/TypeAuth.enum';
+import { FirebaseProviderEnum, TypeAuthEnum } from '../../../src/lib/enums';
 
 vi.mock('$env/static/public', () => ({
 	PUBLIC_FIREBASE_OPTIONS: '{"apiKey": "test"}'

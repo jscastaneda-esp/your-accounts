@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 
 	// Utilities
-	import { session } from '$lib/stores/user.store';
+	import { session } from '$lib/stores';
 
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
@@ -25,7 +25,7 @@
 {#if loading}
 	<ScreenLoading />
 {:else}
-	<div class="flex justify-center items-center h-full">
+	<div class="flex justify-center items-center h-screen">
 		<slot />
 	</div>
 {/if}
