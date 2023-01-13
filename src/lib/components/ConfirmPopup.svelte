@@ -10,7 +10,7 @@
 </script>
 
 <Popup>
-	<div class="w-screen sm:max-w-sm">
+	<div class="w-screen sm:max-w-sm text-center">
 		<div class="bg-white pt-6 px-6">
 			<h3 class="text-lg font-medium leading-6 text-black" id="modal-title">
 				{question}

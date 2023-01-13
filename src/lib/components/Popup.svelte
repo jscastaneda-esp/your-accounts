@@ -6,7 +6,7 @@
 	<div role="region" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
 	<div
-		class="fixed inset-0 z-10 overflow-y-auto min-h-full flex items-end sm:items-center justify-center text-center"
+		class="fixed inset-0 z-10 overflow-y-auto min-h-full flex items-end sm:items-center justify-center"
 	>
 		<div class="relative">
 			{#if showCloseButton}
