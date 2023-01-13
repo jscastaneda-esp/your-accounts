@@ -10,7 +10,7 @@
 		$session = user;
 	});
 
-	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } };
+	const toastOptions: SvelteToastOptions = { pauseable: true, reversed: true, intro: { y: 192 } };
 
 	Settings.defaultLocale = 'es-CO';
 </script>

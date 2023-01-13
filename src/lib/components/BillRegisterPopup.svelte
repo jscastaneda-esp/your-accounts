@@ -100,7 +100,7 @@
 					type="number"
 					errors={$errors.amount}
 					className="col-span-4"
-					readonly={$data.all}
+					disabled={$data.all}
 				/>
 				<section class="flex justify-evenly col-span-2">
 					<ButtonRounded
