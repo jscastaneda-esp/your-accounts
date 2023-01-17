@@ -41,7 +41,8 @@
 		form,
 		data: dataForm,
 		errors,
-		isValid
+		isValid,
+		interacted
 	} = createForm({
 		initialValues: {
 			id: data.id,
@@ -103,13 +104,16 @@
 					data.month = month;
 				}
 			} else {
-				const newValue = ($dataForm as any)[interacted] as string | number;
+				const newValue = ($dataForm as any)[interacted];
 				if (newValue != data[interacted]) {
 					changes.push({
 						field: interacted,
 						newValue: ($dataForm as any)[interacted]
 					});
-					data[interacted] = newValue;
+					data = {
+						...data,
+						[interacted]: newValue
+					};
 				}
 			}
 		}
