@@ -1,20 +1,21 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import budgetImage from '../assets/images/budget.png';
-
 	import { goto } from '$app/navigation';
-
 	import type { ConfirmPopupInfo } from '../types';
-	import { TypeProject } from '../enums';
+	import { HttpStatus, TypeProjectEnum } from '../enums';
 	import { zeroPad } from '../utils/numberFormat.utils';
-
 	import CardBase from './CardBase.svelte';
 	import SummaryValue from './SummaryValue.svelte';
 	import ButtonRounded from './ButtonRounded.svelte';
 	import ConfirmPopup from './ConfirmPopup.svelte';
+	import Toast from '$lib/utils/toast.utils';
+	import { session } from '$lib/stores';
 
+	export let loading: boolean;
 	export let id: number;
 	export let name: string;
-	export let type: TypeProject;
+	export let type: TypeProjectEnum;
 
 	let img: string | undefined = undefined;
 	let additionalName: string | undefined = undefined;
@@ -22,15 +23,16 @@
 		show: false,
 		question: ''
 	};
+	const dispatch = createEventDispatcher<{ delete: { id: number } }>();
 
-	if (TypeProject.BUDGET == type) {
+	if (TypeProjectEnum.BUDGET == type) {
 		img = budgetImage;
 		additionalName = `${zeroPad($$props.month, 2)}/${$$props.year}`;
 	}
 
 	function handleEdit() {
-		let url: string | undefined = undefined;
-		if (TypeProject.BUDGET === type) {
+		let url: string = '';
+		if (TypeProjectEnum.BUDGET === type) {
 			url = '/budget';
 		}
 		goto(`${url}/${id}`);
@@ -41,7 +43,7 @@
 		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
 		confirmPopupInfo.detail = 'delete';
 
-		if (TypeProject.BUDGET === type) {
+		if (TypeProjectEnum.BUDGET === type) {
 			confirmPopupInfo.question += 'presupuesto?';
 			confirmPopupInfo.description =
 				'Se eliminará toda la información asociada y no será posible recuperarla';
@@ -53,33 +55,74 @@
 		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
 		confirmPopupInfo.detail = 'clone';
 
-		if (TypeProject.BUDGET === type) {
+		if (TypeProjectEnum.BUDGET === type) {
 			confirmPopupInfo.question += 'presupuesto?';
 			confirmPopupInfo.description =
 				'Se duplicará la información principal. Las transacciones no serán duplicadas';
 		}
 	}
 
-	function handlePopUpAccept() {
+	async function handlePopUpAccept() {
+		loading = true;
+
 		if (confirmPopupInfo.detail === 'clone') {
-			let url: string | undefined = undefined;
-			if (TypeProject.BUDGET === type) {
+			let url: string = '';
+			if (TypeProjectEnum.BUDGET === type) {
 				url = '/budget';
 			}
-			alert('Duplicando');
-			goto(`${url}/${new Date().getTime()}`);
+
+			try {
+				const response = await fetch('/api/dashboard', {
+					method: 'POST',
+					body: JSON.stringify({
+						userId: $session?.uid,
+						type: TypeProjectEnum[type],
+						baseId: id
+					})
+				});
+				if (response.status != HttpStatus.OK) {
+					throw new Error(response.statusText);
+				}
+
+				const body = await response.json();
+				goto(`${url}/${body.id}`);
+			} catch (error) {
+				Toast.clear();
+				Toast.error('Se presento un error al duplicar el proyecto');
+				throw error;
+			} finally {
+				loading = false;
+			}
 		} else {
-			alert('Eliminando');
+			try {
+				const response = await fetch('/api/dashboard', {
+					method: 'DELETE',
+					body: JSON.stringify({
+						id
+					})
+				});
+				if (response.status != HttpStatus.OK) {
+					throw new Error(response.statusText);
+				}
+
+				Toast.clear();
+				Toast.success(`Se elimino exitosamente el proyecto ${name}`);
+				dispatch('delete', {
+					id
+				});
+			} catch (error) {
+				Toast.clear();
+				Toast.error('Se presento un error al duplicar el proyecto');
+				throw error;
+			} finally {
+				loading = false;
+			}
 		}
 
-		resetConfirmPopupInfo();
+		handlePopUpCancel();
 	}
 
 	function handlePopUpCancel() {
-		resetConfirmPopupInfo();
-	}
-
-	function resetConfirmPopupInfo() {
 		confirmPopupInfo.show = false;
 		confirmPopupInfo.question = '';
 		confirmPopupInfo.description = undefined;
@@ -92,7 +135,7 @@
 		<button
 			type="button"
 			class="flex justify-center items-center gap-1 rounded-full min-w-[43px] max-w-max py-[3px] px-1 text-[10px] transition-all hover:scale-110 cursor-pointer"
-			class:bg-blue-300={TypeProject.BUDGET == type}
+			class:bg-blue-300={TypeProjectEnum.BUDGET == type}
 			on:click={handleEdit}
 		>
 			#{id}
@@ -110,7 +153,7 @@
 	<main
 		class="p-1 justify-center grid grid-cols-[repeat(auto-fit,_minmax(74px,_1fr))] items-center gap-1 rounded-lg bg-gray-200"
 	>
-		{#if TypeProject.BUDGET == type}
+		{#if TypeProjectEnum.BUDGET == type}
 			<SummaryValue icon="wallet" title="Disponible" value={$$props.totalAvailableBalance} />
 			<SummaryValue
 				icon="file-invoice-dollar"
@@ -122,7 +165,7 @@
 	</main>
 	<footer class="w-full flex justify-between mt-4">
 		<div>
-			{#if TypeProject.BUDGET == type}
+			{#if TypeProjectEnum.BUDGET == type}
 				<div class="flex gap-1 -mt-3 text-[11px] items-center">
 					<span class="min-w-[18px] bg-gray-200 text-center p-1 leading-none rounded font-semibold">
 						{$$props.pendingBills}

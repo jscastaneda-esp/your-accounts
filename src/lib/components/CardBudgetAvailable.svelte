@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
 	import CardBudget from './CardBudget.svelte';
 	import ComposeHeaderCardBudget from './ComposeHeaderCardBudget.svelte';
 	import SummaryValue from './SummaryValue.svelte';
@@ -8,15 +7,12 @@
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
 	import Toast from '../utils/toast.utils';
-	import { Context } from '../enums';
-	import type { Writable } from 'svelte/store';
-	import type { BudgetAvailable, BudgetContext, BudgetMainData } from '../types';
+	import type { BudgetAvailable } from '../types';
 
+	export let isValidForm: boolean;
 	export let list: BudgetAvailable[];
+	export let budgetId: number;
 
-	const dataMain: Writable<BudgetMainData> = getContext('dataMain');
-
-	let ctx = getContext<Writable<BudgetContext>>(Context.BUDGET_DATA_AVAILABLE);
 	let show = false;
 
 	// Form Definition
@@ -25,7 +21,7 @@
 			yup.object().shape({
 				name: defaultText.max(40),
 				amount: defaultNumber.min(0).max(9999999999.99),
-				budget_id: defaultNumber.min(1)
+				budgetId: defaultNumber.min(1)
 			})
 		)
 	});
@@ -38,7 +34,7 @@
 
 	function add() {
 		if ($isValid) {
-			addField('availables', { name: '', amount: 0, budget_id: $dataMain.id }, availables.length);
+			addField('availables', { name: '', amount: 0, budgetId }, availables.length);
 		}
 	}
 
@@ -50,11 +46,9 @@
 		unsetField(`availables.${detail.index}`);
 	}
 
+	$: isValidForm = $isValid;
 	$: availables = $data.availables;
-	$: $ctx = {
-		isValid: $isValid,
-		data: $data
-	};
+	$: sumAvailables = $data.availables.reduce((previous, current) => previous + current.amount, 0);
 </script>
 
 <div class="px-1">
@@ -76,7 +70,7 @@
 				<SummaryValue
 					icon={`wallet ${show ? 'w-4' : 'w-5'}`}
 					title="Disponible"
-					value={100000}
+					value={sumAvailables}
 					className={show ? 'text-xs' : 'text-base'}
 				/>
 			</svelte:fragment>

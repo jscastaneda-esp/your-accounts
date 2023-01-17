@@ -16,24 +16,11 @@ export type PageDataUserManagementAction = {
 	actionCode: string;
 };
 
-export type BudgetMainData = {
-	id: number;
-	name: string;
-	month: string;
-	fixed_income: number;
-	additional_income: number;
-};
-
-export type BudgetContext = {
-	data: Record<string, unknown>;
-	isValid: boolean;
-};
-
 export type BudgetAvailable = {
 	id?: number;
 	name: string;
 	amount: number;
-	budget_id: number;
+	budgetId: number;
 };
 
 export type BudgetBill = {
@@ -62,5 +49,3 @@ export type BudgetBillShared = {
 };
 
 export type FelteError = string[] | null;
-
-export type FelteOptionalError = FelteError | undefined;

@@ -1,7 +1,5 @@
-export enum Context {
-	BUDGET_DATA_MAIN = 'dataMain',
-	BUDGET_DATA_AVAILABLE = 'dataAvailable',
-	BUDGET_DATA_BILLS = 'dataBills'
+export enum HttpStatus {
+	OK = 200
 }
 
 export enum FirebaseProviderEnum {
@@ -16,8 +14,8 @@ export enum TypeAuthEnum {
 	FORGOT_PASSWORD = 'forgot-password'
 }
 
-export enum TypeProject {
-	BUDGET
+export enum TypeProjectEnum {
+	BUDGET = 'BUDGET'
 }
 
 export enum UserManagementActionsEnum {

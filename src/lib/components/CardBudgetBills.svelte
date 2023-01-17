@@ -8,17 +8,14 @@
 	import yup, { defaultText, defaultNumber, defaultBoolean } from '../utils/yup.utils';
 	import Toast from '../utils/toast.utils';
 	import ItemBudgetBill from './ItemBudgetBill.svelte';
-	import type { Writable } from 'svelte/store';
 	import type { BudgetBill, BudgetContext, BudgetMainData, CategoryBill } from '../types';
-	import { Context } from '../enums';
 	import { DateTime } from 'luxon';
 
+	export let isValidForm: boolean;
 	export let list: BudgetBill[];
 
-	const dataMain: Writable<BudgetMainData> = getContext('dataMain');
 	const now = DateTime.now();
 
-	let ctx = getContext<Writable<BudgetContext>>(Context.BUDGET_DATA_BILLS);
 	let show = false;
 
 	let daysMonth: number[] = [];
@@ -49,7 +46,7 @@
 	onMount(async () => {
 		try {
 			const response = await fetch('/api/params/category');
-			if (response.status != 200) {
+			if (response.status != HttpStatus.OK) {
 				throw new Error(response.statusText);
 			}
 
@@ -88,11 +85,8 @@
 		unsetField(`bills.${detail.index}`);
 	}
 
+	$: isValidForm = $isValid;
 	$: bills = $data.bills;
-	$: $ctx = {
-		isValid: $isValid,
-		data: $data
-	};
 	$: monthBudget = DateTime.fromFormat($dataMain.month, 'yyyy-MM');
 	$: {
 		daysMonth = [];

@@ -2,26 +2,35 @@
 	// Utilities
 	import { goto } from '$app/navigation';
 	import Toast from '$lib/utils/toast.utils';
+	import { session } from '$lib/stores';
+	import { DateTime } from 'luxon';
 
 	// Components
 	import CardBase from '$lib/components/CardBase.svelte';
 	import CardProject from '$lib/components/CardProject.svelte';
 
 	// Types, Enums
-	import { TypeProject } from '$lib/enums';
+	import { HttpStatus, TypeProjectEnum } from '$lib/enums';
+	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
+	import { onMount } from 'svelte';
 
 	const awaitLoad = [1, 2, 3];
+	let loading = false;
+	let projects: any[];
 	let showNewProject = false;
+
+	onMount(() => {
+		getProjects();
+	});
 
 	async function getProjects() {
 		try {
 			const response = await fetch('/api/dashboard');
-			if (response.status != 200) {
+			if (response.status != HttpStatus.OK) {
 				throw new Error(response.statusText);
 			}
 
-			const projects = await response.json();
-			return projects;
+			projects = await response.json();
 		} catch (error) {
 			Toast.clear();
 			Toast.error('Se presento un error al consultar los proyectos');
@@ -29,13 +38,39 @@
 		}
 	}
 
-	function handleNewProject(type: TypeProject) {
-		let url: string | undefined = undefined;
-		if (TypeProject.BUDGET === type) {
+	async function handleNewProject(type: TypeProjectEnum) {
+		loading = true;
+
+		let url: string = '';
+		if (TypeProjectEnum.BUDGET === type) {
 			url = '/budget';
 		}
-		alert('Creando proyecto');
-		goto(`${url}/${new Date().getTime()}`);
+
+		try {
+			const response = await fetch('/api/dashboard', {
+				method: 'POST',
+				body: JSON.stringify({
+					userId: $session?.uid,
+					type: type
+				})
+			});
+			if (response.status != HttpStatus.OK) {
+				throw new Error(response.statusText);
+			}
+
+			const body = await response.json();
+			goto(`${url}/${body.id}`);
+		} catch (error) {
+			Toast.clear();
+			Toast.error('Se presento un error al crear el proyecto');
+			throw error;
+		} finally {
+			loading = false;
+		}
+	}
+
+	async function handleDeleteProject(event: { detail: { id: number } }) {
+		projects = projects.filter((project) => project.id != event.detail.id);
 	}
 </script>
 
@@ -43,10 +78,46 @@
 	<title>Dashboard</title>
 </svelte:head>
 
+{#if loading}
+	<ScreenLoading />
+{/if}
+
 <section
 	class="w-full justify-evenly grid grid-cols-[repeat(auto-fit,_minmax(276px,_300px))] gap-[22px] p-[22px]"
 >
-	{#await getProjects()}
+	{#if projects}
+		<CardBase>
+			<button
+				type="button"
+				class="flex justify-center items-center gap-2 text-gray-400 font-bold w-full h-full select-none cursor-pointer"
+				on:click={() => (showNewProject = !showNewProject)}
+			>
+				<i class="fa-solid fa-plus text-6xl" />
+				<span class="text-3xl text-center w-min">Crear Proyecto</span>
+			</button>
+
+			<div class="relative block transition-[display]" class:hidden={!showNewProject}>
+				<div
+					class="absolute -right-3 z-30 mt-4 origin-top-right rounded-md border border-gray-100 bg-white shadow-lg p-[6px] w-48 text-sm"
+					role="menu"
+				>
+					<a
+						class="block rounded-lg py-[6px] TypeProjectEnumm text-gray-500 hover:bg-gray-100 hover:text-gray-700 no-underline"
+						role="menuitem"
+						on:click={() => handleNewProject(TypeProjectEnum.BUDGET)}
+						href={'#'}
+					>
+						<i class="fa-solid fa-cash-register" />
+						<span class="ml-2 tracking-wider font-semibold">Presupuesto</span>
+					</a>
+				</div>
+			</div>
+		</CardBase>
+
+		{#each projects as project (project.id)}
+			<CardProject bind:loading {...project} on:delete={handleDeleteProject} />
+		{/each}
+	{:else}
 		<CardBase>
 			<div class="animate-pulse">
 				<div class="bg-slate-400 w-full h-[140px]" />
@@ -69,37 +140,5 @@
 				</div>
 			</CardBase>
 		{/each}
-	{:then data}
-		<CardBase>
-			<button
-				type="button"
-				class="flex justify-center items-center gap-2 text-gray-400 font-bold w-full h-full select-none cursor-pointer"
-				on:click={() => (showNewProject = !showNewProject)}
-			>
-				<i class="fa-solid fa-plus text-6xl" />
-				<span class="text-3xl text-center w-min">Crear Proyecto</span>
-			</button>
-
-			<div class="relative block transition-[display]" class:hidden={!showNewProject}>
-				<div
-					class="absolute -right-3 z-30 mt-4 origin-top-right rounded-md border border-gray-100 bg-white shadow-lg p-[6px] w-48 text-sm"
-					role="menu"
-				>
-					<a
-						class="block rounded-lg py-[6px] px-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 no-underline"
-						role="menuitem"
-						on:click={() => handleNewProject(TypeProject.BUDGET)}
-						href={'#'}
-					>
-						<i class="fa-solid fa-cash-register" />
-						<span class="ml-2 tracking-wider font-semibold">Presupuesto</span>
-					</a>
-				</div>
-			</div>
-		</CardBase>
-
-		{#each data as project (project.id)}
-			<CardProject {...project} />
-		{/each}
-	{/await}
+	{/if}
 </section>

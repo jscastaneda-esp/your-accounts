@@ -3,15 +3,13 @@
 	import ButtonRounded from './ButtonRounded.svelte';
 	import Input from './Input.svelte';
 	import ConfirmPopup from './ConfirmPopup.svelte';
-	import type { ConfirmPopupInfo, FelteError, FelteOptionalError } from '../types';
+	import type { ConfirmPopupInfo, FelteError } from '../types';
 
 	export let index: number;
 	export let id: number | null | undefined;
 	export let errors: {
-		id?: FelteOptionalError;
 		name: FelteError;
 		amount: FelteError;
-		budget_id?: FelteOptionalError;
 	};
 
 	const dispatch = createEventDispatcher();
