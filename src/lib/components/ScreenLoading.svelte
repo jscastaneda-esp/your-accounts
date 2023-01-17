@@ -1,4 +1,4 @@
-<main class="z-[200] fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
+<main class="z-[200] fixed inset-0 bg-gray-100 bg-opacity-75 flex justify-center items-center">
 	<div class="items-center p-4 rounded-md text-white bg-blue-400">
 		<svg
 			class="animate-spin h-10 w-10 text-white"

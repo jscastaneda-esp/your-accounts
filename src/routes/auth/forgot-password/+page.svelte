@@ -30,22 +30,20 @@
 		},
 		onSubmit: (values) => firebase.authFunctions.sendPasswordResetEmail(values.email),
 		onSuccess: () => {
-			Toast.clear();
 			Toast.success(
-				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados'
+				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados',
+				true
 			);
 		},
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]

@@ -125,5 +125,10 @@
 </Popup>
 
 {#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
+	<ConfirmPopup
+		question={confirmPopupInfo.question}
+		description={confirmPopupInfo.description}
+		on:accept={handlePopUpAccept}
+		on:cancel={handlePopUpCancel}
+	/>
 {/if}

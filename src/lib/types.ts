@@ -1,4 +1,4 @@
-import type { TypeAuthEnum, UserManagementActionsEnum } from './enums';
+import type { TypeAuthEnum, TypeProjectEnum, UserManagementActionsEnum } from './enums';
 
 export type ConfirmPopupInfo<D = null> = {
 	show: boolean;
@@ -49,3 +49,9 @@ export type BudgetBillShared = {
 };
 
 export type FelteError = string[] | null;
+
+export type EventDispatchProject = {
+	id: number;
+	name: string;
+	type: TypeProjectEnum;
+};

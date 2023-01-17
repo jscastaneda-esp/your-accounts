@@ -1,10 +1,15 @@
 <script lang="ts">
 	// Enums, Types, Utilities
+	import { onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import type { ConfirmPopupInfo } from '$lib/types';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '$lib/utils/yup.utils';
+	import { zeroPad } from '$lib/utils/numberFormat.utils';
+	import type { BaseBudget, Budget } from '$lib/interfaces/Budget';
+	import Toast from '$lib/utils/toast.utils';
+	import { HttpStatus } from '$lib/enums';
 
 	// Components
 	import Input from '$lib/components/Input.svelte';
@@ -15,19 +20,31 @@
 	import CardBudgetAvailable from '$lib/components/CardBudgetAvailable.svelte';
 	import CardBudgetBills from '$lib/components/CardBudgetBills.svelte';
 	import CardBudgetStatistics from '$lib/components/CardBudgetStatistics.svelte';
-	import { zeroPad } from '$lib/utils/numberFormat.utils';
-	import { onDestroy, onMount } from 'svelte';
-	import type { BaseBudget, Budget } from '$lib/interfaces/Budget';
+	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
 	export let data: Budget;
 
 	onMount(() => {
-		interval = setInterval(() => {}, 1000);
+		interval = setInterval(() => {
+			handleSave();
+		}, 30000);
 	});
 
 	onDestroy(() => {
 		clearInterval(interval);
 	});
+
+	let loading = false;
+	let showSummary = false;
+	let interval: ReturnType<typeof setInterval>;
+	let changes: { field: keyof BaseBudget; newValue: string | number }[] = [];
+	let isValidAvailable = false;
+	let isValidBills = false;
+	const confirmPopupInfo: ConfirmPopupInfo = {
+		show: false,
+		question: '¿Realmente desea salir?',
+		description: 'Al salir se pueden perder cambios. Se recomienda primero guardar'
+	};
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -42,7 +59,7 @@
 		data: dataForm,
 		errors,
 		isValid,
-		interacted
+		touched
 	} = createForm({
 		initialValues: {
 			id: data.id,
@@ -54,19 +71,28 @@
 		extend: [validator({ schema: validationSchema })]
 	});
 
-	let showSummary = false;
-	let interval: NodeJS.Timer;
-	let changes: { field: keyof BaseBudget; newValue: string | number }[] = [];
-	let isValidAvailable = false;
-	let isValidBills = false;
-	const confirmPopupInfo: ConfirmPopupInfo = {
-		show: false,
-		question: '¿Realmente desea salir?',
-		description: 'Al salir se pueden perder cambios. Se recomienda primero guardar'
-	};
+	async function handleSave() {
+		if (changes.length > 0) {
+			try {
+				const body: { [key: string]: string | number } = {
+					id: data.id
+				};
+				changes.forEach((change) => (body[change.field] = change.newValue));
 
-	function handleSave() {
-		alert('Guardando');
+				const response = await fetch('/api/budget', {
+					method: 'PUT',
+					body: JSON.stringify(body)
+				});
+				if (response.status != HttpStatus.OK) {
+					throw new Error(response.statusText);
+				}
+
+				changes = [];
+			} catch (error) {
+				Toast.error('Se presento un error al guardar', true);
+				throw error;
+			}
+		}
 	}
 
 	function handleExit() {
@@ -82,54 +108,67 @@
 		confirmPopupInfo.show = false;
 	}
 
-	function compareData(interacted: keyof BaseBudget | null) {
-		if (interacted) {
-			if (interacted == 'month') {
-				const monthParts = $dataForm.month.split('-');
-				const year = Number(monthParts[0]);
-				const month = Number(monthParts[1]);
-				if (year != data.year) {
-					changes.push({
-						field: 'year',
-						newValue: year
-					});
-					data.year = year;
-				}
+	function compareData() {
+		if ($isValid) {
+			const newData = $dataForm;
+			if (newData.name != data.name) {
+				changes.push({
+					field: 'name',
+					newValue: newData.name
+				});
+				data.name = newData.name;
+			}
 
-				if (month != data.month) {
-					changes.push({
-						field: 'month',
-						newValue: month
-					});
-					data.month = month;
-				}
-			} else {
-				const newValue = ($dataForm as any)[interacted];
-				if (newValue != data[interacted]) {
-					changes.push({
-						field: interacted,
-						newValue: ($dataForm as any)[interacted]
-					});
-					data = {
-						...data,
-						[interacted]: newValue
-					};
-				}
+			const monthParts = newData.month.split('-');
+			const year = Number(monthParts[0]);
+			const month = Number(monthParts[1]);
+			if (year != data.year) {
+				changes.push({
+					field: 'year',
+					newValue: year
+				});
+				data.year = year;
+			}
+
+			if (month != data.month) {
+				changes.push({
+					field: 'month',
+					newValue: month
+				});
+				data.month = month;
+			}
+
+			if (newData.fixedIncome != data.fixedIncome) {
+				changes.push({
+					field: 'fixedIncome',
+					newValue: newData.fixedIncome
+				});
+				data.fixedIncome = newData.fixedIncome;
+			}
+
+			if (newData.additionalIncome != data.additionalIncome) {
+				changes.push({
+					field: 'additionalIncome',
+					newValue: newData.additionalIncome
+				});
+				data.additionalIncome = newData.additionalIncome;
+			}
+
+			if (changes.length > 0) {
+				changes = [...changes];
 			}
 		}
 	}
 
-	$: compareData($interacted as keyof BaseBudget);
+	$: if ($touched) compareData();
 </script>
-
-{JSON.stringify(data)}
 
 <article class="px-2 py-3 flex flex-col gap-[10px] mb-[5.2rem] md:mb-[7.6rem]">
 	<section class="px-1 flex justify-between">
 		<ButtonLink
 			text="Guardar"
 			className="text-gray-500 before:bg-gray-500 text-base"
-			disabled={!$isValid || !isValidAvailable || !isValidBills}
+			disabled={!$isValid || !isValidAvailable || !isValidBills || changes.length > 0}
 			on:click={handleSave}
 		>
 			<i class="fa-solid fa-floppy-disk" />
@@ -172,6 +211,7 @@
 	{$isValid}
 	{isValidAvailable}
 	{isValidBills}
+	{changes.length > 0}
 	<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
 		<CardBudgetAvailable
 			bind:isValidForm={isValidAvailable}
@@ -244,6 +284,14 @@
 	</article>
 </footer>
 
-{#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
+{#if loading}
+	<ScreenLoading />
 {/if}
+
+<ConfirmPopup
+	show={confirmPopupInfo.show}
+	question={confirmPopupInfo.question}
+	description={confirmPopupInfo.description}
+	on:accept={handlePopUpAccept}
+	on:cancel={handlePopUpCancel}
+/>

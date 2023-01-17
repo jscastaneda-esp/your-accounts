@@ -30,14 +30,12 @@
 		try {
 			await firebase.authFunctions.verifyPasswordResetCode(data.actionCode);
 		} catch (error: unknown) {
-			Toast.clear();
-
 			const msg = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			)[0];
 
-			alert(msg);
+			Toast.error(msg, true);
 			goto('/auth/login');
 		}
 	});
@@ -62,8 +60,7 @@
 			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password);
 		},
 		onSuccess: () => {
-			Toast.clear();
-			Toast.success('Se asigno la contraseña exitosamente');
+			Toast.success('Se asigno la contraseña exitosamente', true);
 
 			setTimeout(() => {
 				Toast.clear();
@@ -71,16 +68,14 @@
 			}, 2000);
 		},
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]

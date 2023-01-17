@@ -46,7 +46,6 @@
 			confirmPassword: ''
 		},
 		onSubmit: (values) => {
-			Toast.clear();
 			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password);
 		},
 		onSuccess: async (response: unknown) => {
@@ -60,9 +59,9 @@
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]

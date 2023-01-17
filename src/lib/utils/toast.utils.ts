@@ -24,13 +24,21 @@ class Toast {
 		});
 	}
 
-	static info(msg: string) {
+	static info(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
 		Toast.add(DefaultToast, msg, {
 			'--toastColor': '#ffffff'
 		});
 	}
 
-	static error(msg: string) {
+	static error(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
 		Toast.add(
 			ErrorToast,
 			msg,
@@ -42,14 +50,22 @@ class Toast {
 		);
 	}
 
-	static warn(msg: string) {
+	static warn(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
 		Toast.add(WarnToast, msg, {
 			'--toastBackground': '#fde68a',
 			'--toastBarBackground': '#F59E0B'
 		});
 	}
 
-	static success(msg: string) {
+	static success(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
 		Toast.add(SuccessToast, msg, {
 			'--toastBackground': '#86efac',
 			'--toastBarBackground': '#22c55e'

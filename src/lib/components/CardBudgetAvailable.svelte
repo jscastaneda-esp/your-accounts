@@ -57,9 +57,8 @@
 			slot="header"
 			iconAction={show ? 'caret-up' : 'caret-down'}
 			on:click={() => {
-				Toast.clear();
 				if (show && !$isValid) {
-					Toast.warn('Completa la información');
+					Toast.warn('Completa la información', true);
 					return;
 				}
 

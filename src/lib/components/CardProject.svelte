@@ -2,15 +2,12 @@
 	import { createEventDispatcher } from 'svelte';
 	import budgetImage from '../assets/images/budget.png';
 	import { goto } from '$app/navigation';
-	import type { ConfirmPopupInfo } from '../types';
-	import { HttpStatus, TypeProjectEnum } from '../enums';
+	import { TypeProjectEnum } from '../enums';
 	import { zeroPad } from '../utils/numberFormat.utils';
 	import CardBase from './CardBase.svelte';
 	import SummaryValue from './SummaryValue.svelte';
 	import ButtonRounded from './ButtonRounded.svelte';
-	import ConfirmPopup from './ConfirmPopup.svelte';
-	import Toast from '$lib/utils/toast.utils';
-	import { session } from '$lib/stores';
+	import type { EventDispatchProject } from '$lib/types';
 
 	export let loading: boolean;
 	export let id: number;
@@ -19,114 +16,32 @@
 
 	let img: string | undefined = undefined;
 	let additionalName: string | undefined = undefined;
-	const confirmPopupInfo: ConfirmPopupInfo<string | null> = {
-		show: false,
-		question: ''
-	};
-	const dispatch = createEventDispatcher<{ delete: { id: number } }>();
+	const dispatch = createEventDispatcher<{
+		delete: EventDispatchProject;
+		clone: EventDispatchProject;
+	}>();
 
 	if (TypeProjectEnum.BUDGET == type) {
 		img = budgetImage;
 		additionalName = `${zeroPad($$props.month, 2)}/${$$props.year}`;
 	}
 
-	function handleEdit() {
-		let url: string = '';
+	async function handleEdit() {
+		loading = true;
+		let url = '';
 		if (TypeProjectEnum.BUDGET === type) {
 			url = '/budget';
 		}
-		goto(`${url}/${id}`);
+		await goto(`${url}/${id}`);
+		loading = false;
 	}
 
-	function handleDelete() {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
-		confirmPopupInfo.detail = 'delete';
-
-		if (TypeProjectEnum.BUDGET === type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se eliminará toda la información asociada y no será posible recuperarla';
-		}
-	}
-
-	function handleClone() {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
-		confirmPopupInfo.detail = 'clone';
-
-		if (TypeProjectEnum.BUDGET === type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se duplicará la información principal. Las transacciones no serán duplicadas';
-		}
-	}
-
-	async function handlePopUpAccept() {
-		loading = true;
-
-		if (confirmPopupInfo.detail === 'clone') {
-			let url: string = '';
-			if (TypeProjectEnum.BUDGET === type) {
-				url = '/budget';
-			}
-
-			try {
-				const response = await fetch('/api/dashboard', {
-					method: 'POST',
-					body: JSON.stringify({
-						userId: $session?.uid,
-						type: TypeProjectEnum[type],
-						baseId: id
-					})
-				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				const body = await response.json();
-				goto(`${url}/${body.id}`);
-			} catch (error) {
-				Toast.clear();
-				Toast.error('Se presento un error al duplicar el proyecto');
-				throw error;
-			} finally {
-				loading = false;
-			}
-		} else {
-			try {
-				const response = await fetch('/api/dashboard', {
-					method: 'DELETE',
-					body: JSON.stringify({
-						id
-					})
-				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				Toast.clear();
-				Toast.success(`Se elimino exitosamente el proyecto ${name}`);
-				dispatch('delete', {
-					id
-				});
-			} catch (error) {
-				Toast.clear();
-				Toast.error('Se presento un error al duplicar el proyecto');
-				throw error;
-			} finally {
-				loading = false;
-			}
-		}
-
-		handlePopUpCancel();
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '';
-		confirmPopupInfo.description = undefined;
-		confirmPopupInfo.detail = undefined;
+	function handleAction(action: 'delete' | 'clone') {
+		dispatch(action, {
+			id,
+			name,
+			type
+		});
 	}
 </script>
 
@@ -180,7 +95,7 @@
 				textColor="text-red-500"
 				backgroundColor="bg-red-300"
 				activeBackgroundColor="active:bg-red-200"
-				on:click={handleDelete}
+				on:click={() => handleAction('delete')}
 			>
 				<i class="fa-solid fa-trash" slot="left" />
 			</ButtonRounded>
@@ -189,14 +104,10 @@
 				textColor="text-blue-500"
 				backgroundColor="bg-blue-300"
 				activeBackgroundColor="active:bg-blue-200"
-				on:click={handleClone}
+				on:click={() => handleAction('clone')}
 			>
 				<i class="fa-solid fa-copy" slot="right" />
 			</ButtonRounded>
 		</div>
 	</footer>
 </CardBase>
-
-{#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
-{/if}

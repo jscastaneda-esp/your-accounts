@@ -15,6 +15,17 @@ export const GET = (async () => {
 					totalPendingPayment: 10000,
 					totalBalance: 50000,
 					pendingBills: 3
+				},
+				{
+					id: 2,
+					name: 'Test 2',
+					type: 'BUDGET',
+					month: new Date().getMonth() + 1,
+					year: new Date().getFullYear(),
+					totalAvailableBalance: 7000000,
+					totalPendingPayment: 100000,
+					totalBalance: 500000,
+					pendingBills: 10
 				}
 			]);
 		}, 1000);

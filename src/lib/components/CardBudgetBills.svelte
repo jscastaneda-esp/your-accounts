@@ -52,8 +52,7 @@
 
 			categories = await response.json();
 		} catch (error) {
-			Toast.clear();
-			Toast.error('Se presento un error al consultar los tipos de pagos');
+			Toast.error('Se presento un error al consultar los tipos de pagos', true);
 			throw error;
 		}
 	});
@@ -105,12 +104,11 @@
 			slot="header"
 			iconAction={show ? 'caret-up' : 'caret-down'}
 			on:click={() => {
-				Toast.clear();
 				if (show && !$isValid) {
-					Toast.warn('Completa la información');
+					Toast.warn('Completa la información', true);
 					return;
 				} else if (!show && !$dataMain.month) {
-					Toast.warn('Mes del presupuesto obligatorio');
+					Toast.warn('Mes del presupuesto obligatorio', true);
 					return;
 				}
 

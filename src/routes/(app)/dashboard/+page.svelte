@@ -1,20 +1,26 @@
 <script lang="ts">
 	// Utilities
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Toast from '$lib/utils/toast.utils';
 	import { session } from '$lib/stores';
-	import { DateTime } from 'luxon';
 
 	// Components
 	import CardBase from '$lib/components/CardBase.svelte';
 	import CardProject from '$lib/components/CardProject.svelte';
+	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
+	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
 
 	// Types, Enums
 	import { HttpStatus, TypeProjectEnum } from '$lib/enums';
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
-	import { onMount } from 'svelte';
+	import type { ConfirmPopupInfo, EventDispatchProject } from '$lib/types';
 
 	const awaitLoad = [1, 2, 3];
+	const confirmPopupInfo: ConfirmPopupInfo<{ action: 'delete' | 'clone' } & EventDispatchProject> =
+		{
+			show: false,
+			question: ''
+		};
 	let loading = false;
 	let projects: any[];
 	let showNewProject = false;
@@ -32,8 +38,7 @@
 
 			projects = await response.json();
 		} catch (error) {
-			Toast.clear();
-			Toast.error('Se presento un error al consultar los proyectos');
+			Toast.error('Se presento un error al consultar los proyectos', true);
 			throw error;
 		}
 	}
@@ -41,7 +46,7 @@
 	async function handleNewProject(type: TypeProjectEnum) {
 		loading = true;
 
-		let url: string = '';
+		let url = '';
 		if (TypeProjectEnum.BUDGET === type) {
 			url = '/budget';
 		}
@@ -59,18 +64,105 @@
 			}
 
 			const body = await response.json();
-			goto(`${url}/${body.id}`);
+			await goto(`${url}/${body.id}`);
 		} catch (error) {
-			Toast.clear();
-			Toast.error('Se presento un error al crear el proyecto');
+			Toast.error('Se presento un error al crear el proyecto', true);
 			throw error;
 		} finally {
 			loading = false;
 		}
 	}
 
-	async function handleDeleteProject(event: { detail: { id: number } }) {
-		projects = projects.filter((project) => project.id != event.detail.id);
+	async function handleDeleteProject({ detail }: { detail: EventDispatchProject }) {
+		confirmPopupInfo.show = true;
+		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
+		confirmPopupInfo.detail = {
+			action: 'delete',
+			...detail
+		};
+
+		if (TypeProjectEnum.BUDGET === detail.type) {
+			confirmPopupInfo.question += `presupuesto ${detail.name}?`;
+			confirmPopupInfo.description =
+				'Se eliminará toda la información asociada y no será posible recuperarla';
+		}
+	}
+
+	async function handleCloneProject({ detail }: { detail: EventDispatchProject }) {
+		confirmPopupInfo.show = true;
+		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
+		confirmPopupInfo.detail = {
+			action: 'clone',
+			...detail
+		};
+
+		if (TypeProjectEnum.BUDGET === detail.type) {
+			confirmPopupInfo.question += `presupuesto ${detail.name}?`;
+			confirmPopupInfo.description =
+				'Se duplicará la información principal. Las transacciones no serán duplicadas';
+		}
+	}
+
+	async function handlePopUpAccept() {
+		loading = true;
+
+		try {
+			if (confirmPopupInfo.detail?.action === 'clone') {
+				let url = '';
+				if (TypeProjectEnum.BUDGET === confirmPopupInfo.detail?.type) {
+					url = '/budget';
+				}
+
+				try {
+					const response = await fetch('/api/dashboard', {
+						method: 'POST',
+						body: JSON.stringify({
+							userId: $session?.uid,
+							type: TypeProjectEnum[confirmPopupInfo.detail?.type],
+							baseId: confirmPopupInfo.detail?.id
+						})
+					});
+					if (response.status != HttpStatus.OK) {
+						throw new Error(response.statusText);
+					}
+
+					const body = await response.json();
+					await goto(`${url}/${body.id}`);
+				} catch (error) {
+					Toast.error('Se presento un error al duplicar el proyecto', true);
+					throw error;
+				}
+			} else {
+				try {
+					const response = await fetch('/api/dashboard', {
+						method: 'DELETE',
+						body: JSON.stringify({
+							id: confirmPopupInfo.detail?.id
+						})
+					});
+					if (response.status != HttpStatus.OK) {
+						throw new Error(response.statusText);
+					}
+
+					Toast.success('Se elimino exitosamente el proyecto', true);
+					projects = projects.filter((project) => project.id != confirmPopupInfo.detail?.id);
+				} catch (error) {
+					Toast.error('Se presento un error al eliminar el proyecto', true);
+					throw error;
+				}
+			}
+		} finally {
+			loading = false;
+		}
+
+		handlePopUpCancel();
+	}
+
+	function handlePopUpCancel() {
+		confirmPopupInfo.show = false;
+		confirmPopupInfo.question = '';
+		confirmPopupInfo.description = undefined;
+		confirmPopupInfo.detail = undefined;
 	}
 </script>
 
@@ -78,12 +170,8 @@
 	<title>Dashboard</title>
 </svelte:head>
 
-{#if loading}
-	<ScreenLoading />
-{/if}
-
 <section
-	class="w-full justify-evenly grid grid-cols-[repeat(auto-fit,_minmax(276px,_300px))] gap-[22px] p-[22px]"
+	class="grid grid-cols-[repeat(auto-fit,_300px)] place-content-start_evenly gap-y-[22px] p-[22px] m-auto container"
 >
 	{#if projects}
 		<CardBase>
@@ -115,8 +203,16 @@
 		</CardBase>
 
 		{#each projects as project (project.id)}
-			<CardProject bind:loading {...project} on:delete={handleDeleteProject} />
+			<CardProject
+				bind:loading
+				{...project}
+				on:delete={handleDeleteProject}
+				on:clone={handleCloneProject}
+			/>
 		{/each}
+		<div />
+		<div />
+		<div />
 	{:else}
 		<CardBase>
 			<div class="animate-pulse">
@@ -142,3 +238,15 @@
 		{/each}
 	{/if}
 </section>
+
+{#if loading}
+	<ScreenLoading />
+{/if}
+
+<ConfirmPopup
+	show={confirmPopupInfo.show}
+	question={confirmPopupInfo.question}
+	description={confirmPopupInfo.description}
+	on:accept={handlePopUpAccept}
+	on:cancel={handlePopUpCancel}
+/>
