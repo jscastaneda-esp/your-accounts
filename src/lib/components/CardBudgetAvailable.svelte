@@ -7,48 +7,155 @@
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
 	import Toast from '../utils/toast.utils';
-	import type { BudgetAvailable } from '../types';
+	import type { BudgetAvailable, ConfirmPopupInfo } from '../types';
+	import ConfirmPopup from './ConfirmPopup.svelte';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
+	import { getContext } from 'svelte';
+	import type { changes as changesStore } from '../stores';
 
 	export let isValidForm: boolean;
+	export let loading: boolean;
 	export let list: BudgetAvailable[];
 	export let budgetId: number;
 
 	let show = false;
+	let countName = list.length + 1;
+	const confirmPopupInfo: ConfirmPopupInfo<{ index: number; id: number; name: string }> = {
+		show: false,
+		question: '¿Está seguro que desea eliminar el disponible :NAME?'
+	};
+	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		availables: yup.array().of(
 			yup.object().shape({
+				id: defaultNumber.min(1),
 				name: defaultText.max(40),
 				amount: defaultNumber.min(0).max(9999999999.99),
 				budgetId: defaultNumber.min(1)
 			})
 		)
 	});
-	const { form, data, errors, isValid, addField, unsetField } = createForm({
+	const { form, data, errors, isValid, touched, addField, unsetField } = createForm({
 		initialValues: {
 			availables: list
 		},
 		extend: [validator({ schema: validationSchema })]
 	});
 
-	function add() {
+	async function handleAdd() {
 		if ($isValid) {
-			addField('availables', { name: '', amount: 0, budgetId }, availables.length);
+			loading = true;
+
+			try {
+				const request = {
+					name: `Disponible ${countName++}`,
+					budgetId
+				};
+
+				const response = await fetch('/api/budget/available', {
+					method: 'POST',
+					body: JSON.stringify(request)
+				});
+				if (response.status != HttpStatus.OK) {
+					throw new Error(response.statusText);
+				}
+
+				const body = await response.json();
+				const newField = { id: body.id, name: request.name, amount: 0, budgetId };
+				addField('availables', newField);
+				list.push(newField);
+			} catch (error) {
+				Toast.error('Se presento un error al crear el disponible', true);
+				throw error;
+			} finally {
+				loading = false;
+			}
 		}
 	}
 
-	function del({ detail }: { detail: { id: number; index: number } }) {
-		if (detail.id) {
-			alert('Eliminar');
+	function handleDelete({ detail }: { detail: { index: number; id: number; name: string } }) {
+		confirmPopupInfo.show = true;
+		confirmPopupInfo.question = confirmPopupInfo.question.replace(':NAME', detail.name);
+		confirmPopupInfo.detail = detail;
+	}
+
+	function handlePopUpAccept() {
+		if (confirmPopupInfo.detail) {
+			unsetField(`availables.${confirmPopupInfo.detail.index}`);
 		}
 
-		unsetField(`availables.${detail.index}`);
+		handlePopUpCancel();
+	}
+
+	function handlePopUpCancel() {
+		confirmPopupInfo.show = false;
+		confirmPopupInfo.question = '¿Está seguro que desea eliminar el disponible :NAME?';
+		confirmPopupInfo.detail = undefined;
+	}
+
+	function compareData() {
+		if ($isValid) {
+			const newDatas = $data.availables;
+			if (newDatas.length != list.length) {
+				const deletes = list.filter(
+					(available) => !newDatas.some((item) => item.id == available.id)
+				);
+				list = list.filter((available) => newDatas.some((item) => item.id == available.id));
+
+				const changeBase = {
+					section: ChangeSectionEnum.BUDGET_AVAILABLE,
+					action: ChangeActionEnum.DELETE
+				};
+
+				deletes.forEach((del) => {
+					changes.add({
+						...changeBase,
+						detail: {
+							id: del.id
+						}
+					});
+				});
+			} else {
+				for (let index = 0; index < newDatas.length; index++) {
+					const newData = newDatas[index];
+					const oldData = list[index];
+
+					const changeBase = {
+						section: ChangeSectionEnum.BUDGET_AVAILABLE,
+						action: ChangeActionEnum.UPDATE
+					};
+
+					if (newData.name != oldData.name) {
+						oldData.name = newData.name;
+						changes.add({
+							...changeBase,
+							detail: {
+								id: newData.id,
+								name: newData.name
+							}
+						});
+					}
+
+					if (newData.amount != oldData.amount) {
+						oldData.amount = newData.amount;
+						changes.add({
+							...changeBase,
+							detail: {
+								id: newData.id,
+								amount: newData.amount
+							}
+						});
+					}
+				}
+			}
+		}
 	}
 
 	$: isValidForm = $isValid;
-	$: availables = $data.availables;
-	$: sumAvailables = $data.availables.reduce((previous, current) => previous + current.amount, 0);
+	$: totalAvailable = $data.availables.reduce((previous, current) => previous + current.amount, 0);
+	$: if ($touched) compareData();
 </script>
 
 <div class="px-1">
@@ -69,25 +176,26 @@
 				<SummaryValue
 					icon={`wallet ${show ? 'w-4' : 'w-5'}`}
 					title="Disponible"
-					value={sumAvailables}
+					value={totalAvailable}
 					className={show ? 'text-xs' : 'text-base'}
 				/>
 			</svelte:fragment>
 		</ComposeHeaderCardBudget>
 		<form slot="body" class="flex flex-col overflow-y-auto max-h-[210px]" use:form>
-			{#each availables as available, index (`available_${index}`)}
+			{#each $data.availables as available, index (`available_${index}`)}
 				<ItemBudgetAvailable
 					{index}
 					id={available.id}
+					name={available.name}
 					errors={$errors.availables?.[index]}
-					on:delete={del}
+					on:delete={handleDelete}
 				/>
 			{/each}
 			{#if $isValid}
 				<button
 					type="button"
 					class="bg-gray-200 py-[6px] px-3 flex items-center gap-1 text-xs text-gray-500 shadow-inner shadow-gray-300"
-					on:click={add}
+					on:click={handleAdd}
 				>
 					<i class="fa-solid fa-plus" />
 					<span>Agregar disponible</span>
@@ -96,3 +204,11 @@
 		</form>
 	</CardBudget>
 </div>
+
+<ConfirmPopup
+	show={confirmPopupInfo.show}
+	question={confirmPopupInfo.question}
+	description={confirmPopupInfo.description}
+	on:accept={handlePopUpAccept}
+	on:cancel={handlePopUpCancel}
+/>

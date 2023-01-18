@@ -9,7 +9,7 @@ class Toast {
 	private static add(
 		component: typeof SvelteComponent,
 		msg: string,
-		theme: { [key: string]: string },
+		theme: Record<string, string>,
 		autoHidden = true
 	) {
 		toast.push({

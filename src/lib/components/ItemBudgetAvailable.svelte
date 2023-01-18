@@ -2,37 +2,25 @@
 	import { createEventDispatcher } from 'svelte';
 	import ButtonRounded from './ButtonRounded.svelte';
 	import Input from './Input.svelte';
-	import ConfirmPopup from './ConfirmPopup.svelte';
-	import type { ConfirmPopupInfo, FelteError } from '../types';
+	import type { FelteError } from '../types';
 
 	export let index: number;
-	export let id: number | null | undefined;
+	export let id: number;
+	export let name: string;
 	export let errors: {
 		name: FelteError;
 		amount: FelteError;
 	};
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{ delete: { index: number; id: number; name: string } }>();
 	const prefixFieldName = `availables.${index}`;
-	const confirmPopupInfo: ConfirmPopupInfo = {
-		show: false,
-		question: '¿Está seguro que desea eliminar el registro?'
-	};
 
-	function del() {
-		confirmPopupInfo.show = true;
-	}
-
-	function handlePopUpAccept() {
+	function handleDelete() {
 		dispatch('delete', {
+			index,
 			id,
-			index
+			name
 		});
-		handlePopUpCancel();
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
 	}
 </script>
 
@@ -60,13 +48,9 @@
 			backgroundColor="bg-red-300"
 			activeBackgroundColor="active:bg-red-200"
 			className="col-span-1"
-			on:click={del}
+			on:click={handleDelete}
 		>
 			<i class="fa-solid fa-trash" slot="left" />
 		</ButtonRounded>
 	</div>
 </article>
-
-{#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
-{/if}

@@ -1,4 +1,4 @@
-import type { Budget } from '$lib/interfaces/Budget';
+import type { Budget } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params }) => {
@@ -22,6 +22,30 @@ export const load = (async ({ params }) => {
 						name: 'Cuenta Ahorros',
 						amount: 6370000,
 						budgetId: Number(params.id)
+					}
+				],
+				bills: [
+					{
+						id: 1,
+						description: 'Pagos financieros',
+						amount: 1000000,
+						payment: 0,
+						shared: true,
+						dueDate: '10',
+						complete: false,
+						budgetId: Number(params.id),
+						categoryId: '4'
+					},
+					{
+						id: 2,
+						description: 'Pagos personales',
+						amount: 2000000,
+						payment: 0,
+						shared: false,
+						dueDate: '',
+						complete: false,
+						budgetId: Number(params.id),
+						categoryId: '1'
 					}
 				]
 			} satisfies Budget);

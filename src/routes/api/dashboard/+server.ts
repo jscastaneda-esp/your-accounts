@@ -1,3 +1,5 @@
+import { TypeProjectEnum } from '$lib/enums';
+import type { Project } from '$lib/types';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -8,7 +10,7 @@ export const GET = (async () => {
 				{
 					id: 1,
 					name: 'Test',
-					type: 'BUDGET',
+					type: TypeProjectEnum.BUDGET,
 					month: new Date().getMonth() + 1,
 					year: new Date().getFullYear(),
 					totalAvailableBalance: 100000,
@@ -19,7 +21,7 @@ export const GET = (async () => {
 				{
 					id: 2,
 					name: 'Test 2',
-					type: 'BUDGET',
+					type: TypeProjectEnum.BUDGET,
 					month: new Date().getMonth() + 1,
 					year: new Date().getFullYear(),
 					totalAvailableBalance: 7000000,
@@ -27,7 +29,7 @@ export const GET = (async () => {
 					totalBalance: 500000,
 					pendingBills: 10
 				}
-			]);
+			] satisfies Project[]);
 		}, 1000);
 	});
 

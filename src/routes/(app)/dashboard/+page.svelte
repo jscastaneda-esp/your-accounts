@@ -13,7 +13,7 @@
 
 	// Types, Enums
 	import { HttpStatus, TypeProjectEnum } from '$lib/enums';
-	import type { ConfirmPopupInfo, EventDispatchProject } from '$lib/types';
+	import type { ConfirmPopupInfo, EventDispatchProject, Project } from '$lib/types';
 
 	const awaitLoad = [1, 2, 3];
 	const confirmPopupInfo: ConfirmPopupInfo<{ action: 'delete' | 'clone' } & EventDispatchProject> =
@@ -22,7 +22,7 @@
 			question: ''
 		};
 	let loading = false;
-	let projects: any[];
+	let projects: Project[];
 	let showNewProject = false;
 
 	onMount(() => {

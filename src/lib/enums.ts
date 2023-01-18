@@ -21,3 +21,17 @@ export enum TypeProjectEnum {
 export enum UserManagementActionsEnum {
 	resetPassword
 }
+
+export enum ChangeActionEnum {
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE'
+}
+
+export enum ChangeSectionEnum {
+	BUDGET_MAIN = 'BUDGET_MAIN',
+	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE'
+}
+
+export enum ContextNameEnum {
+	CHANGES = 'changes'
+}

@@ -1,15 +1,16 @@
 <script lang="ts">
 	// Enums, Types, Utilities
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 	import { goto } from '$app/navigation';
-	import type { ConfirmPopupInfo } from '$lib/types';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
+	import type { Budget, Change, ConfirmPopupInfo } from '$lib/types';
 	import yup, { defaultText, defaultNumber } from '$lib/utils/yup.utils';
-	import { zeroPad } from '$lib/utils/numberFormat.utils';
-	import type { BaseBudget, Budget } from '$lib/interfaces/Budget';
+	import { zeroPad } from '$lib/utils/number.utils';
 	import Toast from '$lib/utils/toast.utils';
-	import { HttpStatus } from '$lib/enums';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
+	import { groupBy } from '$lib/utils/array.utils';
+	import { changes } from '$lib/stores';
 
 	// Components
 	import Input from '$lib/components/Input.svelte';
@@ -24,20 +25,10 @@
 
 	export let data: Budget;
 
-	onMount(() => {
-		interval = setInterval(() => {
-			handleSave();
-		}, 30000);
-	});
-
-	onDestroy(() => {
-		clearInterval(interval);
-	});
-
 	let loading = false;
 	let showSummary = false;
 	let interval: ReturnType<typeof setInterval>;
-	let changes: { field: keyof BaseBudget; newValue: string | number }[] = [];
+	// let changes: { field: keyof BaseBudget; newValue: string | number }[] = [];
 	let isValidAvailable = false;
 	let isValidBills = false;
 	const confirmPopupInfo: ConfirmPopupInfo = {
@@ -71,23 +62,60 @@
 		extend: [validator({ schema: validationSchema })]
 	});
 
-	async function handleSave() {
-		if (changes.length > 0) {
-			try {
-				const body: { [key: string]: string | number } = {
-					id: data.id
-				};
-				changes.forEach((change) => (body[change.field] = change.newValue));
+	onMount(() => {
+		interval = setInterval(() => {
+			handleSave();
+		}, 30000);
+	});
 
-				const response = await fetch('/api/budget', {
+	onDestroy(() => {
+		clearInterval(interval);
+	});
+
+	setContext(ContextNameEnum.CHANGES, {
+		changes: changes
+	});
+
+	async function handleSave() {
+		const changeList = [...$changes];
+		if ($changes.length > 0) {
+			try {
+				changes.delete(changeList);
+				const sendChanges: Change[] = [];
+
+				const groupBySection = groupBy<Change>(changeList, (change) => change.section);
+				Object.entries(groupBySection).forEach((group) => {
+					const [section, items] = group;
+					const groupByAction = groupBy<Change>(items, (change) => change.action);
+					Object.entries(groupByAction).forEach((group) => {
+						const [action, items] = group;
+						const groupById = groupBy<Change>(items, (change) => change.detail.id.toString());
+						Object.entries(groupById).forEach((group) => {
+							const [id, items] = group;
+
+							const sendChange: Change = {
+								section: section as ChangeSectionEnum,
+								action: action as ChangeActionEnum,
+								detail: {
+									id: Number(id)
+								}
+							};
+
+							items.forEach(
+								(item) => (sendChange.detail = { ...sendChange.detail, ...item.detail })
+							);
+							sendChanges.push(sendChange);
+						});
+					});
+				});
+
+				const response = await fetch('/api/changes', {
 					method: 'PUT',
-					body: JSON.stringify(body)
+					body: JSON.stringify(sendChanges)
 				});
 				if (response.status != HttpStatus.OK) {
 					throw new Error(response.statusText);
 				}
-
-				changes = [];
 			} catch (error) {
 				Toast.error('Se presento un error al guardar', true);
 				throw error;
@@ -110,52 +138,68 @@
 
 	function compareData() {
 		if ($isValid) {
+			const changeBase = {
+				section: ChangeSectionEnum.BUDGET_MAIN,
+				action: ChangeActionEnum.UPDATE
+			};
+
 			const newData = $dataForm;
 			if (newData.name != data.name) {
-				changes.push({
-					field: 'name',
-					newValue: newData.name
-				});
 				data.name = newData.name;
+				changes.add({
+					...changeBase,
+					detail: {
+						id: data.id,
+						name: newData.name
+					}
+				});
 			}
 
 			const monthParts = newData.month.split('-');
 			const year = Number(monthParts[0]);
 			const month = Number(monthParts[1]);
 			if (year != data.year) {
-				changes.push({
-					field: 'year',
-					newValue: year
-				});
 				data.year = year;
+				changes.add({
+					...changeBase,
+					detail: {
+						id: data.id,
+						year
+					}
+				});
 			}
 
 			if (month != data.month) {
-				changes.push({
-					field: 'month',
-					newValue: month
-				});
 				data.month = month;
+				changes.add({
+					...changeBase,
+					detail: {
+						id: data.id,
+						month
+					}
+				});
 			}
 
 			if (newData.fixedIncome != data.fixedIncome) {
-				changes.push({
-					field: 'fixedIncome',
-					newValue: newData.fixedIncome
-				});
 				data.fixedIncome = newData.fixedIncome;
+				changes.add({
+					...changeBase,
+					detail: {
+						id: data.id,
+						fixedIncome: newData.fixedIncome
+					}
+				});
 			}
 
 			if (newData.additionalIncome != data.additionalIncome) {
-				changes.push({
-					field: 'additionalIncome',
-					newValue: newData.additionalIncome
-				});
 				data.additionalIncome = newData.additionalIncome;
-			}
-
-			if (changes.length > 0) {
-				changes = [...changes];
+				changes.add({
+					...changeBase,
+					detail: {
+						id: data.id,
+						additionalIncome: newData.additionalIncome
+					}
+				});
 			}
 		}
 	}
@@ -168,7 +212,7 @@
 		<ButtonLink
 			text="Guardar"
 			className="text-gray-500 before:bg-gray-500 text-base"
-			disabled={!$isValid || !isValidAvailable || !isValidBills || changes.length > 0}
+			disabled={!$isValid || !isValidAvailable || !isValidBills || $changes.length == 0}
 			on:click={handleSave}
 		>
 			<i class="fa-solid fa-floppy-disk" />
@@ -208,17 +252,20 @@
 			errors={$errors.additionalIncome}
 		/>
 	</form>
-	{$isValid}
-	{isValidAvailable}
-	{isValidBills}
-	{changes.length > 0}
 	<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
 		<CardBudgetAvailable
 			bind:isValidForm={isValidAvailable}
+			bind:loading
 			budgetId={data.id}
 			list={data.availableBalances}
 		/>
-		<!-- <CardBudgetBills bind:isValidForm={isValidBills} list={[]} /> -->
+		<CardBudgetBills
+			bind:isValidForm={isValidBills}
+			bind:loading
+			budgetId={data.id}
+			budgetMonth={$dataForm.month}
+			list={data.bills}
+		/>
 	</section>
 	<CardBudgetStatistics />
 </article>

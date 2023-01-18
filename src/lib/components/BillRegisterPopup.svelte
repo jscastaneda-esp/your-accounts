@@ -2,7 +2,7 @@
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber, defaultBoolean } from '../utils/yup.utils';
-	import { money } from '$lib/utils/numberFormat.utils';
+	import { money } from '$lib/utils/number.utils';
 	import Popup from './Popup.svelte';
 	import Input from './Input.svelte';
 	import SwitchInput from './SwitchInput.svelte';

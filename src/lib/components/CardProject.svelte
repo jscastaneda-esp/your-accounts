@@ -3,7 +3,7 @@
 	import budgetImage from '../assets/images/budget.png';
 	import { goto } from '$app/navigation';
 	import { TypeProjectEnum } from '../enums';
-	import { zeroPad } from '../utils/numberFormat.utils';
+	import { zeroPad } from '../utils/number.utils';
 	import CardBase from './CardBase.svelte';
 	import SummaryValue from './SummaryValue.svelte';
 	import ButtonRounded from './ButtonRounded.svelte';

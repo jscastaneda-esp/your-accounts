@@ -1,17 +1,14 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const PUT = (async ({ request }) => {
 	const body = await request.json();
 	console.log(body);
 
-	const project = await new Promise((resolve) => {
+	await new Promise<void>((resolve) => {
 		setTimeout(() => {
-			resolve({
-				id: new Date().getTime()
-			});
+			resolve();
 		}, 1000);
 	});
 
-	return json(project);
+	return new Response();
 }) satisfies RequestHandler;

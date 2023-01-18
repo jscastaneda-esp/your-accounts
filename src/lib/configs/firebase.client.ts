@@ -24,7 +24,7 @@ import {
 import { FirebaseProviderEnum, TypeAuthEnum } from '../enums';
 
 class FirebaseAuth {
-	private readonly ERROR_MESSAGES: { [key: string]: { [key: string]: [string, boolean] } } = {
+	private readonly ERROR_MESSAGES: Record<string, Record<string, [string, boolean]>> = {
 		[TypeAuthEnum.FORGOT_PASSWORD]: {
 			[AuthErrorCodes.USER_DELETED]: ['Correo electrónico no existe', false],
 			[AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER]: [
@@ -109,7 +109,7 @@ class FirebaseAuth {
 	getError(
 		type: TypeAuthEnum,
 		code: string | null | undefined,
-		tags?: { [key: string]: string }
+		tags?: Record<string, string>
 	): [string, boolean] {
 		let msg: string | null = null;
 		let isError = true;
