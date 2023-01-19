@@ -1,5 +1,6 @@
 export enum HttpStatus {
-	OK = 200
+	OK = 200,
+	BAD_REQUEST = 400
 }
 
 export enum FirebaseProviderEnum {
@@ -29,7 +30,9 @@ export enum ChangeActionEnum {
 
 export enum ChangeSectionEnum {
 	BUDGET_MAIN = 'BUDGET_MAIN',
-	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE'
+	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE',
+	BUDGET_BILL = 'BUDGET_BILL',
+	BUDGET_BILL_SHARED = 'BUDGET_BILL_SHARED'
 }
 
 export enum ContextNameEnum {

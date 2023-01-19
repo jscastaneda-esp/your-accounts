@@ -8,27 +8,40 @@
 	import yup, { defaultText, defaultNumber, defaultBoolean } from '../utils/yup.utils';
 	import Toast from '../utils/toast.utils';
 	import ItemBudgetBill from './ItemBudgetBill.svelte';
-	import type { BudgetBill, CategoryBill, ConfirmPopupInfo } from '../types';
-	import { DateTime } from 'luxon';
-	import { ContextNameEnum, HttpStatus } from '$lib/enums';
+	import type { BudgetBill, CategoryBill, Change, ConfirmPopupInfo } from '../types';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
 	import type { changes as changesStore } from '../stores';
 	import ConfirmPopup from './ConfirmPopup.svelte';
+	import { fromFormat, today } from '$lib/utils/date.utils';
+	import ChangeUtil from '$lib/classes/ChangeUtil';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
 	export let list: BudgetBill[];
 	export let budgetId: number;
 	export let budgetMonth: string;
+	export let total: number;
+	export let totalPending: number;
 
-	const now = DateTime.now();
+	const now = today();
 	let show = false;
 	let daysMonth: number[] = [];
 	let categories: CategoryBill[] = [];
 	let countName = list.length + 1;
+	const pendingValues: number[] = new Array(list.length);
 	const confirmPopupInfo: ConfirmPopupInfo<{ index: number; id: number; description: string }> = {
 		show: false,
 		question: '¿Está seguro que desea eliminar el gasto :DESC?'
 	};
+	type ChangeBill = {
+		description?: string;
+		amount?: number;
+		shared?: boolean;
+		dueDate?: string | number;
+		complete?: boolean;
+		categoryId?: string | number;
+	};
+	const changeUtil = new ChangeUtil<keyof ChangeBill>();
 	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
 
 	// Form Definition
@@ -134,11 +147,76 @@
 	}
 
 	function compareData() {
-		// FIXME Pendiente
+		const changeBase = {
+			section: ChangeSectionEnum.BUDGET_BILL,
+			action: ChangeActionEnum.UPDATE
+		};
+		const newDatas = $data.bills;
+		const dataErrors = $errors.bills || [];
+
+		if (newDatas.length != list.length) {
+			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id));
+			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id));
+
+			deletes.forEach((del) => {
+				changes.add({
+					...changeBase,
+					action: ChangeActionEnum.DELETE,
+					detail: {
+						id: del.id
+					}
+				});
+			});
+		} else {
+			for (let index = 0; index < newDatas.length; index++) {
+				const newData = newDatas[index];
+				const oldData = list[index];
+				const errorData = dataErrors[index];
+
+				let isChanges = false;
+				const change: Change<ChangeBill> = {
+					...changeBase,
+					detail: {
+						id: newData.id
+					}
+				};
+
+				isChanges = changeUtil.setChange(
+					errorData,
+					newData,
+					oldData,
+					change,
+					'description',
+					isChanges
+				);
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges);
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'shared', isChanges);
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'dueDate', isChanges);
+				isChanges = changeUtil.setChange(
+					errorData,
+					newData,
+					oldData,
+					change,
+					'complete',
+					isChanges
+				);
+				isChanges = changeUtil.setChange(
+					errorData,
+					newData,
+					oldData,
+					change,
+					'categoryId',
+					isChanges
+				);
+				if (isChanges) {
+					changes.add(change);
+				}
+			}
+		}
 	}
 
 	$: isValidForm = $isValid;
-	$: monthBudget = DateTime.fromFormat(budgetMonth, 'yyyy-MM');
+	$: monthBudget = fromFormat(budgetMonth, 'yyyy-MM');
 	$: {
 		daysMonth = [];
 		const daysInMonth = monthBudget.daysInMonth;
@@ -148,6 +226,7 @@
 			}
 		}
 	}
+	$: totalPending = pendingValues.reduce((previous, current) => previous + current, 0);
 	$: totalPayment = $data.bills.reduce((previous, current) => previous + current.payment, 0);
 	$: total = $data.bills.reduce((previous, current) => previous + current.amount, 0);
 	$: if ($touched) compareData();
@@ -174,7 +253,7 @@
 				<SummaryValue
 					icon={`file-invoice-dollar ${show ? 'w-4' : 'w-5'}`}
 					title="Pendiente"
-					value={total - totalPayment}
+					value={totalPending}
 					className={show ? 'text-xs' : 'text-base'}
 				/>
 				<SummaryValue
@@ -210,6 +289,7 @@
 						{daysMonth}
 						{categories}
 						data={bill}
+						bind:pending={pendingValues[index]}
 						errors={$errors.bills?.[index]}
 						on:delete={handleDelete}
 					/>

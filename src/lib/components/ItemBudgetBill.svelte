@@ -15,6 +15,7 @@
 	export let daysMonth: number[];
 	export let categories: CategoryBill[];
 	export let data: BudgetBill;
+	export let pending: number;
 	export let errors: {
 		description: FelteError;
 		amount: FelteError;
@@ -37,14 +38,14 @@
 	}
 
 	function handleShowOption(option: number) {
-		if (optionRegister != option) {
-			optionRegister = option;
-		} else {
-			optionRegister = 0;
-		}
+		optionRegister = optionRegister != option ? option : 0;
 	}
 
-	$: pending = data.amount - data.payment;
+	function handleRegisterBill({ detail }: { detail: { payment: number } }) {
+		data.payment += detail.payment;
+	}
+
+	$: pending = data.complete ? 0 : data.amount - data.payment;
 	$: category = categories.find((category) => category.id == data.categoryId);
 </script>
 
@@ -156,10 +157,14 @@
 	</section>
 </article>
 
-<!-- {#if optionRegister == 1}
-	<BillRegisterPopup pendingBill={pending} on:click={() => handleShowOption(1)} />
+{#if optionRegister == 1}
+	<BillRegisterPopup
+		budgetBillId={data.id}
+		pendingBill={pending}
+		on:click={() => handleShowOption(1)}
+		on:add={handleRegisterBill}
+	/>
+{:else if optionRegister == 2}
+	<!-- FIXME PENDIENTE Tener en cuenta los compartidos -->
+	<BillSharedPopup budgetBillId={data.id} on:click={() => handleShowOption(2)} />
 {/if}
-
-{#if optionRegister == 2}
-	<BillSharedPopup budgetBillId={1} list={[]} on:click={() => handleShowOption(2)} />
-{/if} -->

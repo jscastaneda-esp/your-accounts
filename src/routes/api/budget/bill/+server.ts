@@ -5,7 +5,7 @@ export const POST = (async ({ request }) => {
 	const body = await request.json();
 	console.log(body);
 
-	const project = await new Promise((resolve) => {
+	const bill = await new Promise((resolve) => {
 		setTimeout(() => {
 			resolve({
 				id: new Date().getTime()
@@ -13,5 +13,5 @@ export const POST = (async ({ request }) => {
 		}, 1000);
 	});
 
-	return json(project);
+	return json(bill);
 }) satisfies RequestHandler;

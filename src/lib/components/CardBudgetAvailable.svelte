@@ -7,16 +7,18 @@
 	import { validator } from '@felte/validator-yup';
 	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
 	import Toast from '../utils/toast.utils';
-	import type { BudgetAvailable, ConfirmPopupInfo } from '../types';
+	import type { BudgetAvailable, Change, ConfirmPopupInfo } from '../types';
 	import ConfirmPopup from './ConfirmPopup.svelte';
 	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
 	import { getContext } from 'svelte';
 	import type { changes as changesStore } from '../stores';
+	import ChangeUtil from '$lib/classes/ChangeUtil';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
 	export let list: BudgetAvailable[];
 	export let budgetId: number;
+	export let total: number;
 
 	let show = false;
 	let countName = list.length + 1;
@@ -24,6 +26,11 @@
 		show: false,
 		question: '¿Está seguro que desea eliminar el disponible :NAME?'
 	};
+	type ChangeAvailable = {
+		name?: string;
+		amount?: number;
+	};
+	const changeUtil = new ChangeUtil<keyof ChangeAvailable>();
 	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
 
 	// Form Definition
@@ -96,65 +103,51 @@
 	}
 
 	function compareData() {
-		if ($isValid) {
-			const newDatas = $data.availables;
-			if (newDatas.length != list.length) {
-				const deletes = list.filter(
-					(available) => !newDatas.some((item) => item.id == available.id)
-				);
-				list = list.filter((available) => newDatas.some((item) => item.id == available.id));
+		const changeBase = {
+			section: ChangeSectionEnum.BUDGET_AVAILABLE,
+			action: ChangeActionEnum.UPDATE
+		};
+		const newDatas = $data.availables;
+		const dataErrors = $errors.availables || [];
 
-				const changeBase = {
-					section: ChangeSectionEnum.BUDGET_AVAILABLE,
-					action: ChangeActionEnum.DELETE
+		if (newDatas.length != list.length) {
+			const deletes = list.filter((available) => !newDatas.some((item) => item.id == available.id));
+			list = list.filter((available) => newDatas.some((item) => item.id == available.id));
+
+			deletes.forEach((del) => {
+				changes.add({
+					...changeBase,
+					action: ChangeActionEnum.DELETE,
+					detail: {
+						id: del.id
+					}
+				});
+			});
+		} else {
+			for (let index = 0; index < newDatas.length; index++) {
+				const newData = newDatas[index];
+				const oldData = list[index];
+				const errorData = dataErrors[index];
+
+				let isChanges = false;
+				const change: Change<ChangeAvailable> = {
+					...changeBase,
+					detail: {
+						id: newData.id
+					}
 				};
 
-				deletes.forEach((del) => {
-					changes.add({
-						...changeBase,
-						detail: {
-							id: del.id
-						}
-					});
-				});
-			} else {
-				for (let index = 0; index < newDatas.length; index++) {
-					const newData = newDatas[index];
-					const oldData = list[index];
-
-					const changeBase = {
-						section: ChangeSectionEnum.BUDGET_AVAILABLE,
-						action: ChangeActionEnum.UPDATE
-					};
-
-					if (newData.name != oldData.name) {
-						oldData.name = newData.name;
-						changes.add({
-							...changeBase,
-							detail: {
-								id: newData.id,
-								name: newData.name
-							}
-						});
-					}
-
-					if (newData.amount != oldData.amount) {
-						oldData.amount = newData.amount;
-						changes.add({
-							...changeBase,
-							detail: {
-								id: newData.id,
-								amount: newData.amount
-							}
-						});
-					}
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'name', isChanges);
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges);
+				if (isChanges) {
+					changes.add(change);
 				}
 			}
 		}
 	}
 
 	$: isValidForm = $isValid;
-	$: totalAvailable = $data.availables.reduce((previous, current) => previous + current.amount, 0);
+	$: total = $data.availables.reduce((previous, current) => previous + current.amount, 0);
 	$: if ($touched) compareData();
 </script>
 
@@ -176,7 +169,7 @@
 				<SummaryValue
 					icon={`wallet ${show ? 'w-4' : 'w-5'}`}
 					title="Disponible"
-					value={totalAvailable}
+					value={total}
 					className={show ? 'text-xs' : 'text-base'}
 				/>
 			</svelte:fragment>

@@ -22,7 +22,7 @@
 <fieldset {disabled} class={className}>
 	<div class="flex gap-1 items-center">
 		<span class="text-sm text-gray-500">{text}</span>
-		<label for={id} class="relative h-6 w-10 cursor-pointer">
+		<label for={id} class="relative h-6 w-10 cursor-pointer" class:pointer-events-none={disabled}>
 			<input type="checkbox" {id} {name} class="peer sr-only" on:change />
 
 			<span class="absolute inset-0 rounded-full bg-gray-300 transition" />

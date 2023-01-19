@@ -55,6 +55,12 @@ export type BudgetAvailable = {
 	budgetId: number;
 };
 
+export type CategoryBill = {
+	id: number;
+	name: string;
+	color: string;
+};
+
 export type BudgetBill = {
 	id: number;
 	description: string;
@@ -67,17 +73,17 @@ export type BudgetBill = {
 	categoryId: string | number;
 };
 
-export type CategoryBill = {
-	id: number;
-	name: string;
-	color: string;
+export type BudgetBillTransaction = {
+	description: string;
+	amount: number;
+	createdAt: Date;
 };
 
 export type BudgetBillShared = {
-	id?: number;
+	id: number;
 	description: string;
 	amount: number;
-	budget_bill_id: number;
+	budgetBillId: number;
 };
 
 export type FelteError = string[] | null;
@@ -88,9 +94,9 @@ export type EventDispatchProject = {
 	readonly type: TypeProjectEnum;
 };
 
-export type Change = {
+export type Change<T> = {
 	index?: number;
 	readonly section: ChangeSectionEnum;
 	readonly action: ChangeActionEnum;
-	detail: { id: number } & Record<string, unknown>;
+	detail: { id: number } & T;
 };

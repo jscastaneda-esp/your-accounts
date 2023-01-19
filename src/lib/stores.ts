@@ -5,18 +5,19 @@ import type { Change } from './types';
 export const session = writable<User | null>(null);
 
 function changesStore() {
-	const { subscribe, update } = writable<Change[]>([]);
+	const { subscribe, update } = writable<Change<unknown>[]>([]);
 
 	let count = 1;
 
 	return {
 		subscribe,
-		add: (change: Change) =>
+		add: (newChange: Change<unknown>) =>
 			update((changes) => {
-				change.index = count++;
-				return [...changes, change];
+				newChange.index = count++;
+				return [...changes, newChange];
 			}),
-		delete: (delChanges: Change[]) =>
+		revert: (newChanges: Change<unknown>[]) => update((changes) => [...newChanges, ...changes]),
+		delete: (delChanges: Change<unknown>[]) =>
 			update((changes) =>
 				changes.filter((change) => !delChanges.some((del) => change.index == del.index))
 			)

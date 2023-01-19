@@ -11,6 +11,7 @@
 	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
 	import { groupBy } from '$lib/utils/array.utils';
 	import { changes } from '$lib/stores';
+	import ChangeUtil from '$lib/classes/ChangeUtil';
 
 	// Components
 	import Input from '$lib/components/Input.svelte';
@@ -28,14 +29,23 @@
 	let loading = false;
 	let showSummary = false;
 	let interval: ReturnType<typeof setInterval>;
-	// let changes: { field: keyof BaseBudget; newValue: string | number }[] = [];
 	let isValidAvailable = false;
 	let isValidBills = false;
+	let totalAvailable = 0;
+	let totalBillPending = 0;
 	const confirmPopupInfo: ConfirmPopupInfo = {
 		show: false,
 		question: '¿Realmente desea salir?',
 		description: 'Al salir se pueden perder cambios. Se recomienda primero guardar'
 	};
+	type ChangeMain = {
+		name?: string;
+		year?: number;
+		month?: number;
+		fixedIncome?: number;
+		additionalIncome?: number;
+	};
+	const changeUtil = new ChangeUtil<keyof ChangeMain>();
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -65,7 +75,7 @@
 	onMount(() => {
 		interval = setInterval(() => {
 			handleSave();
-		}, 30000);
+		}, 10000);
 	});
 
 	onDestroy(() => {
@@ -73,7 +83,7 @@
 	});
 
 	setContext(ContextNameEnum.CHANGES, {
-		changes: changes
+		changes
 	});
 
 	async function handleSave() {
@@ -81,19 +91,21 @@
 		if ($changes.length > 0) {
 			try {
 				changes.delete(changeList);
-				const sendChanges: Change[] = [];
+				const sendChanges: Change<unknown>[] = [];
 
-				const groupBySection = groupBy<Change>(changeList, (change) => change.section);
+				const groupBySection = groupBy<Change<unknown>>(changeList, (change) => change.section);
 				Object.entries(groupBySection).forEach((group) => {
 					const [section, items] = group;
-					const groupByAction = groupBy<Change>(items, (change) => change.action);
+					const groupByAction = groupBy<Change<unknown>>(items, (change) => change.action);
 					Object.entries(groupByAction).forEach((group) => {
 						const [action, items] = group;
-						const groupById = groupBy<Change>(items, (change) => change.detail.id.toString());
+						const groupById = groupBy<Change<unknown>>(items, (change) =>
+							change.detail.id.toString()
+						);
 						Object.entries(groupById).forEach((group) => {
 							const [id, items] = group;
 
-							const sendChange: Change = {
+							const sendChange: Change<unknown> = {
 								section: section as ChangeSectionEnum,
 								action: action as ChangeActionEnum,
 								detail: {
@@ -117,6 +129,7 @@
 					throw new Error(response.statusText);
 				}
 			} catch (error) {
+				changes.revert(changeList);
 				Toast.error('Se presento un error al guardar', true);
 				throw error;
 			}
@@ -137,73 +150,43 @@
 	}
 
 	function compareData() {
-		if ($isValid) {
-			const changeBase = {
-				section: ChangeSectionEnum.BUDGET_MAIN,
-				action: ChangeActionEnum.UPDATE
-			};
+		const newData = $dataForm;
+		const errorData = $errors;
 
-			const newData = $dataForm;
-			if (newData.name != data.name) {
-				data.name = newData.name;
-				changes.add({
-					...changeBase,
-					detail: {
-						id: data.id,
-						name: newData.name
-					}
-				});
+		let isChanges = false;
+		const change: Change<ChangeMain> = {
+			section: ChangeSectionEnum.BUDGET_MAIN,
+			action: ChangeActionEnum.UPDATE,
+			detail: {
+				id: data.id
 			}
+		};
 
+		if (!errorData?.month) {
 			const monthParts = newData.month.split('-');
 			const year = Number(monthParts[0]);
 			const month = Number(monthParts[1]);
-			if (year != data.year) {
-				data.year = year;
-				changes.add({
-					...changeBase,
-					detail: {
-						id: data.id,
-						year
-					}
-				});
-			}
+			isChanges = changeUtil.setChangeDirect(year, data, change, 'year', isChanges);
+			isChanges = changeUtil.setChangeDirect(month, data, change, 'month', isChanges);
+		}
 
-			if (month != data.month) {
-				data.month = month;
-				changes.add({
-					...changeBase,
-					detail: {
-						id: data.id,
-						month
-					}
-				});
-			}
-
-			if (newData.fixedIncome != data.fixedIncome) {
-				data.fixedIncome = newData.fixedIncome;
-				changes.add({
-					...changeBase,
-					detail: {
-						id: data.id,
-						fixedIncome: newData.fixedIncome
-					}
-				});
-			}
-
-			if (newData.additionalIncome != data.additionalIncome) {
-				data.additionalIncome = newData.additionalIncome;
-				changes.add({
-					...changeBase,
-					detail: {
-						id: data.id,
-						additionalIncome: newData.additionalIncome
-					}
-				});
-			}
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'name', isChanges);
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'fixedIncome', isChanges);
+		isChanges = changeUtil.setChange(
+			errorData,
+			newData,
+			data,
+			change,
+			'additionalIncome',
+			isChanges
+		);
+		if (isChanges) {
+			changes.add(change);
 		}
 	}
 
+	$: data.estimatedBalance = data.fixedIncome + data.additionalIncome - data.total;
+	$: data.totalBalance = totalAvailable - totalBillPending;
 	$: if ($touched) compareData();
 </script>
 
@@ -256,12 +239,15 @@
 		<CardBudgetAvailable
 			bind:isValidForm={isValidAvailable}
 			bind:loading
+			bind:total={totalAvailable}
 			budgetId={data.id}
 			list={data.availableBalances}
 		/>
 		<CardBudgetBills
 			bind:isValidForm={isValidBills}
 			bind:loading
+			bind:total={data.total}
+			bind:totalPending={totalBillPending}
 			budgetId={data.id}
 			budgetMonth={$dataForm.month}
 			list={data.bills}
@@ -305,6 +291,7 @@
 				value={data.totalBalance - data.estimatedBalance}
 				className="!text-sm"
 			/>
+			<!-- FIXME PENDIENTE -->
 			<SummaryValue
 				icon="triangle-exclamation"
 				title="Registrar"
