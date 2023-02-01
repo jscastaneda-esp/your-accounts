@@ -29,12 +29,11 @@
 			email: ''
 		},
 		onSubmit: (values) => firebase.authFunctions.sendPasswordResetEmail(values.email),
-		onSuccess: () => {
+		onSuccess: () =>
 			Toast.success(
 				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados',
 				true
-			);
-		},
+			),
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,

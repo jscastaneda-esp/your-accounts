@@ -56,16 +56,13 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) => {
-			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password);
-		},
-		onSuccess: () => {
+		onSubmit: (values) =>
+			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password),
+		onSuccess: async () => {
 			Toast.success('Se asigno la contraseña exitosamente', true);
 
-			setTimeout(() => {
-				Toast.clear();
-				goto('/auth/login');
-			}, 2000);
+			await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+			return goto('/auth/login');
 		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(

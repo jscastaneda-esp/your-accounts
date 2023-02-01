@@ -45,13 +45,12 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) => {
-			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password);
-		},
+		onSubmit: (values) =>
+			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password),
 		onSuccess: async (response: unknown) => {
 			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user);
 			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password);
-			goto('/dashboard');
+			return goto('/dashboard');
 		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
