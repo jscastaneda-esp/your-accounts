@@ -1,26 +1,25 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Popup from './Popup.svelte';
-	import Button from './Button.svelte';
+	import Button from '../buttons/Button.svelte';
 
+	export let show: boolean;
 	export let question: string;
 	export let description: string | undefined = undefined;
 
 	const dispatch = createEventDispatcher();
 </script>
 
-<Popup>
-	<div class="w-screen sm:max-w-sm text-center">
+<Popup open={show}>
+	<div class="w-screen sm:max-w-sm">
 		<div class="bg-white pt-6 px-6">
-			<h3 class="text-lg font-medium leading-6 text-black" id="modal-title">
+			<h3 class="text-lg font-medium leading-6 text-black text-center" id="modal-title">
 				{question}
 			</h3>
 			{#if description}
-				<div class="mt-2">
-					<p class="text-sm text-gray-500">
-						{description}
-					</p>
-				</div>
+				<p class="text-sm text-gray-500 mt-2 text-justify">
+					{description}
+				</p>
 			{/if}
 		</div>
 		<div class="bg-gray-50 p-4 flex items-center justify-between">

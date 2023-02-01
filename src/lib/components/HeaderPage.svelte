@@ -87,19 +87,23 @@
 				</div>
 				<i class="fa-solid fa-right-from-bracket text-lg" />
 			</button>
-			<div class="absolute top-full flex-col items-center hidden mb-6 group-hover:flex">
-				<div class="w-3 h-3 rotate-45 bg-gray-600" />
+			<div class="absolute top-[90%] flex-col items-center hidden mb-6 group-hover:flex">
+				<div class="w-2 h-2 rotate-45 bg-gray-600" />
 				<span
-					class="relative -mt-2 z-10 p-2 text-xs leading-none text-white whitespace-nowrap bg-gray-600 shadow-lg rounded-xl"
+					class="relative -mt-1 z-10 p-2 text-xs leading-none text-white whitespace-nowrap bg-gray-600 shadow-lg rounded-xl"
 				>
 					Cerrar sesión
 				</span>
 			</div>
 		</div>
 	</div>
+</header>
+
+<div class="z-50 fixed top-14 md:hidden" class:inset-0={showMenu}>
+	<div role="region" class="absolute inset-0 bg-gray-500 bg-opacity-75" />
 
 	<nav
-		class="toggle z-10 absolute top-14 h-[calc(100vh-3.5rem)] w-full max-w-[320px] bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin] duration-300 md:hidden"
+		class="toggle absolute inset-0 max-w-[320px] bg-white pt-4 pr-5 flex flex-col justify-between shadow shadow-gray-700 transition-[margin]"
 		class:ml-0={showMenu}
 		class:-ml-[320px]={!showMenu}
 	>
@@ -130,7 +134,7 @@
 			</section>
 		</button>
 	</nav>
-</header>
+</div>
 
 <style lang="postcss">
 	.toggle #menu li {

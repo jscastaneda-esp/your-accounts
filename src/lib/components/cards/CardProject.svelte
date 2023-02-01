@@ -1,89 +1,47 @@
 <script lang="ts">
-	import budgetImage from '../assets/images/budget.png';
-
+	import { createEventDispatcher } from 'svelte';
+	import budgetImage from '../../assets/images/budget.png';
 	import { goto } from '$app/navigation';
-
-	import type { ConfirmPopupInfo } from '../types';
-	import { TypeProject } from '../enums';
-	import { zeroPad } from '../utils/numberFormat.utils';
-
+	import { TypeProjectEnum } from '../../enums';
+	import { zeroPad } from '../../utils/number.utils';
 	import CardBase from './CardBase.svelte';
-	import SummaryValue from './SummaryValue.svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import ConfirmPopup from './ConfirmPopup.svelte';
+	import SummaryValue from '../SummaryValue.svelte';
+	import ButtonRounded from '../buttons/ButtonRounded.svelte';
+	import type { EventDispatchProject } from '../../types';
 
+	export let loading: boolean;
 	export let id: number;
 	export let name: string;
-	export let type: TypeProject;
+	export let type: TypeProjectEnum;
 
 	let img: string | undefined = undefined;
 	let additionalName: string | undefined = undefined;
-	const confirmPopupInfo: ConfirmPopupInfo<string | null> = {
-		show: false,
-		question: ''
-	};
+	const dispatch = createEventDispatcher<{
+		delete: EventDispatchProject;
+		clone: EventDispatchProject;
+	}>();
 
-	if (TypeProject.BUDGET == type) {
+	if (TypeProjectEnum.BUDGET == type) {
 		img = budgetImage;
 		additionalName = `${zeroPad($$props.month, 2)}/${$$props.year}`;
 	}
 
-	function handleEdit() {
-		let url: string | undefined = undefined;
-		if (TypeProject.BUDGET === type) {
+	async function handleEdit() {
+		loading = true;
+		let url = '';
+		if (TypeProjectEnum.BUDGET === type) {
 			url = '/budget';
 		}
-		goto(`${url}/${id}`);
+		await goto(`${url}/${id}`);
+		loading = false;
 	}
 
-	function handleDelete() {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
-		confirmPopupInfo.detail = 'delete';
-
-		if (TypeProject.BUDGET === type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se eliminará toda la información asociada y no será posible recuperarla';
-		}
-	}
-
-	function handleClone() {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
-		confirmPopupInfo.detail = 'clone';
-
-		if (TypeProject.BUDGET === type) {
-			confirmPopupInfo.question += 'presupuesto?';
-			confirmPopupInfo.description =
-				'Se duplicará la información principal. Las transacciones no serán duplicadas';
-		}
-	}
-
-	function handlePopUpAccept() {
-		if (confirmPopupInfo.detail === 'clone') {
-			let url: string | undefined = undefined;
-			if (TypeProject.BUDGET === type) {
-				url = '/budget';
-			}
-			alert('Duplicando');
-			goto(`${url}/${new Date().getTime()}`);
-		} else {
-			alert('Eliminando');
-		}
-
-		resetConfirmPopupInfo();
-	}
-
-	function handlePopUpCancel() {
-		resetConfirmPopupInfo();
-	}
-
-	function resetConfirmPopupInfo() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '';
-		confirmPopupInfo.description = undefined;
-		confirmPopupInfo.detail = undefined;
+	function handleAction(action: 'delete' | 'clone') {
+		dispatch(action, {
+			id,
+			name,
+			type
+		});
 	}
 </script>
 
@@ -92,7 +50,7 @@
 		<button
 			type="button"
 			class="flex justify-center items-center gap-1 rounded-full min-w-[43px] max-w-max py-[3px] px-1 text-[10px] transition-all hover:scale-110 cursor-pointer"
-			class:bg-blue-300={TypeProject.BUDGET == type}
+			class:bg-blue-300={TypeProjectEnum.BUDGET == type}
 			on:click={handleEdit}
 		>
 			#{id}
@@ -110,7 +68,7 @@
 	<main
 		class="p-1 justify-center grid grid-cols-[repeat(auto-fit,_minmax(74px,_1fr))] items-center gap-1 rounded-lg bg-gray-200"
 	>
-		{#if TypeProject.BUDGET == type}
+		{#if TypeProjectEnum.BUDGET == type}
 			<SummaryValue icon="wallet" title="Disponible" value={$$props.totalAvailableBalance} />
 			<SummaryValue
 				icon="file-invoice-dollar"
@@ -122,7 +80,7 @@
 	</main>
 	<footer class="w-full flex justify-between mt-4">
 		<div>
-			{#if TypeProject.BUDGET == type}
+			{#if TypeProjectEnum.BUDGET == type}
 				<div class="flex gap-1 -mt-3 text-[11px] items-center">
 					<span class="min-w-[18px] bg-gray-200 text-center p-1 leading-none rounded font-semibold">
 						{$$props.pendingBills}
@@ -137,7 +95,7 @@
 				textColor="text-red-500"
 				backgroundColor="bg-red-300"
 				activeBackgroundColor="active:bg-red-200"
-				on:click={handleDelete}
+				on:click={() => handleAction('delete')}
 			>
 				<i class="fa-solid fa-trash" slot="left" />
 			</ButtonRounded>
@@ -146,14 +104,10 @@
 				textColor="text-blue-500"
 				backgroundColor="bg-blue-300"
 				activeBackgroundColor="active:bg-blue-200"
-				on:click={handleClone}
+				on:click={() => handleAction('clone')}
 			>
 				<i class="fa-solid fa-copy" slot="right" />
 			</ButtonRounded>
 		</div>
 	</footer>
 </CardBase>
-
-{#if confirmPopupInfo.show}
-	<ConfirmPopup {...confirmPopupInfo} on:accept={handlePopUpAccept} on:cancel={handlePopUpCancel} />
-{/if}

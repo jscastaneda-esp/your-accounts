@@ -1,12 +1,67 @@
+import { TypeProjectEnum } from '$lib/enums';
+import type { Project } from '$lib/types';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
+export const GET = (async () => {
 	const projects = await new Promise((resolve) => {
 		setTimeout(() => {
-			resolve([]);
+			resolve([
+				{
+					id: 1,
+					name: 'Test',
+					type: TypeProjectEnum.BUDGET,
+					month: new Date().getMonth() + 1,
+					year: new Date().getFullYear(),
+					totalAvailableBalance: 100000,
+					totalPendingPayment: 10000,
+					totalBalance: 50000,
+					pendingBills: 3
+				},
+				{
+					id: 2,
+					name: 'Test 2',
+					type: TypeProjectEnum.BUDGET,
+					month: new Date().getMonth() + 1,
+					year: new Date().getFullYear(),
+					totalAvailableBalance: 7000000,
+					totalPendingPayment: 100000,
+					totalBalance: 500000,
+					pendingBills: 10
+				}
+			] satisfies Project[]);
 		}, 1000);
 	});
 
 	return json(projects);
-};
+}) satisfies RequestHandler;
+
+export const POST = (async ({ request }) => {
+	const body = await request.json();
+	console.log(body);
+
+	const project = await new Promise((resolve) => {
+		setTimeout(() => {
+			resolve({
+				id: new Date().getTime()
+			});
+		}, 1000);
+	});
+
+	return json(project);
+}) satisfies RequestHandler;
+
+export const DELETE = (async ({ request }) => {
+	const body = await request.json();
+	console.log(body);
+
+	await new Promise((resolve) => {
+		setTimeout(() => {
+			resolve({
+				id: new Date().getTime()
+			});
+		}, 1000);
+	});
+
+	return new Response();
+}) satisfies RequestHandler;

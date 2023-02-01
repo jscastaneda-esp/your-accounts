@@ -1,64 +1,88 @@
 <script lang="ts">
-	import CardBudget from './CardBudget.svelte';
-	import SimpleHeaderCardBudget from './SimpleHeaderCardBudget.svelte';
+	import { HttpStatus } from '../enums';
+	import type { ProjectTransaction } from '../types';
+	import Toast from '../utils/toast.utils';
+	import dayjs from '../utils/dayjs.utils';
+	import Card from './cards/Card.svelte';
+	import HeaderCardSimple from './cards/HeaderCardSimple.svelte';
 
+	export let projectId: number;
+
+	const awaitLoad = [1, 2, 3, 4];
 	let show = false;
+	let loading = false;
+	let transactions: ProjectTransaction[] = [];
+
+	async function handleShow() {
+		show = true;
+		loading = true;
+		try {
+			const response = await fetch(`/api/transactions?id=${projectId}`);
+			if (response.status != HttpStatus.OK) {
+				throw new Error(response.statusText);
+			}
+
+			transactions = await response.json();
+		} catch (error) {
+			Toast.error('Se presento un error al consultar las transacciones', true);
+			throw error;
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
-{#if show}
-	<section class="absolute right-0 bottom-0 p-2 pb-3 md:max-w-[50%] md:w-1/2">
-		<CardBudget showBody={true}>
-			<SimpleHeaderCardBudget
-				slot="header"
-				title="Transacciones"
-				iconHeader="list"
-				iconAction="xmark"
-				on:click={() => (show = false)}
-			/>
-			<table slot="body" class="w-full divide-y-2 divide-gray-200 text-sm">
-				<thead>
-					<tr class="grid grid-cols-[100px_1fr] py-2 text-left font-medium text-gray-900">
-						<th class="px-4">Fecha</th>
-						<th class="px-4">Descripción</th>
-					</tr>
-				</thead>
-				<tbody
-					class="divide-y divide-gray-200 inline-block overflow-y-auto min-h-[104px] h-[104px] w-full"
-				>
-					<tr class="grid grid-cols-[100px_1fr] py-2 text-gray-700 text-left">
-						<td class="px-4">26/08/2022</td>
-						<td class="px-4 max-h-[50px] text-clip overflow-hidden">
-							Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius nihil illo alias
-							dignissimos magnam fuga eaque incidunt exercitationem, dicta repudiandae vel ipsum est
-							quam ducimus odit in iusto ex ipsam.</td
-						>
-					</tr>
-					<tr class="grid grid-cols-[100px_1fr] py-2 text-gray-700 text-left">
-						<td class="px-4">26/08/2022</td>
-						<td class="px-4 max-h-[50px] text-clip overflow-hidden"
-							>Se agrage nuevo gasto por un valor de $100,000
-						</td>
-					</tr>
-					<tr class="grid grid-cols-[100px_1fr] py-2 text-gray-700 text-left">
-						<td class="px-4">26/08/2022</td>
-						<td class="px-4 max-h-[50px] text-clip overflow-hidden"
-							>Se agrage nuevo gasto por un valor de $100,000
-						</td>
-					</tr>
-					<tr class="grid grid-cols-[100px_1fr] py-2 text-gray-700 text-left">
-						<td class="px-4">26/08/2022</td>
-						<td class="px-4 max-h-[50px] text-clip overflow-hidden"
-							>Se agrage nuevo gasto por un valor de $100,000
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</CardBudget>
-	</section>
-{:else}
-	<section class="absolute right-0 bottom-0 p-3">
-		<button class="w-10 h-10 bg-blue-400 text-lg rounded-full" on:click={() => (show = true)}>
-			<i class="fa-solid fa-list" />
-		</button>
-	</section>
-{/if}
+<div class="relative">
+	{#if show}
+		<section class="absolute right-0 bottom-0 p-2 pb-3 w-full lg:w-1/2">
+			<Card showBody>
+				<HeaderCardSimple
+					slot="header"
+					title="Transacciones"
+					iconHeader="list"
+					iconAction="xmark"
+					on:click={() => (show = false)}
+				/>
+				<table slot="body" class="w-full divide-y-2 divide-gray-200 text-sm">
+					<thead>
+						<tr class="grid grid-cols-[100px_1fr] py-2 text-left font-medium text-gray-900">
+							<th class="px-4">Registrado</th>
+							<th class="px-4">Descripción</th>
+						</tr>
+					</thead>
+					<tbody
+						class="divide-y divide-gray-200 inline-block overflow-y-auto min-h-[173px] h-[104px] w-full"
+					>
+						{#if loading}
+							{#each awaitLoad as _}
+								<tr class="grid grid-cols-[100px_1fr] animate-pulse h-[42px]">
+									<td class="bg-slate-400 m-1" />
+									<td class="bg-slate-400 m-1" />
+								</tr>
+							{/each}
+						{:else}
+							{#each transactions as transaction}
+								<tr class="grid grid-cols-[100px_1fr] text-gray-900 py-2 text-left">
+									<td class="px-4">{dayjs(transaction.createdAt).fromNow()}</td>
+									<td class="px-4 max-h-[26px] text-clip overflow-hidden"
+										>{transaction.description}</td
+									>
+								</tr>
+							{:else}
+								<tr class="grid justify-center p-4 font-semibold">
+									<td colspan="2">No se han registrado transacciones</td>
+								</tr>
+							{/each}
+						{/if}
+					</tbody>
+				</table>
+			</Card>
+		</section>
+	{:else}
+		<section class="absolute right-0 bottom-0 p-3">
+			<button class="w-10 h-10 bg-blue-400 text-lg rounded-full" on:click={handleShow}>
+				<i class="fa-solid fa-list" />
+			</button>
+		</section>
+	{/if}
+</div>

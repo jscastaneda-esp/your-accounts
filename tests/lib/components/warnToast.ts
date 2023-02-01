@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/svelte';
-import WarnToast from '../../../src/lib/components/WarnToast.svelte';
+import ToastWarn from '../../../src/lib/components/alerts/ToastWarn.svelte';
 
 describe('WarnToast', () => {
 	const message = 'Test message';
@@ -8,7 +8,7 @@ describe('WarnToast', () => {
 	afterEach(() => cleanup());
 
 	it('required properties', () => {
-		render(WarnToast, {
+		render(ToastWarn, {
 			props: {
 				message
 			}

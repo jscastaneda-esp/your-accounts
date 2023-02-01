@@ -1,15 +1,15 @@
 import { toast } from '@zerodevx/svelte-toast';
-import DefaultToast from '../components/DefaultToast.svelte';
-import ErrorToast from '../components/ErrorToast.svelte';
-import WarnToast from '../components/WarnToast.svelte';
-import SuccessToast from '../components/SuccessToast.svelte';
+import ToastDefault from '../components/alerts/ToastDefault.svelte';
+import ToastError from '../components/alerts/ToastError.svelte';
+import ToastWarn from '../components/alerts/ToastWarn.svelte';
+import ToastSuccess from '../components/alerts/ToastSuccess.svelte';
 import type { SvelteComponent } from 'svelte';
 
 class Toast {
 	private static add(
 		component: typeof SvelteComponent,
 		msg: string,
-		theme: { [key: string]: string },
+		theme: Record<string, string>,
 		autoHidden = true
 	) {
 		toast.push({
@@ -24,15 +24,23 @@ class Toast {
 		});
 	}
 
-	static info(msg: string) {
-		Toast.add(DefaultToast, msg, {
+	static info(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
+		Toast.add(ToastDefault, msg, {
 			'--toastColor': '#ffffff'
 		});
 	}
 
-	static error(msg: string) {
+	static error(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
 		Toast.add(
-			ErrorToast,
+			ToastError,
 			msg,
 			{
 				'--toastBackground': '#fca5a5',
@@ -42,15 +50,23 @@ class Toast {
 		);
 	}
 
-	static warn(msg: string) {
-		Toast.add(WarnToast, msg, {
+	static warn(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
+		Toast.add(ToastWarn, msg, {
 			'--toastBackground': '#fde68a',
 			'--toastBarBackground': '#F59E0B'
 		});
 	}
 
-	static success(msg: string) {
-		Toast.add(SuccessToast, msg, {
+	static success(msg: string, clear = false) {
+		if (clear) {
+			this.clear();
+		}
+
+		Toast.add(ToastSuccess, msg, {
 			'--toastBackground': '#86efac',
 			'--toastBarBackground': '#22c55e'
 		});

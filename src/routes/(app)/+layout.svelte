@@ -8,7 +8,7 @@
 
 	// Components
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
-	import Header from '$lib/components/Header.svelte';
+	import HeaderPage from '$lib/components/HeaderPage.svelte';
 
 	let loading = true;
 
@@ -26,7 +26,7 @@
 {#if loading}
 	<ScreenLoading />
 {:else}
-	<Header />
+	<HeaderPage />
 	<main class="min-h-full">
 		<slot />
 	</main>

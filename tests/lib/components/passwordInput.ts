@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/svelte';
-import PasswordInput from '../../../src/lib/components/PasswordInput.svelte';
+import InputPassword from '../../../src/lib/components/inputs/InputPassword.svelte';
 
 vi.stubGlobal('crypto', {
 	randomUUID: vi.fn()
@@ -17,7 +17,7 @@ describe('PasswordInput', () => {
 	});
 
 	it('required properties', () => {
-		render(PasswordInput, {
+		render(InputPassword, {
 			props: {
 				id,
 				name,
@@ -58,7 +58,7 @@ describe('PasswordInput', () => {
 	});
 
 	it('disabled property', () => {
-		render(PasswordInput, {
+		render(InputPassword, {
 			props: {
 				id,
 				name,
@@ -74,7 +74,7 @@ describe('PasswordInput', () => {
 	it('errors property', () => {
 		const errors = ['Error in the field'];
 
-		render(PasswordInput, {
+		render(InputPassword, {
 			props: {
 				id,
 				name,
@@ -96,7 +96,7 @@ describe('PasswordInput', () => {
 	});
 
 	it('show password', async () => {
-		render(PasswordInput, {
+		render(InputPassword, {
 			props: {
 				id,
 				name,

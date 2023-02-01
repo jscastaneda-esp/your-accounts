@@ -16,11 +16,11 @@
 	import type { FirebaseError } from 'firebase/app';
 
 	// Components
-	import ButtonExternalAuth from './ButtonExternalAuth.svelte';
-	import Input from './Input.svelte';
-	import PasswordInput from './PasswordInput.svelte';
-	import Button from './Button.svelte';
-	import ButtonLink from './ButtonLink.svelte';
+	import ButtonExternalAuth from './buttons/ButtonExternalAuth.svelte';
+	import Input from './inputs/Input.svelte';
+	import InputPassword from './inputs/InputPassword.svelte';
+	import Button from './buttons/Button.svelte';
+	import ButtonLink from './buttons/ButtonLink.svelte';
 
 	// Utilities
 	import firebase from '../configs/firebase.client';
@@ -37,10 +37,8 @@
 			email: '',
 			password: ''
 		},
-		onSubmit: (values) => {
-			Toast.clear();
-			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password);
-		},
+		onSubmit: (values, context) =>
+			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password),
 		onSuccess: () => goto('/dashboard'),
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
@@ -48,9 +46,9 @@
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
@@ -59,7 +57,6 @@
 	let loading = false;
 
 	async function signInGoogle() {
-		Toast.clear();
 		loading = true;
 
 		try {
@@ -74,9 +71,9 @@
 				}
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		} finally {
 			loading = false;
@@ -107,7 +104,7 @@
 			type="email"
 			errors={$errors.email}
 		/>
-		<PasswordInput
+		<InputPassword
 			id="password"
 			name="password"
 			placeholder="Contraseña"

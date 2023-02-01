@@ -15,10 +15,10 @@
 	import { TypeAuthEnum } from '../enums';
 
 	// Components
-	import Input from './Input.svelte';
-	import PasswordInput from './PasswordInput.svelte';
-	import Button from './Button.svelte';
-	import ButtonLink from './ButtonLink.svelte';
+	import Input from './inputs/Input.svelte';
+	import InputPassword from './inputs/InputPassword.svelte';
+	import Button from './buttons/Button.svelte';
+	import ButtonLink from './buttons/ButtonLink.svelte';
 
 	// Utilities
 	import firebase from '../configs/firebase.client';
@@ -45,14 +45,12 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) => {
-			Toast.clear();
-			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password);
-		},
+		onSubmit: (values) =>
+			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password),
 		onSuccess: async (response: unknown) => {
 			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user);
 			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password);
-			goto('/dashboard');
+			return goto('/dashboard');
 		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
@@ -60,9 +58,9 @@
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
@@ -91,14 +89,14 @@
 			type="email"
 			errors={$errors.email}
 		/>
-		<PasswordInput
+		<InputPassword
 			id="password"
 			name="password"
 			placeholder="Contraseña"
 			disabled={$isSubmitting}
 			errors={$errors.password}
 		/>
-		<PasswordInput
+		<InputPassword
 			id="confirmPassword"
 			name="confirmPassword"
 			placeholder="Confirmar contraseña"

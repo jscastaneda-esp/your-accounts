@@ -2,7 +2,7 @@ import type { CategoryBill } from '$lib/types';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
+export const GET = (async () => {
 	const categories = await new Promise((resolve) => {
 		const types = [
 			{ type: 'PERSONAL', color: '#f59e0b' },
@@ -28,4 +28,4 @@ export const GET: RequestHandler = async () => {
 	});
 
 	return json(categories);
-};
+}) satisfies RequestHandler;

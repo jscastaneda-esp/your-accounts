@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/svelte';
-import ButtonExternalAuth from '../../../src/lib/components/ButtonExternalAuth.svelte';
+import ButtonExternalAuth from '../../../src/lib/components/buttons/ButtonExternalAuth.svelte';
 
 describe('ButtonExternalAuth', () => {
 	const value = 'Test';

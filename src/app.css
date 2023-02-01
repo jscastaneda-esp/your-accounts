@@ -4,7 +4,13 @@
 
 @layer components {
 	.auth-container {
-		@apply flex justify-center w-screen min-w-[320px] md:w-full lg:w-[568px] h-full min-h-screen lg:h-[603px] lg:min-h-full shadow-md shadow-gray-500 bg-[url('/background-image.svg')] bg-no-repeat bg-bottom;
+		@apply flex justify-center w-screen min-w-[320px] md:w-full lg:w-[568px] h-full min-h-screen md:h-[603px] md:min-h-full shadow-md shadow-gray-500 bg-[url('/background-image.svg')] bg-no-repeat bg-bottom;
+	}
+}
+
+@layer utilities {
+	.place-content-start_evenly {
+		place-content: start space-evenly;
 	}
 }
 

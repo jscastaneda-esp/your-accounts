@@ -4,15 +4,12 @@
 	import '../app.css';
 	import firebase from '$lib/configs/firebase.client';
 	import { session } from '$lib/stores';
-	import { Settings } from 'luxon';
 
 	firebase.authFunctions.onAuthStateChanged((user) => {
 		$session = user;
 	});
 
-	const toastOptions: SvelteToastOptions = { pauseable: true, reversed: true, intro: { y: 192 } };
-
-	Settings.defaultLocale = 'es-CO';
+	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } };
 </script>
 
 <slot />

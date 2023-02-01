@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/svelte';
-import DefaultToast from '../../../src/lib/components/DefaultToast.svelte';
+import ToastDefault from '../../../src/lib/components/alerts/ToastDefault.svelte';
 
 describe('DefaultToast', () => {
 	const message = 'Test message';
@@ -8,7 +8,7 @@ describe('DefaultToast', () => {
 	afterEach(() => cleanup());
 
 	it('required properties', () => {
-		render(DefaultToast, {
+		render(ToastDefault, {
 			props: {
 				message
 			}

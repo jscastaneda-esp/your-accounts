@@ -15,8 +15,8 @@
 	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
-	import PasswordInput from '$lib/components/PasswordInput.svelte';
-	import Button from '$lib/components/Button.svelte';
+	import InputPassword from '$lib/components/inputs/InputPassword.svelte';
+	import Button from '$lib/components/buttons/Button.svelte';
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';
@@ -30,14 +30,12 @@
 		try {
 			await firebase.authFunctions.verifyPasswordResetCode(data.actionCode);
 		} catch (error: unknown) {
-			Toast.clear();
-
 			const msg = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			)[0];
 
-			alert(msg);
+			Toast.error(msg, true);
 			goto('/auth/login');
 		}
 	});
@@ -58,29 +56,23 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) => {
-			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password);
-		},
-		onSuccess: () => {
-			Toast.clear();
-			Toast.success('Se asigno la contraseña exitosamente');
+		onSubmit: (values) =>
+			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password),
+		onSuccess: async () => {
+			Toast.success('Se asigno la contraseña exitosamente', true);
 
-			setTimeout(() => {
-				Toast.clear();
-				goto('/auth/login');
-			}, 2000);
+			await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+			return goto('/auth/login');
 		},
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
@@ -100,14 +92,14 @@
 			</section>
 
 			<section class="flex flex-col gap-3 w-full mb-[10px]">
-				<PasswordInput
+				<InputPassword
 					id="password"
 					name="password"
 					placeholder="Nueva contraseña"
 					disabled={$isSubmitting}
 					errors={$errors.password}
 				/>
-				<PasswordInput
+				<InputPassword
 					id="confirmPassword"
 					name="confirmPassword"
 					placeholder="Confirmar nueva contraseña"

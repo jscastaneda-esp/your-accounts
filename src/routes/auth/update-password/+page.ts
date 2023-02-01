@@ -1,9 +1,8 @@
 import { redirect } from '@sveltejs/kit';
-import type { PageLoad, PageData } from './$types';
-import type { PageDataUserManagementAction } from '$lib/types';
+import type { PageLoad } from './$types';
 import { UserManagementActionsEnum } from '$lib/enums';
 
-export const load: PageLoad<PageData> = async ({ url }): Promise<PageDataUserManagementAction> => {
+export const load = (async ({ url }) => {
 	let modeStr: string | null = null;
 	let actionCode: string | null = null;
 
@@ -25,4 +24,4 @@ export const load: PageLoad<PageData> = async ({ url }): Promise<PageDataUserMan
 		mode,
 		actionCode
 	};
-};
+}) satisfies PageLoad;

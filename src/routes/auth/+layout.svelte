@@ -25,7 +25,7 @@
 {#if loading}
 	<ScreenLoading />
 {:else}
-	<div class="flex justify-center items-center h-screen">
+	<div class="fixed inset-0 flex justify-center items-center min-h-full">
 		<slot />
 	</div>
 {/if}

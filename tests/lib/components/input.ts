@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/svelte';
-import Input from '../../../src/lib/components/Input.svelte';
+import Input from '../../../src/lib/components/inputs/Input.svelte';
 
 vi.stubGlobal('crypto', {
 	randomUUID: vi.fn()

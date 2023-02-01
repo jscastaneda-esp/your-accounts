@@ -11,9 +11,9 @@
 	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
-	import Input from '$lib/components/Input.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import ButtonLink from '$lib/components/ButtonLink.svelte';
+	import Input from '$lib/components/inputs/Input.svelte';
+	import Button from '$lib/components/buttons/Button.svelte';
+	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte';
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';
@@ -29,23 +29,20 @@
 			email: ''
 		},
 		onSubmit: (values) => firebase.authFunctions.sendPasswordResetEmail(values.email),
-		onSuccess: () => {
-			Toast.clear();
+		onSuccess: () =>
 			Toast.success(
-				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados'
-			);
-		},
+				'Se ha enviado un correo electrónico a su cuenta de correo. Por favor siga los pasos indicados',
+				true
+			),
 		onError: (error: unknown) => {
-			Toast.clear();
-
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
 			);
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg, true);
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg, true);
 			}
 		},
 		extend: [validator({ schema: validationSchema })]

@@ -1,8 +1,9 @@
 <script lang="ts">
+	export let open: boolean;
 	export let showCloseButton = false;
 </script>
 
-<dialog open class="z-[100] bg-transparent" aria-modal="true">
+<dialog {open} class="z-[100] bg-transparent" aria-modal="true">
 	<div role="region" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
 	<div

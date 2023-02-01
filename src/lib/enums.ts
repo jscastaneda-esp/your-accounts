@@ -1,7 +1,6 @@
-export enum Context {
-	BUDGET_DATA_MAIN = 'dataMain',
-	BUDGET_DATA_AVAILABLE = 'dataAvailable',
-	BUDGET_DATA_BILLS = 'dataBills'
+export enum HttpStatus {
+	OK = 200,
+	BAD_REQUEST = 400
 }
 
 export enum FirebaseProviderEnum {
@@ -16,10 +15,26 @@ export enum TypeAuthEnum {
 	FORGOT_PASSWORD = 'forgot-password'
 }
 
-export enum TypeProject {
-	BUDGET
+export enum TypeProjectEnum {
+	BUDGET = 'BUDGET'
 }
 
 export enum UserManagementActionsEnum {
 	resetPassword
+}
+
+export enum ChangeActionEnum {
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE'
+}
+
+export enum ChangeSectionEnum {
+	BUDGET_MAIN = 'BUDGET_MAIN',
+	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE',
+	BUDGET_BILL = 'BUDGET_BILL',
+	BUDGET_BILL_SHARED = 'BUDGET_BILL_SHARED'
+}
+
+export enum ContextNameEnum {
+	CHANGES = 'changes'
 }
