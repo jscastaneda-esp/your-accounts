@@ -1,8 +1,8 @@
 import { toast } from '@zerodevx/svelte-toast';
-import DefaultToast from '../components/DefaultToast.svelte';
-import ErrorToast from '../components/ErrorToast.svelte';
-import WarnToast from '../components/WarnToast.svelte';
-import SuccessToast from '../components/SuccessToast.svelte';
+import ToastDefault from '../components/alerts/ToastDefault.svelte';
+import ToastError from '../components/alerts/ToastError.svelte';
+import ToastWarn from '../components/alerts/ToastWarn.svelte';
+import ToastSuccess from '../components/alerts/ToastSuccess.svelte';
 import type { SvelteComponent } from 'svelte';
 
 class Toast {
@@ -29,7 +29,7 @@ class Toast {
 			this.clear();
 		}
 
-		Toast.add(DefaultToast, msg, {
+		Toast.add(ToastDefault, msg, {
 			'--toastColor': '#ffffff'
 		});
 	}
@@ -40,7 +40,7 @@ class Toast {
 		}
 
 		Toast.add(
-			ErrorToast,
+			ToastError,
 			msg,
 			{
 				'--toastBackground': '#fca5a5',
@@ -55,7 +55,7 @@ class Toast {
 			this.clear();
 		}
 
-		Toast.add(WarnToast, msg, {
+		Toast.add(ToastWarn, msg, {
 			'--toastBackground': '#fde68a',
 			'--toastBarBackground': '#F59E0B'
 		});
@@ -66,7 +66,7 @@ class Toast {
 			this.clear();
 		}
 
-		Toast.add(SuccessToast, msg, {
+		Toast.add(ToastSuccess, msg, {
 			'--toastBackground': '#86efac',
 			'--toastBarBackground': '#22c55e'
 		});

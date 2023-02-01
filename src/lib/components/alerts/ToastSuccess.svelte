@@ -1,10 +1,10 @@
 <script lang="ts">
-	import DefaultToast from './DefaultToast.svelte';
+	import ToastDefault from './ToastDefault.svelte';
 
 	export let message: string;
 </script>
 
-<DefaultToast {message}>
+<ToastDefault {message}>
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
 		class="w-5 h-5 text-green-500"
@@ -17,4 +17,4 @@
 			clip-rule="evenodd"
 		/>
 	</svg>
-</DefaultToast>
+</ToastDefault>

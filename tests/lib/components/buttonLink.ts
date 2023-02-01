@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/svelte';
-import ButtonLink from '../../../src/lib/components/ButtonLink.svelte';
+import ButtonLink from '../../../src/lib/components/buttons/ButtonLink.svelte';
 
 describe('ButtonLink', () => {
 	const text = 'Test';

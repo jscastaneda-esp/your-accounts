@@ -1,21 +1,20 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import Input from './Input.svelte';
-	import type { BudgetBill, CategoryBill, FelteError } from '../types';
-	import SummaryValue from './SummaryValue.svelte';
-	import type { DateTime } from 'luxon';
-	import SwitchInput from './SwitchInput.svelte';
-	import BillRegisterPopup from './BillRegisterPopup.svelte';
-	import BillSharedPopup from './BillSharedPopup.svelte';
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
+	import Input from '../../inputs/Input.svelte';
+	import type { BudgetBill, CategoryBill, FelteError } from '../../../types';
+	import SummaryValue from '../../SummaryValue.svelte';
+	import InputSwitch from '../../inputs/InputSwitch.svelte';
+	import PopupBillRegister from '../../popups/budget/PopupBillRegister.svelte';
+	import PopupBillShared from '../../popups/budget/PopupBillShared.svelte';
+	import type dayjs from '../../../utils/dayjs.utils';
 
-	export let now: DateTime;
+	export let now: dayjs.Dayjs;
 	export let index: number;
-	export let monthBudget: DateTime;
+	export let monthBudget: dayjs.Dayjs;
 	export let daysMonth: number[];
 	export let categories: CategoryBill[];
 	export let data: BudgetBill;
-	export let pending: number;
 	export let errors: {
 		description: FelteError;
 		amount: FelteError;
@@ -43,6 +42,10 @@
 
 	function handleRegisterBill({ detail }: { detail: { payment: number } }) {
 		data.payment += detail.payment;
+	}
+
+	function handleChangeTotalShared({ detail }: { detail: number }) {
+		data.totalShared = detail;
 	}
 
 	$: pending = data.complete ? 0 : data.amount - data.payment;
@@ -75,17 +78,32 @@
 			value={data.payment}
 			className="!text-sm col-span-2 lg:col-span-1"
 		/>
-		<SummaryValue
-			icon="file-invoice-dollar w-5"
-			title="Pendiente"
-			value={pending}
-			className="!text-sm col-span-2 lg:col-span-1"
-		/>
+		<div class="relative flex items-center group">
+			<SummaryValue
+				icon="file-invoice-dollar w-5"
+				title="Pendiente"
+				value={pending}
+				className="!text-sm col-span-2 lg:col-span-1"
+			/>
+			{#if data.shared}
+				<div
+					class="absolute top-full lg:top-[85%] w-full flex-col items-center hidden mb-6 group-hover:flex"
+				>
+					<div class="w-2 h-2 rotate-45 bg-gray-600" />
+					<span
+						class="relative -mt-1 z-10 p-2 text-xs leading-none text-white whitespace-nowrap bg-gray-600 shadow-lg rounded-xl"
+					>
+						Compartido: {pending != 0 ? pending + data.totalShared : 0}
+					</span>
+				</div>
+			{/if}
+		</div>
+
 		<div
 			class="ml-1 col-span-4 lg:col-span-2 flex gap-1 items-center transition-all duration-75 text-sm text-gray-500"
 			class:text-red-500={data.dueDate != 0 &&
-				now.month === monthBudget.month &&
-				now.day > data.dueDate}
+				now.month() === monthBudget.month() &&
+				now.day() > data.dueDate}
 		>
 			<span class="leading-none">Vencimiento</span>
 			<select
@@ -98,16 +116,16 @@
 					<option value={day.toString()}>{day}</option>
 				{/each}
 			</select>
-			<span class="leading-none">de {monthBudget.monthLong}</span>
+			<span class="leading-none">de {monthBudget.format('MMMM')}</span>
 		</div>
-		<SwitchInput
+		<InputSwitch
 			id={`${prefixFieldName}.shared`}
 			name={`${prefixFieldName}.shared`}
 			text="Compartido"
 			errors={errors.shared}
 			className="ml-1 col-span-2 lg:col-span-1"
 		/>
-		<SwitchInput
+		<InputSwitch
 			id={`${prefixFieldName}.complete`}
 			name={`${prefixFieldName}.complete`}
 			text="Completo"
@@ -158,13 +176,16 @@
 </article>
 
 {#if optionRegister == 1}
-	<BillRegisterPopup
+	<PopupBillRegister
 		budgetBillId={data.id}
 		pendingBill={pending}
 		on:click={() => handleShowOption(1)}
 		on:add={handleRegisterBill}
 	/>
 {:else if optionRegister == 2}
-	<!-- FIXME PENDIENTE Tener en cuenta los compartidos -->
-	<BillSharedPopup budgetBillId={data.id} on:click={() => handleShowOption(2)} />
+	<PopupBillShared
+		budgetBillId={data.id}
+		on:click={() => handleShowOption(2)}
+		on:changeTotal={handleChangeTotalShared}
+	/>
 {/if}

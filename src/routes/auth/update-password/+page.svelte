@@ -15,8 +15,8 @@
 	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
-	import PasswordInput from '$lib/components/PasswordInput.svelte';
-	import Button from '$lib/components/Button.svelte';
+	import InputPassword from '$lib/components/inputs/InputPassword.svelte';
+	import Button from '$lib/components/buttons/Button.svelte';
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';
@@ -95,14 +95,14 @@
 			</section>
 
 			<section class="flex flex-col gap-3 w-full mb-[10px]">
-				<PasswordInput
+				<InputPassword
 					id="password"
 					name="password"
 					placeholder="Nueva contraseña"
 					disabled={$isSubmitting}
 					errors={$errors.password}
 				/>
-				<PasswordInput
+				<InputPassword
 					id="confirmPassword"
 					name="confirmPassword"
 					placeholder="Confirmar nueva contraseña"

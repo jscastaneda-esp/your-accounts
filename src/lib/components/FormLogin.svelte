@@ -16,11 +16,11 @@
 	import type { FirebaseError } from 'firebase/app';
 
 	// Components
-	import ButtonExternalAuth from './ButtonExternalAuth.svelte';
-	import Input from './Input.svelte';
-	import PasswordInput from './PasswordInput.svelte';
-	import Button from './Button.svelte';
-	import ButtonLink from './ButtonLink.svelte';
+	import ButtonExternalAuth from './buttons/ButtonExternalAuth.svelte';
+	import Input from './inputs/Input.svelte';
+	import InputPassword from './inputs/InputPassword.svelte';
+	import Button from './buttons/Button.svelte';
+	import ButtonLink from './buttons/ButtonLink.svelte';
 
 	// Utilities
 	import firebase from '../configs/firebase.client';
@@ -105,7 +105,7 @@
 			type="email"
 			errors={$errors.email}
 		/>
-		<PasswordInput
+		<InputPassword
 			id="password"
 			name="password"
 			placeholder="Contraseña"

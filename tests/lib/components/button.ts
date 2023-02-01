@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/svelte';
-import Button from '../../../src/lib/components/Button.svelte';
+import Button from '../../../src/lib/components/buttons/Button.svelte';
 
 describe('Button', () => {
 	const value = 'Test';

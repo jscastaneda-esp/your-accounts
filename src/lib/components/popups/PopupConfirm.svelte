@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Popup from './Popup.svelte';
-	import Button from './Button.svelte';
+	import Button from '../buttons/Button.svelte';
 
 	export let show: boolean;
 	export let question: string;

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import budgetImage from '../assets/images/budget.png';
+	import budgetImage from '../../assets/images/budget.png';
 	import { goto } from '$app/navigation';
-	import { TypeProjectEnum } from '../enums';
-	import { zeroPad } from '../utils/number.utils';
+	import { TypeProjectEnum } from '../../enums';
+	import { zeroPad } from '../../utils/number.utils';
 	import CardBase from './CardBase.svelte';
-	import SummaryValue from './SummaryValue.svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import type { EventDispatchProject } from '$lib/types';
+	import SummaryValue from '../SummaryValue.svelte';
+	import ButtonRounded from '../buttons/ButtonRounded.svelte';
+	import type { EventDispatchProject } from '../../types';
 
 	export let loading: boolean;
 	export let id: number;

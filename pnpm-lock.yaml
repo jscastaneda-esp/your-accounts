@@ -7,20 +7,19 @@ specifiers:
   '@sveltejs/vite-plugin-svelte': 2.0.2
   '@tailwindcss/forms': 0.5.3
   '@testing-library/svelte': 3.2.2
-  '@types/luxon': 3.2.0
   '@typescript-eslint/eslint-plugin': 5.48.1
   '@typescript-eslint/parser': 5.48.1
   '@vitest/coverage-c8': 0.27.1
   '@zerodevx/svelte-toast': 0.8.2
   autoprefixer: 10.4.13
   chart.js: 4.1.2
+  dayjs: 1.11.7
   eslint: 8.31.0
   eslint-config-prettier: 8.6.0
   eslint-plugin-svelte3: 4.0.0
   felte: 1.2.7
   firebase: 9.15.0
   jsdom: 21.0.0
-  luxon: 3.2.1
   postcss: 8.4.21
   prettier: 2.8.2
   prettier-plugin-svelte: 2.9.0
@@ -37,9 +36,9 @@ specifiers:
 dependencies:
   '@felte/validator-yup': 1.0.11_yup@0.32.11
   chart.js: 4.1.2
+  dayjs: 1.11.7
   felte: 1.2.7_svelte@3.55.1
   firebase: 9.15.0
-  luxon: 3.2.1
   yup: 0.32.11
 
 devDependencies:
@@ -48,7 +47,6 @@ devDependencies:
   '@sveltejs/vite-plugin-svelte': 2.0.2_svelte@3.55.1+vite@4.0.4
   '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.4
   '@testing-library/svelte': 3.2.2_svelte@3.55.1
-  '@types/luxon': 3.2.0
   '@typescript-eslint/eslint-plugin': 5.48.1_3jon24igvnqaqexgwtxk6nkpse
   '@typescript-eslint/parser': 5.48.1_iukboom6ndih5an6iafl45j2fe
   '@vitest/coverage-c8': 0.27.1_jsdom@21.0.0
@@ -1073,10 +1071,6 @@ packages:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
     dev: false
 
-  /@types/luxon/3.2.0:
-    resolution: {integrity: sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==}
-    dev: true
-
   /@types/node/18.11.18:
     resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
 
@@ -1624,6 +1618,10 @@ packages:
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
     dev: true
+
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
+    dev: false
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
@@ -2678,11 +2676,6 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
-
-  /luxon/3.2.1:
-    resolution: {integrity: sha512-QrwPArQCNLAKGO/C+ZIilgIuDnEnKx5QYODdDtbFaxzsbZcc/a7WFq7MhsVYgRlwawLtvOUESTlfJ+hc/USqPg==}
-    engines: {node: '>=12'}
-    dev: false
 
   /lz-string/1.4.4:
     resolution: {integrity: sha512-0ckx7ZHRPqb0oUm8zNr+90mtf9DQB60H1wMCjBtfi62Kl3a7JbHob6gA2bC+xRvZoOL+1hzUK8jeuEIQE8svEQ==}

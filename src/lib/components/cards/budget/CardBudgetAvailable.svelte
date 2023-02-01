@@ -1,18 +1,18 @@
 <script lang="ts">
-	import CardBudget from './CardBudget.svelte';
-	import ComposeHeaderCardBudget from './ComposeHeaderCardBudget.svelte';
-	import SummaryValue from './SummaryValue.svelte';
-	import ItemBudgetAvailable from './ItemBudgetAvailable.svelte';
+	import Card from '../Card.svelte';
+	import HeaderCardCompose from '../HeaderCardCompose.svelte';
+	import SummaryValue from '../../SummaryValue.svelte';
+	import ItemCardBudgetAvailable from './ItemCardBudgetAvailable.svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
-	import Toast from '../utils/toast.utils';
-	import type { BudgetAvailable, Change, ConfirmPopupInfo } from '../types';
-	import ConfirmPopup from './ConfirmPopup.svelte';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
+	import yup, { defaultText, defaultNumber } from '../../../utils/yup.utils';
+	import Toast from '../../../utils/toast.utils';
+	import type { BudgetAvailable, Change, ConfirmPopupInfo } from '../../../types';
+	import PopupConfirm from '../../popups/PopupConfirm.svelte';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
 	import { getContext } from 'svelte';
-	import type { changes as changesStore } from '../stores';
-	import ChangeUtil from '$lib/classes/ChangeUtil';
+	import type { changes as changesStore } from '../../../stores';
+	import ChangeUtil from '../../../classes/ChangeUtil';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
@@ -152,8 +152,8 @@
 </script>
 
 <div class="px-1">
-	<CardBudget showBody={show}>
-		<ComposeHeaderCardBudget
+	<Card showBody={show}>
+		<HeaderCardCompose
 			slot="header"
 			iconAction={show ? 'caret-up' : 'caret-down'}
 			on:click={() => {
@@ -173,10 +173,10 @@
 					className={show ? 'text-xs' : 'text-base'}
 				/>
 			</svelte:fragment>
-		</ComposeHeaderCardBudget>
+		</HeaderCardCompose>
 		<form slot="body" class="flex flex-col overflow-y-auto max-h-[210px]" use:form>
 			{#each $data.availables as available, index (`available_${index}`)}
-				<ItemBudgetAvailable
+				<ItemCardBudgetAvailable
 					{index}
 					id={available.id}
 					name={available.name}
@@ -195,10 +195,10 @@
 				</button>
 			{/if}
 		</form>
-	</CardBudget>
+	</Card>
 </div>
 
-<ConfirmPopup
+<PopupConfirm
 	show={confirmPopupInfo.show}
 	question={confirmPopupInfo.question}
 	description={confirmPopupInfo.description}

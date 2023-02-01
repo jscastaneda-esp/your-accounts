@@ -34,6 +34,11 @@ export type Project = {
 	pendingBills?: number;
 };
 
+export type ProjectTransaction = {
+	description: string;
+	createdAt: Date;
+};
+
 export type Budget = {
 	id: number;
 	name: string;
@@ -71,6 +76,7 @@ export type BudgetBill = {
 	complete: boolean;
 	budgetId: number;
 	categoryId: string | number;
+	totalShared: number;
 };
 
 export type BudgetBillTransaction = {
@@ -84,6 +90,21 @@ export type BudgetBillShared = {
 	description: string;
 	amount: number;
 	budgetBillId: number;
+};
+
+export type BudgetStatistics = {
+	labels: string[];
+	pie: {
+		data: number[];
+	};
+	bar: {
+		amount: {
+			data: number[];
+		};
+		payment: {
+			data: number[];
+		};
+	};
 };
 
 export type FelteError = string[] | null;

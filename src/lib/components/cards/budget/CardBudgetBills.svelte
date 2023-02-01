@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { getContext, onMount } from 'svelte';
-	import CardBudget from './CardBudget.svelte';
-	import ComposeHeaderCardBudget from './ComposeHeaderCardBudget.svelte';
-	import SummaryValue from './SummaryValue.svelte';
+	import Card from '../Card.svelte';
+	import HeaderCardCompose from '../HeaderCardCompose.svelte';
+	import SummaryValue from '../../SummaryValue.svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber, defaultBoolean } from '../utils/yup.utils';
-	import Toast from '../utils/toast.utils';
-	import ItemBudgetBill from './ItemBudgetBill.svelte';
-	import type { BudgetBill, CategoryBill, Change, ConfirmPopupInfo } from '../types';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
-	import type { changes as changesStore } from '../stores';
-	import ConfirmPopup from './ConfirmPopup.svelte';
-	import { fromFormat, today } from '$lib/utils/date.utils';
-	import ChangeUtil from '$lib/classes/ChangeUtil';
+	import yup, { defaultText, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
+	import Toast from '../../../utils/toast.utils';
+	import ItemCardBudgetBill from './ItemCardBudgetBill.svelte';
+	import type { BudgetBill, CategoryBill, Change, ConfirmPopupInfo } from '../../../types';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
+	import type { changes as changesStore } from '../../../stores';
+	import PopupConfirm from '../../popups/PopupConfirm.svelte';
+	import ChangeUtil from '../../../classes/ChangeUtil';
+	import dayjs from '../../../utils/dayjs.utils';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
@@ -22,13 +22,16 @@
 	export let budgetMonth: string;
 	export let total: number;
 	export let totalPending: number;
+	export let totalMaxPayment: number;
+	export let totalSavings: number;
 
-	const now = today();
+	const now = dayjs();
 	let show = false;
 	let daysMonth: number[] = [];
 	let categories: CategoryBill[] = [];
 	let countName = list.length + 1;
-	const pendingValues: number[] = new Array(list.length);
+	let totalPayment = 0;
+	let numberPending = 0;
 	const confirmPopupInfo: ConfirmPopupInfo<{ index: number; id: number; description: string }> = {
 		show: false,
 		question: '¿Está seguro que desea eliminar el gasto :DESC?'
@@ -109,7 +112,8 @@
 					dueDate: '',
 					complete: false,
 					budgetId,
-					categoryId: ''
+					categoryId: '',
+					totalShared: 0
 				};
 				addField('bills', newField);
 				list.push(newField);
@@ -216,25 +220,62 @@
 	}
 
 	$: isValidForm = $isValid;
-	$: monthBudget = fromFormat(budgetMonth, 'yyyy-MM');
+	$: monthBudget = dayjs(budgetMonth, 'YYYY-MM');
 	$: {
 		daysMonth = [];
-		const daysInMonth = monthBudget.daysInMonth;
+		const daysInMonth = monthBudget.daysInMonth();
 		if (!isNaN(daysInMonth)) {
 			for (let day = 1; day <= daysInMonth; day++) {
 				daysMonth = [...daysMonth, day];
 			}
 		}
 	}
-	$: totalPending = pendingValues.reduce((previous, current) => previous + current, 0);
-	$: totalPayment = $data.bills.reduce((previous, current) => previous + current.payment, 0);
-	$: total = $data.bills.reduce((previous, current) => previous + current.amount, 0);
+	$: {
+		total = 0;
+		totalPending = 0;
+		totalSavings = 0;
+		totalPayment = 0;
+		numberPending = 0;
+		totalMaxPayment = 0;
+
+		$data.bills.forEach((bill) => {
+			total += bill.amount;
+			totalPayment += bill.payment;
+
+			const pending = bill.amount - bill.payment;
+			if (!bill.complete) {
+				totalPending += pending;
+			} else {
+				totalSavings += pending;
+			}
+
+			if (bill.amount > bill.payment && !bill.complete) {
+				numberPending += 1;
+			}
+
+			if (bill.amount < bill.payment) {
+				let isTotalPayment = true;
+				if (bill.shared) {
+					if (pending < 0) {
+						totalMaxPayment += bill.payment + pending;
+						isTotalPayment = false;
+					}
+				}
+
+				if (isTotalPayment) {
+					totalMaxPayment += bill.payment;
+				}
+			} else {
+				totalMaxPayment += bill.amount;
+			}
+		});
+	}
 	$: if ($touched) compareData();
 </script>
 
 <div class="px-1">
-	<CardBudget showBody={show}>
-		<ComposeHeaderCardBudget
+	<Card showBody={show}>
+		<HeaderCardCompose
 			slot="header"
 			iconAction={show ? 'caret-up' : 'caret-down'}
 			on:click={() => {
@@ -274,22 +315,21 @@
 					class:min-w-[18px]={!show}
 					class:min-w-[16px]={show}
 				>
-					3
+					{numberPending}
 				</span>
 				<span class="leading-none text-gray-500">Pagos pendientes</span>
 			</div>
-		</ComposeHeaderCardBudget>
+		</HeaderCardCompose>
 		<div slot="body">
 			<form class="flex flex-col overflow-y-auto max-h-[400px]" use:form>
 				{#each $data.bills as bill, index (`bill_${index}`)}
-					<ItemBudgetBill
+					<ItemCardBudgetBill
 						{now}
 						{index}
 						{monthBudget}
 						{daysMonth}
 						{categories}
 						data={bill}
-						bind:pending={pendingValues[index]}
 						errors={$errors.bills?.[index]}
 						on:delete={handleDelete}
 					/>
@@ -306,10 +346,10 @@
 				{/if}
 			</form>
 		</div>
-	</CardBudget>
+	</Card>
 </div>
 
-<ConfirmPopup
+<PopupConfirm
 	show={confirmPopupInfo.show}
 	question={confirmPopupInfo.question}
 	description={confirmPopupInfo.description}

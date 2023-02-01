@@ -87,10 +87,10 @@
 				</div>
 				<i class="fa-solid fa-right-from-bracket text-lg" />
 			</button>
-			<div class="absolute top-full flex-col items-center hidden mb-6 group-hover:flex">
-				<div class="w-3 h-3 rotate-45 bg-gray-600" />
+			<div class="absolute top-[90%] flex-col items-center hidden mb-6 group-hover:flex">
+				<div class="w-2 h-2 rotate-45 bg-gray-600" />
 				<span
-					class="relative -mt-2 z-10 p-2 text-xs leading-none text-white whitespace-nowrap bg-gray-600 shadow-lg rounded-xl"
+					class="relative -mt-1 z-10 p-2 text-xs leading-none text-white whitespace-nowrap bg-gray-600 shadow-lg rounded-xl"
 				>
 					Cerrar sesión
 				</span>

@@ -1,21 +1,21 @@
 <script lang="ts">
+	import { createEventDispatcher, getContext, onMount } from 'svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber } from '../utils/yup.utils';
-	import Popup from './Popup.svelte';
-	import Input from './Input.svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import type { BudgetBillShared, Change, ConfirmPopupInfo } from '$lib/types';
-	import CardBudget from './CardBudget.svelte';
-	import ComposeHeaderCardBudget from './ComposeHeaderCardBudget.svelte';
-	import SummaryValue from './SummaryValue.svelte';
-	import ConfirmPopup from './ConfirmPopup.svelte';
-	import Toast from '$lib/utils/toast.utils';
-	import { getContext, onMount } from 'svelte';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
-	import type { changes as changesStore } from '../stores';
-	import ScreenLoading from './ScreenLoading.svelte';
-	import ChangeUtil from '$lib/classes/ChangeUtil';
+	import yup, { defaultText, defaultNumber } from '../../../utils/yup.utils';
+	import Popup from '../Popup.svelte';
+	import Input from '../../inputs/Input.svelte';
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
+	import type { BudgetBillShared, Change, ConfirmPopupInfo } from '../../../types';
+	import Card from '../../cards/Card.svelte';
+	import HeaderCardCompose from '../../cards/HeaderCardCompose.svelte';
+	import SummaryValue from '../../SummaryValue.svelte';
+	import PopupConfirm from '../PopupConfirm.svelte';
+	import Toast from '../../../utils/toast.utils';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
+	import type { changes as changesStore } from '../../../stores';
+	import ScreenLoading from '../../ScreenLoading.svelte';
+	import ChangeUtil from '../../../classes/ChangeUtil';
 
 	export let budgetBillId: number;
 
@@ -37,6 +37,7 @@
 	};
 	const changeUtil = new ChangeUtil<keyof ChangeBillShared>();
 	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
+	const dispatch = createEventDispatcher<{ changeTotal: number }>();
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -189,16 +190,18 @@
 		}
 	}
 
+	$: total = $data.shared.reduce((previous, current) => previous + current.amount, 0);
+	$: dispatch('changeTotal', total);
 	$: if ($touched) compareData();
 </script>
 
 <Popup open showCloseButton on:click>
-	<CardBudget showBody classNameContainer="w-screen sm:w-[24rem]">
-		<ComposeHeaderCardBudget slot="header" clickable={false}>
+	<Card showBody classNameContainer="w-screen sm:w-[24rem]">
+		<HeaderCardCompose slot="header" clickable={false}>
 			<svelte:fragment slot="title">
-				<SummaryValue icon="dollar-sign w-5" title="Total" value={100000} className="text-base" />
+				<SummaryValue icon="dollar-sign w-5" title="Total" value={total} className="text-base" />
 			</svelte:fragment>
-		</ComposeHeaderCardBudget>
+		</HeaderCardCompose>
 		<form slot="body" class="flex flex-col overflow-y-auto max-h-[210px]" use:form>
 			{#if isLoadingData}
 				<article
@@ -254,7 +257,7 @@
 				{/if}
 			{/if}
 		</form>
-	</CardBudget>
+	</Card>
 </Popup>
 
 {#if loading}
@@ -262,7 +265,7 @@
 {/if}
 
 {#if confirmPopupInfo.show}
-	<ConfirmPopup
+	<PopupConfirm
 		show
 		question={confirmPopupInfo.question}
 		description={confirmPopupInfo.description}

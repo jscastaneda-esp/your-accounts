@@ -11,9 +11,9 @@
 	import { TypeAuthEnum } from '$lib/enums';
 
 	// Components
-	import Input from '$lib/components/Input.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import ButtonLink from '$lib/components/ButtonLink.svelte';
+	import Input from '$lib/components/inputs/Input.svelte';
+	import Button from '$lib/components/buttons/Button.svelte';
+	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte';
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client';

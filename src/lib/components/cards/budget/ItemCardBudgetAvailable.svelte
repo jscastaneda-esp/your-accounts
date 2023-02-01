@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import Input from './Input.svelte';
-	import type { FelteError } from '../types';
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
+	import Input from '../../inputs/Input.svelte';
+	import type { FelteError } from '../../../types';
 
 	export let index: number;
 	export let id: number;

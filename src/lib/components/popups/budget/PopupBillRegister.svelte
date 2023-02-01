@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber, defaultBoolean } from '../utils/yup.utils';
-	import { money } from '$lib/utils/number.utils';
-	import Popup from './Popup.svelte';
-	import Input from './Input.svelte';
-	import SwitchInput from './SwitchInput.svelte';
-	import ButtonRounded from './ButtonRounded.svelte';
-	import { HttpStatus } from '$lib/enums';
-	import type { BudgetBillTransaction } from '$lib/types';
-	import Toast from '$lib/utils/toast.utils';
-	import { isoToFormat } from '$lib/utils/date.utils';
 	import { createEventDispatcher } from 'svelte';
+	import yup, { defaultText, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
+	import { money } from '../../../utils/number.utils';
+	import Popup from '../Popup.svelte';
+	import Input from '../../inputs/Input.svelte';
+	import InputSwitch from '../../inputs/InputSwitch.svelte';
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
+	import { HttpStatus } from '../../../enums';
+	import type { BudgetBillTransaction } from '../../../types';
+	import Toast from '../../../utils/toast.utils';
+	import dayjs from '../../../utils/dayjs.utils';
 
 	export let budgetBillId: number;
 	export let pendingBill: number;
@@ -20,6 +20,7 @@
 	const dispatch = createEventDispatcher<{ add: { payment: number } }>();
 	let loading = false;
 	let tab = 1;
+	let loadTransactions = false;
 	let transactions: BudgetBillTransaction[] = [];
 
 	// Form Definition
@@ -80,6 +81,7 @@
 
 	async function showTabTransactions() {
 		tab = 2;
+		loadTransactions = true;
 		try {
 			const response = await fetch(`/api/budget/bill/transaction?id=${budgetBillId}`);
 			if (response.status != HttpStatus.OK) {
@@ -90,12 +92,14 @@
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los movimientos', true);
 			throw error;
+		} finally {
+			loadTransactions = false;
 		}
 	}
 </script>
 
 <Popup open showCloseButton on:click>
-	<div class="w-screen sm:w-[28rem]">
+	<div class="w-screen sm:w-[30rem]">
 		<ul class="grid grid-cols-2 border-b-2 border-gray-200 text-gray-500">
 			<li>
 				<a class="relative block py-1.5 px-4" href="#add" on:click={() => (tab = 1)}>
@@ -133,7 +137,7 @@
 					className="col-span-8"
 					disabled={loading}
 				/>
-				<SwitchInput
+				<InputSwitch
 					id="all"
 					name="all"
 					text="Todo"
@@ -217,40 +221,46 @@
 			<section id="transactions">
 				<table class="w-full divide-y-2 divide-gray-200 text-sm">
 					<thead>
-						<tr class="grid grid-cols-[100px_1fr_120px] py-2 text-left font-medium text-gray-900">
-							<th class="px-4">Fecha</th>
+						<tr class="grid grid-cols-[1fr_120px_161px] py-2 text-left font-medium text-gray-900">
 							<th class="px-4">Descripción</th>
 							<th class="px-4">Monto</th>
+							<th class="px-4">Registrado</th>
 						</tr>
 					</thead>
 					<tbody
 						class="divide-y divide-gray-200 inline-block overflow-y-auto min-h-[173px] h-[173px] w-full"
 					>
-						{#each transactions as transaction}
-							<tr class="grid grid-cols-[100px_1fr_120px] text-gray-900 py-2 text-left">
-								<td class="px-4">{isoToFormat(transaction.createdAt.toString(), 'dd/MM/yyyy')}</td>
-								<td class="px-4 max-h-[26px] text-clip overflow-hidden"
-									>{transaction.description}</td
-								>
-								<td class="px-4">
-									<strong
-										class="w-full inline-block text-center rounded py-1 text-xs font-medium bg-green-100 text-green-700"
-										class:bg-red-100={transaction.amount < 0}
-										class:text-red-700={transaction.amount < 0}
-									>
-										{money(transaction.amount)}
-									</strong>
-								</td>
-							</tr>
-						{:else}
+						{#if loadTransactions}
 							{#each awaitLoad as _}
-								<tr class="grid grid-cols-[100px_1fr_120px] animate-pulse h-[42px]">
+								<tr class="grid grid-cols-[1fr_120px_161px] animate-pulse h-[42px]">
 									<td class="bg-slate-400 m-1" />
 									<td class="bg-slate-400 m-1" />
 									<td class="bg-slate-400 m-1" />
 								</tr>
 							{/each}
-						{/each}
+						{:else}
+							{#each transactions as transaction}
+								<tr class="grid grid-cols-[1fr_120px_161px] text-gray-900 py-2 text-left">
+									<td class="px-4 max-h-[26px] text-clip overflow-hidden"
+										>{transaction.description}</td
+									>
+									<td class="px-4">
+										<strong
+											class="w-full inline-block text-center rounded py-1 text-xs font-medium bg-green-100 text-green-700"
+											class:bg-red-100={transaction.amount < 0}
+											class:text-red-700={transaction.amount < 0}
+										>
+											{money(transaction.amount)}
+										</strong>
+									</td>
+									<td class="px-4">{dayjs(transaction.createdAt).fromNow()}</td>
+								</tr>
+							{:else}
+								<tr class="grid justify-center p-4 font-semibold">
+									<td colspan="2">No se han registrado movimientos</td>
+								</tr>
+							{/each}
+						{/if}
 					</tbody>
 				</table>
 			</section>

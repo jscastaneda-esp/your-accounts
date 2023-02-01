@@ -13,7 +13,7 @@ export const GET = (async ({ url }) => {
 					{
 						id: 1,
 						description: 'Lau',
-						amount: 10000,
+						amount: 100000,
 						budgetBillId: 1
 					}
 				] satisfies BudgetBillShared[]);

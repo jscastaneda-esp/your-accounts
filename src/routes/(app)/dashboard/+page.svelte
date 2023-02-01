@@ -6,10 +6,10 @@
 	import { session } from '$lib/stores';
 
 	// Components
-	import CardBase from '$lib/components/CardBase.svelte';
-	import CardProject from '$lib/components/CardProject.svelte';
+	import CardBase from '$lib/components/cards/CardBase.svelte';
+	import CardProject from '$lib/components/cards/CardProject.svelte';
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
-	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
+	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte';
 
 	// Types, Enums
 	import { HttpStatus, TypeProjectEnum } from '$lib/enums';
@@ -243,7 +243,7 @@
 	<ScreenLoading />
 {/if}
 
-<ConfirmPopup
+<PopupConfirm
 	show={confirmPopupInfo.show}
 	question={confirmPopupInfo.question}
 	description={confirmPopupInfo.description}

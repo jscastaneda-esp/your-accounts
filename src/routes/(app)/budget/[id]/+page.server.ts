@@ -34,7 +34,8 @@ export const load = (async ({ params }) => {
 						dueDate: '10',
 						complete: false,
 						budgetId: Number(params.id),
-						categoryId: '4'
+						categoryId: '4',
+						totalShared: 100000
 					},
 					{
 						id: 2,
@@ -45,7 +46,8 @@ export const load = (async ({ params }) => {
 						dueDate: '',
 						complete: false,
 						budgetId: Number(params.id),
-						categoryId: '1'
+						categoryId: '1',
+						totalShared: 0
 					}
 				]
 			} satisfies Budget);

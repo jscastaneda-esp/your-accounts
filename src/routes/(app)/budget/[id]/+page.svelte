@@ -14,14 +14,14 @@
 	import ChangeUtil from '$lib/classes/ChangeUtil';
 
 	// Components
-	import Input from '$lib/components/Input.svelte';
-	import ButtonLink from '$lib/components/ButtonLink.svelte';
-	import ConfirmPopup from '$lib/components/ConfirmPopup.svelte';
+	import Input from '$lib/components/inputs/Input.svelte';
+	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte';
+	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte';
 	import SummaryValue from '$lib/components/SummaryValue.svelte';
 	import Transactions from '$lib/components/Transactions.svelte';
-	import CardBudgetAvailable from '$lib/components/CardBudgetAvailable.svelte';
-	import CardBudgetBills from '$lib/components/CardBudgetBills.svelte';
-	import CardBudgetStatistics from '$lib/components/CardBudgetStatistics.svelte';
+	import CardBudgetAvailable from '$lib/components/cards/budget/CardBudgetAvailable.svelte';
+	import CardBudgetBills from '$lib/components/cards/budget/CardBudgetBills.svelte';
+	import CardBudgetStatistics from '$lib/components/cards/budget/CardBudgetStatistics.svelte';
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
 
 	export let data: Budget;
@@ -33,6 +33,8 @@
 	let isValidBills = false;
 	let totalAvailable = 0;
 	let totalBillPending = 0;
+	let totalBillMaxPayment = 0;
+	let totalBillSavings = 0;
 	const confirmPopupInfo: ConfirmPopupInfo = {
 		show: false,
 		question: '¿Realmente desea salir?',
@@ -248,18 +250,18 @@
 			bind:loading
 			bind:total={data.total}
 			bind:totalPending={totalBillPending}
+			bind:totalMaxPayment={totalBillMaxPayment}
+			bind:totalSavings={totalBillSavings}
 			budgetId={data.id}
 			budgetMonth={$dataForm.month}
 			list={data.bills}
 		/>
 	</section>
-	<CardBudgetStatistics />
+	<CardBudgetStatistics budgetId={data.id} />
 </article>
 
 <footer class="fixed bottom-0 flex flex-col w-full">
-	<div class="relative">
-		<Transactions />
-	</div>
+	<Transactions projectId={data.id} />
 	<article
 		class="flex flex-col min-h-[33px] shadow-[1px_0_3px_0_rgb(0_0_0_/_0.1)] shadow-gray-700 bg-white"
 	>
@@ -291,11 +293,12 @@
 				value={data.totalBalance - data.estimatedBalance}
 				className="!text-sm"
 			/>
-			<!-- FIXME PENDIENTE -->
 			<SummaryValue
 				icon="triangle-exclamation"
 				title="Registrar"
-				value={0}
+				value={data.totalBalance -
+					(data.fixedIncome + data.additionalIncome - totalBillMaxPayment) -
+					totalBillSavings}
 				className="!text-lg font-bold"
 			/>
 		</section>
@@ -322,7 +325,7 @@
 	<ScreenLoading />
 {/if}
 
-<ConfirmPopup
+<PopupConfirm
 	show={confirmPopupInfo.show}
 	question={confirmPopupInfo.question}
 	description={confirmPopupInfo.description}

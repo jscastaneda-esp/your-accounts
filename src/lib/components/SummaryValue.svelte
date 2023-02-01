@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { money } from '$lib/utils/number.utils';
+	import { money } from '../utils/number.utils';
 
 	export let icon: string;
 	export let title: string;

@@ -3,8 +3,8 @@
 	import type { PageDataAuth } from '$lib/types';
 	import { TypeAuthEnum } from '$lib/enums';
 
-	import Login from '$lib/components/Login.svelte';
-	import SignUp from '$lib/components/SignUp.svelte';
+	import FormLogin from '$lib/components/FormLogin.svelte';
+	import FormSignUp from '$lib/components/FormSignUp.svelte';
 
 	export let data: PageDataAuth;
 </script>
@@ -23,14 +23,14 @@
 		class:blur-content={TypeAuthEnum.SIGNUP === data.type}
 		class:login={TypeAuthEnum.SIGNUP === data.type}
 	>
-		<Login />
+		<FormLogin />
 	</div>
 	<div
 		class="bg-white auth-container transition-all duration-200 ease-in-out"
 		class:blur-content={TypeAuthEnum.LOGIN === data.type}
 		class:signup={TypeAuthEnum.LOGIN === data.type}
 	>
-		<SignUp />
+		<FormSignUp />
 	</div>
 </div>
 

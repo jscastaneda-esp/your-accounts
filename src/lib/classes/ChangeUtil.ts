@@ -1,4 +1,4 @@
-import type { Change, FelteError } from '$lib/types';
+import type { Change, FelteError } from '../types';
 
 export default class ChangeUtil<P extends string> {
 	setChange(
