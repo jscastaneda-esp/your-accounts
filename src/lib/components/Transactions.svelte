@@ -17,7 +17,7 @@
 		show = true;
 		loading = true;
 		try {
-			const response = await fetch(`/api/logs?id=${projectId}`);
+			const response = await fetch(`/api/transactions?id=${projectId}`);
 			if (response.status != HttpStatus.OK) {
 				throw new Error(response.statusText);
 			}
