@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  npm:
+    build: .
+    image: pnpm:7.26.3
+    container_name: your-accounts-npm
+    working_dir: /code
+    volumes:
+      - .:/code
+    command: pnpm install
+
+  app:
+    image: pnpm:7.26.3
+    container_name: your-accounts
+    working_dir: /code
+    volumes:
+      - .:/code
+      - ./:/workspace:cached
+    ports:
+      - 5173:5173
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+    tty: true

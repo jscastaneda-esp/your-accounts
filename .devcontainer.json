@@ -1,0 +1,37 @@
+{
+  "name": "Your Account",
+  "dockerComposeFile": [
+    "./docker-compose.yml"
+  ],
+  "service": "app",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"streetsidesoftware.code-spell-checker",
+				"dotenv.dotenv-vscode",
+				"dbaeumer.vscode-eslint",
+				"GitHub.vscode-pull-request-github",
+				"eamodio.gitlens",
+				"kisstkondoros.vscode-gutter-preview",
+				"wix.vscode-import-cost",
+				"Tyriar.lorem-ipsum",
+				"yzhang.markdown-all-in-one",
+				"quicktype.quicktype",
+				"christian-kohler.path-intellisense",
+				"vunguyentuan.vscode-postcss",
+				"esbenp.prettier-vscode",
+				"streetsidesoftware.code-spell-checker-spanish",
+				"svelte.svelte-vscode",
+				"TabNine.tabnine-vscode",
+				"bradlc.vscode-tailwindcss",
+				"meganrogge.template-string-converter",
+				"Gruntfuggly.todo-tree",
+				"pflannery.vscode-versionlens",
+				"aaron-bond.better-comments",
+				"usernamehw.errorlens"
+			]
+		}
+	}
+}

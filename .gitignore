@@ -14,6 +14,7 @@ node_modules
 
 # Optional npm cache directory
 .npm
+.pnpm-store
 
 # Optional eslint cache
 .eslintcache
@@ -32,3 +33,6 @@ vite.config.ts.timestamp-*
 .env
 .env.*
 !.env.example
+
+# temp
+/tmp
