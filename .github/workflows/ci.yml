@@ -42,7 +42,7 @@ jobs:
       - name: Archive test results
         if: failure()
         shell: bash
-        run: find packages -type d -name test-results -not -empty | tar -czf test-results.tar.gz --files-from=-
+        run: tar -czf test-results.tar.gz test-results.json
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v3
@@ -50,3 +50,13 @@ jobs:
           retention-days: 3
           name: test-failure-${{ github.run_id }}
           path: test-results.tar.gz
+      - name: Archive test coverage
+        shell: bash
+        run: tar -czf coverage.tar.gz coverage
+      - name: Upload test coverage
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 3
+          name: coverage-${{ github.run_id }}
+          path: coverage.tar.gz

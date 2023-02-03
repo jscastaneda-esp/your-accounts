@@ -4,7 +4,11 @@ import firebase from '../../../src/lib/configs/firebase.client';
 import { FirebaseProviderEnum, TypeAuthEnum } from '../../../src/lib/enums';
 
 vi.mock('$env/static/public', () => ({
-	PUBLIC_FIREBASE_OPTIONS: '{"apiKey": "test"}'
+	PUBLIC_FIREBASE_OPTIONS: Buffer.from('{"apiKey": "test"}').toString('base64')
+}));
+
+vi.mock('$app/environment', () => ({
+	browser: false
 }));
 
 vi.mock('firebase/app', () => ({
