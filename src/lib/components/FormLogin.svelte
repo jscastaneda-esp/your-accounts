@@ -37,7 +37,7 @@
 			email: '',
 			password: ''
 		},
-		onSubmit: (values, context) =>
+		onSubmit: (values) =>
 			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password),
 		onSuccess: () => goto('/dashboard'),
 		onError: (error: unknown) => {
