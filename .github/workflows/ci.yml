@@ -54,7 +54,6 @@ jobs:
         shell: bash
         run: tar -czf coverage.tar.gz coverage
       - name: Upload test coverage
-        if: failure()
         uses: actions/upload-artifact@v3
         with:
           retention-days: 3
