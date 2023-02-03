@@ -15,6 +15,8 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_FIREBASE_OPTIONS: 'firebase config options'
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2.2.4
