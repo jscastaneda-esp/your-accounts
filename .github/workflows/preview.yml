@@ -1,7 +1,7 @@
 name: Deploy Preview
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: null
   pull_request:
     branches:
       - main
@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: Preview
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: '!contains(github.event.head_commit.message, ''[skip ci]'')'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -26,30 +26,20 @@ jobs:
         with:
           PRODUCTION: false
           CREATE_COMMENT: false
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          GITHUB_TOKEN: '${{ secrets.GH_PAT }}'
+          VERCEL_TOKEN: '${{ secrets.VERCEL_TOKEN }}'
+          VERCEL_ORG_ID: '${{ secrets.VERCEL_ORG_ID }}'
+          VERCEL_PROJECT_ID: '${{ secrets.VERCEL_PROJECT_ID }}'
           GITHUB_DEPLOYMENT_ENV: Preview
-          PR_PREVIEW_DOMAIN: "{REPO}-preview.vercel.app"
+          PR_PREVIEW_DOMAIN: '{REPO}-preview.vercel.app'
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
-        if: ${{ (steps.vercel-deploy.outputs.DEPLOYMENT_CREATED) && (github.event_name == 'pull_request') }}
+        if: >-
+          ${{ (steps.vercel-deploy.outputs.DEPLOYMENT_CREATED) &&
+          (github.event_name == 'pull_request') }}
         with:
-          message: |
-            This pull request has been deployed to Vercel.
-
-            <table>
-              <tr>
-                <td><strong>✅ Preview:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}'>${{ steps.vercel-deploy.outputs.PREVIEW_URL }}</a></td>
-              </tr>
-              <tr>
-                <td><strong>🔍 Inspect:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}'>${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}</a></td>
-              </tr>
-            </table>
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          comment_tag: 'vercel-deploy'
+          message: "This pull request has been deployed to Vercel.\n\n<table>\n  <tr>\n    <td><strong>✅ Preview:</strong></td>\n    <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}'>${{ steps.vercel-deploy.outputs.PREVIEW_URL }}</a></td>\n  </tr>\n  <tr>\n    <td><strong>\U0001F50D Inspect:</strong></td>\n    <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}'>${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}</a></td>\n  </tr>\n</table>\n"
+          GITHUB_TOKEN: '${{ secrets.GH_PAT }}'
+          comment_tag: vercel-deploy
