@@ -1,11 +1,9 @@
 {
-  "name": "Your Account",
-  "dockerComposeFile": [
-    "./docker-compose.yml"
-  ],
-  "service": "app",
-  "shutdownAction": "stopCompose",
-  "workspaceFolder": "/workspace",
+	"name": "Your Account",
+	"dockerComposeFile": ["./docker-compose.yml"],
+	"service": "app",
+	"shutdownAction": "stopCompose",
+	"workspaceFolder": "/workspace",
 	"customizations": {
 		"vscode": {
 			"extensions": [

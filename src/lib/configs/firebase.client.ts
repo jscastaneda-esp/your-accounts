@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { PUBLIC_FIREBASE_OPTIONS } from '$env/static/public';
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import {
@@ -152,7 +153,14 @@ class Firebase {
 	private readonly _authFunctions: FirebaseAuth;
 
 	constructor() {
-		const firebaseOptions: FirebaseOptions = JSON.parse(PUBLIC_FIREBASE_OPTIONS);
+		let firebaseOptionsJson: string;
+		if (browser) {
+			firebaseOptionsJson = window.atob(PUBLIC_FIREBASE_OPTIONS);
+		} else {
+			firebaseOptionsJson = Buffer.from(PUBLIC_FIREBASE_OPTIONS, 'base64').toString('ascii');
+		}
+
+		const firebaseOptions: FirebaseOptions = JSON.parse(firebaseOptionsJson);
 		this._app = initializeApp(firebaseOptions);
 		this._auth = getAuth(this._app);
 		this._authFunctions = new FirebaseAuth(this._auth);

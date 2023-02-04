@@ -28,6 +28,7 @@ vite.config.ts.timestamp-*
 
 # Vitest
 /coverage
+test-results.json
 
 # dotenv environment variables file
 .env
@@ -36,3 +37,4 @@ vite.config.ts.timestamp-*
 
 # temp
 /tmp
+.vercel
