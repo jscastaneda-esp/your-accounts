@@ -52,4 +52,3 @@ jobs:
             </table>
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           comment_tag: 'vercel-deploy'
-          create_if_not_exists: false
