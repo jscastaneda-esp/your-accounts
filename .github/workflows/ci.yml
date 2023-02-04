@@ -40,8 +40,6 @@ jobs:
           - tar-file: coverage.tar.gz
             src-tar: coverage
             upload-name: coverage-${{ github.run_id }}
-
-        upload: [sub1, sub2]
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2.2.4
