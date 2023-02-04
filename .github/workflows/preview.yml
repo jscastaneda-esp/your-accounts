@@ -46,10 +46,10 @@ jobs:
               </tr>
               <tr>
                 <td><strong>🔍 Inspect:</strong></td>
-                <td><a href='${ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }'>${ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }</a></td>
+                <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}'>${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}</a></td>
               </tr>
             </table>
 
-            [View Workflow Logs](${ LOG_URL })
+            [View Workflow Logs](${{ LOG_URL }})
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           comment_tag: 'vercel-deploy'
