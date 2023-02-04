@@ -39,11 +39,20 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
+      - name: Archive test coverage
+        if: failure()
+        shell: bash
+        run: tar -czf coverage.tar.gz coverage
       - name: Archive test files
         if: failure()
         shell: bash
         run: tar -czf test-results.tar.gz test-results.json
-      - run: tar -czf coverage.tar.gz coverage
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 3
+          name: coverage-${{ github.run_id }}
+          path: coverage.tar.gz
       - name: Upload test failure
         if: failure()
         uses: actions/upload-artifact@v3
@@ -51,8 +60,3 @@ jobs:
           retention-days: 3
           name: test-failure-${{ github.run_id }}
           path: test-results.tar.gz
-      - uses: actions/upload-artifact@v3
-        with:
-          retention-days: 3
-          name: coverage-${{ github.run_id }}
-          path: coverage.tar.gz

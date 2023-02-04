@@ -7,9 +7,9 @@ vi.mock('$env/static/public', () => ({
 	PUBLIC_FIREBASE_OPTIONS: Buffer.from('{"apiKey": "test"}').toString('base64')
 }));
 
-// vi.mock('$app/environment', () => ({
-// 	browser: false
-// }));
+vi.mock('$app/environment', () => ({
+	browser: false
+}));
 
 vi.mock('firebase/app', () => ({
 	initializeApp: vi.fn(() => ({
