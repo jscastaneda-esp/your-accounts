@@ -23,5 +23,3 @@ jobs:
           GITHUB_DEPLOYMENT_ENV: Production
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
-          ALIAS_DOMAINS: |
-            {REPO}.vercel.app
