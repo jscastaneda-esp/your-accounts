@@ -2,7 +2,15 @@ name: Deploy Preview
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - closed
+      - reopened
+      - synchronize
 
 jobs:
   deploy:
@@ -42,8 +50,6 @@ jobs:
                 <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}'>${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}</a></td>
               </tr>
             </table>
-
-            [View Workflow Logs](${{ LOG_URL }})
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           comment_tag: 'vercel-deploy'
           create_if_not_exists: false
