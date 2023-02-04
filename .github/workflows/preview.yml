@@ -31,9 +31,9 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           GITHUB_DEPLOYMENT_ENV: Preview
+          PR_PREVIEW_DOMAIN: "{REPO}-preview.vercel.app"
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
-          PR_PREVIEW_DOMAIN: "{REPO}-preview.vercel.app"
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
         if: ${{ (steps.vercel-deploy.outputs.DEPLOYMENT_CREATED) && (github.event_name == 'pull_request') }}
