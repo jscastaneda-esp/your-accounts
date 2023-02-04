@@ -30,6 +30,18 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - tar-file: test-results.tar.gz
+            src-tar: test-results.json
+            upload-name: test-failure-${{ github.run_id }}
+            if: failure()
+          - tar-file: coverage.tar.gz
+            src-tar: coverage
+            upload-name: coverage-${{ github.run_id }}
+
+        upload: [sub1, sub2]
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2.2.4
@@ -39,24 +51,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      - name: Archive test results
-        if: failure()
+      - name: Archive test
+        if: ${{matrix.if}}
         shell: bash
-        run: tar -czf test-results.tar.gz test-results.json
+        run: tar -czf ${{ matrix.tar-file }} ${{ matrix.upload-name }}
       - name: Upload test results
-        if: failure()
+        if: ${{matrix.if}}
         uses: actions/upload-artifact@v3
         with:
           retention-days: 3
-          name: test-failure-${{ github.run_id }}
-          path: test-results.tar.gz
-      - name: Archive test coverage
-        shell: bash
-        run: tar -czf coverage.tar.gz coverage
-      - name: Upload test coverage
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          retention-days: 3
-          name: coverage-${{ github.run_id }}
-          path: coverage.tar.gz
+          name: ${{ matrix.tar-file }}
+          path: ${{ matrix.upload-name }}
