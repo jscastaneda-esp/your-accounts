@@ -33,8 +33,7 @@ jobs:
           GITHUB_DEPLOYMENT_ENV: Preview
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
-          ALIAS_DOMAINS: |
-            {REPO}-{USER}-preview.vercel.app
+          PR_PREVIEW_DOMAIN: {REPO}-preview.vercel.app
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
         if: ${{ (steps.vercel-deploy.outputs.DEPLOYMENT_CREATED) && (github.event_name == 'pull_request') }}
