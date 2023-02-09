@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { HttpStatus } from '../enums';
 	import type { ProjectTransaction } from '../types';
 	import Toast from '../utils/toast.utils';
 	import dayjs from '../utils/dayjs.utils';
 	import Card from './cards/Card.svelte';
 	import HeaderCardSimple from './cards/HeaderCardSimple.svelte';
+	import { trpc } from '$lib/trpc/client';
 
 	export let projectId: number;
 
 	const awaitLoad = [1, 2, 3, 4];
+	const trpcF = trpc();
 	let show = false;
 	let loading = false;
 	let transactions: ProjectTransaction[] = [];
@@ -17,12 +18,7 @@
 		show = true;
 		loading = true;
 		try {
-			const response = await fetch(`/api/transactions?id=${projectId}`);
-			if (response.status != HttpStatus.OK) {
-				throw new Error(response.statusText);
-			}
-
-			transactions = await response.json();
+			transactions = await trpcF.transactions.getByProjectId.query(projectId);
 		} catch (error) {
 			Toast.error('Se presento un error al consultar las transacciones', true);
 			throw error;

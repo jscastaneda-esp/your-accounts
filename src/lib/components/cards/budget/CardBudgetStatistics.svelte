@@ -15,9 +15,8 @@
 	} from 'chart.js';
 	import Card from '../Card.svelte';
 	import HeaderCardSimple from '../HeaderCardSimple.svelte';
-	import { HttpStatus } from '$lib/enums';
-	import type { BudgetStatistics } from '$lib/types';
 	import Toast from '$lib/utils/toast.utils';
+	import { trpc } from '$lib/trpc/client';
 
 	export let budgetId: number;
 
@@ -79,10 +78,11 @@
 			}
 		}
 	};
+	const trpcF = trpc();
 	let show = false;
 	let loading = false;
-	let dataPie: ChartData | null;
-	let dataBar: ChartData | null;
+	let dataPie: ChartData<'pie', number[], unknown> | null;
+	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null;
 
 	async function handleShow() {
 		show = !show;
@@ -92,13 +92,7 @@
 		if (show) {
 			loading = true;
 			try {
-				const response = await fetch(`/api/budget/statistics?id=${budgetId}`);
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				const chartData: BudgetStatistics = await response.json();
-
+				const chartData = await trpcF.budgets.getStatisticsById.query(budgetId);
 				dataPie = {
 					labels: chartData.labels,
 					datasets: [

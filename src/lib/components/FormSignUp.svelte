@@ -23,11 +23,11 @@
 	// Utilities
 	import firebase from '../configs/firebase.client';
 	import Toast from '../utils/toast.utils';
-	import yup, { defaultText, email, password } from '../utils/yup.utils';
+	import yup, { defaultString, email, password } from '../utils/yup.utils';
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
-		fullName: defaultText.max(100),
+		fullName: defaultString.max(100),
 		email,
 		password,
 		confirmPassword: password.test('equals', 'Contraseña no coincide', (value, context) => {

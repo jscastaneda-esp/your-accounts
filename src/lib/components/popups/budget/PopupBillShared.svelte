@@ -2,34 +2,39 @@
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber } from '../../../utils/yup.utils';
+	import yup, { defaultString, defaultNumber } from '../../../utils/yup.utils';
 	import Popup from '../Popup.svelte';
 	import Input from '../../inputs/Input.svelte';
 	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import type { BudgetBillShared, Change, ConfirmPopupInfo } from '../../../types';
+	import type { BudgetBillShared, Change } from '../../../types';
 	import Card from '../../cards/Card.svelte';
 	import HeaderCardCompose from '../../cards/HeaderCardCompose.svelte';
 	import SummaryValue from '../../SummaryValue.svelte';
 	import PopupConfirm from '../PopupConfirm.svelte';
 	import Toast from '../../../utils/toast.utils';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums';
 	import type { changes as changesStore } from '../../../stores';
 	import ScreenLoading from '../../ScreenLoading.svelte';
 	import ChangeUtil from '../../../classes/ChangeUtil';
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import { trpc } from '$lib/trpc/client';
 
 	export let budgetBillId: number;
 
+	const trpcF = trpc();
 	let loading: boolean;
 	let isLoadingData = false;
 	let countName = 0;
 	let list: BudgetBillShared[] = [];
-	const confirmPopupInfo: ConfirmPopupInfo<{
-		index: number;
-		id: number;
-		description: string;
-	} | null> = {
-		show: false,
-		question: '¿Está seguro que desea eliminar el gasto compartido :DESC?'
+	let confirmPopupInfo = new ConfirmPopupInfo(
+		false,
+		'¿Está seguro que desea eliminar el gasto compartido :DESC?'
+	);
+	confirmPopupInfo.actionCancel = () => {
+		confirmPopupInfo = confirmPopupInfo.reset(
+			false,
+			'¿Está seguro que desea eliminar el gasto compartido :DESC?'
+		);
 	};
 	type ChangeBillShared = {
 		description?: string;
@@ -44,7 +49,7 @@
 		shared: yup.array().of(
 			yup.object().shape({
 				id: defaultNumber.min(1),
-				description: defaultText.max(200),
+				description: defaultString.max(200),
 				amount: defaultNumber.min(1).max(9999999999.99),
 				budgetBillId: defaultNumber.min(1)
 			})
@@ -63,12 +68,7 @@
 		isLoadingData = true;
 
 		try {
-			const response = await fetch(`/api/budget/bill/shared?id=${budgetBillId}`);
-			if (response.status != HttpStatus.OK) {
-				throw new Error(response.statusText);
-			}
-
-			list = await response.json();
+			list = await trpcF.budgets.bills.getSharedById.query(budgetBillId);
 			countName = list.length + 1;
 			setFields('shared', list, true);
 		} catch (error) {
@@ -88,21 +88,11 @@
 					description: `Gasto Compartido ${countName++}`,
 					budgetBillId
 				};
-
-				const response = await fetch('/api/budget/bill/shared', {
-					method: 'POST',
-					body: JSON.stringify(request)
-				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				const body = await response.json();
+				const newShared = await trpcF.budgets.bills.createShared.mutate(request);
 				const newField = {
-					id: body.id,
-					description: request.description,
+					id: newShared.id,
 					amount: 0,
-					budgetBillId
+					...request
 				};
 				addField('shared', newField);
 				list.push(newField);
@@ -115,28 +105,10 @@
 		}
 	}
 
-	function handleDelete({ id, description }: BudgetBillShared, index: number) {
+	function handleDelete({ description }: BudgetBillShared, index: number) {
 		confirmPopupInfo.show = true;
 		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', description);
-		confirmPopupInfo.detail = {
-			index,
-			id,
-			description
-		};
-	}
-
-	function handlePopUpAccept() {
-		if (confirmPopupInfo.detail) {
-			unsetField(`shared.${confirmPopupInfo.detail.index}`);
-		}
-
-		handlePopUpCancel();
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '¿Está seguro que desea eliminar el gasto compartido :DESC?';
-		confirmPopupInfo.detail = undefined;
+		confirmPopupInfo.actionOk = () => unsetField(`shared.${index}`);
 	}
 
 	function compareData() {
@@ -265,11 +237,5 @@
 {/if}
 
 {#if confirmPopupInfo.show}
-	<PopupConfirm
-		show
-		question={confirmPopupInfo.question}
-		description={confirmPopupInfo.description}
-		on:accept={handlePopUpAccept}
-		on:cancel={handlePopUpCancel}
-	/>
+	<PopupConfirm data={confirmPopupInfo} />
 {/if}

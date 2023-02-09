@@ -28,7 +28,8 @@
 				"Gruntfuggly.todo-tree",
 				"pflannery.vscode-versionlens",
 				"aaron-bond.better-comments",
-				"usernamehw.errorlens"
+				"usernamehw.errorlens",
+				"adamhartford.vscode-base64"
 			]
 		}
 	}
