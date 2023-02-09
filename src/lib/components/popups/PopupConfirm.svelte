@@ -18,7 +18,7 @@
 				{data.question}
 			</h3>
 			{#if data.description}
-				<p class="text-sm text-gray-500 mt-2 text-justify">
+				<p class="text-sm text-gray-500 mt-2">
 					{data.description}
 				</p>
 			{/if}

@@ -32,7 +32,7 @@
 	});
 
 	async function getProjects() {
-		if ($session?.uid) {
+		if ($session && $session.uid) {
 			try {
 				projects = await trpcF.projects.getByUserId.query($session.uid);
 			} catch (error) {
@@ -43,7 +43,7 @@
 	}
 
 	async function handleNewProject(type: TypeProjectEnum) {
-		if ($session?.uid) {
+		if ($session && $session.uid) {
 			loading = true;
 
 			let url = '';
@@ -54,8 +54,7 @@
 			try {
 				const newProject = await trpcF.projects.create.mutate({
 					userId: $session.uid,
-					type,
-					baseId: undefined
+					type
 				});
 				await goto(`${url}/${newProject.id}`);
 			} catch (error) {
@@ -104,7 +103,7 @@
 		}
 
 		confirmPopupInfo.actionOk = async () => {
-			if ($session?.uid) {
+			if ($session && $session.uid) {
 				loading = true;
 
 				let url = '';
@@ -185,7 +184,7 @@
 		</CardBase>
 		{#each awaitLoad as _}
 			<CardBase>
-				<div class="animate-pulse">
+				<div class="animate-pulse h-full flex flex-col justify-between">
 					<div class="w-full flex justify-end">
 						<div class="rounded-full bg-slate-400 h-4 w-[43px]" />
 					</div>
