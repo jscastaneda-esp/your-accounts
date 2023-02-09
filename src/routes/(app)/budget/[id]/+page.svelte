@@ -4,11 +4,11 @@
 	import { goto } from '$app/navigation';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import type { Budget, Change, ConfirmPopupInfo } from '$lib/types';
-	import yup, { defaultText, defaultNumber } from '$lib/utils/yup.utils';
+	import type { Budget, Change } from '$lib/types';
+	import yup, { defaultString, defaultNumber } from '$lib/utils/yup.utils';
 	import { zeroPad } from '$lib/utils/number.utils';
 	import Toast from '$lib/utils/toast.utils';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '$lib/enums';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums';
 	import { groupBy } from '$lib/utils/array.utils';
 	import { changes } from '$lib/stores';
 	import ChangeUtil from '$lib/classes/ChangeUtil';
@@ -23,6 +23,8 @@
 	import CardBudgetBills from '$lib/components/cards/budget/CardBudgetBills.svelte';
 	import CardBudgetStatistics from '$lib/components/cards/budget/CardBudgetStatistics.svelte';
 	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import { trpc } from '$lib/trpc/client';
 
 	export let data: Budget;
 
@@ -35,11 +37,15 @@
 	let totalBillPending = 0;
 	let totalBillMaxPayment = 0;
 	let totalBillSavings = 0;
-	const confirmPopupInfo: ConfirmPopupInfo = {
-		show: false,
-		question: '¿Realmente desea salir?',
-		description: 'Al salir se pueden perder cambios. Se recomienda primero guardar'
+	const confirmPopupInfo = new ConfirmPopupInfo(
+		false,
+		'¿Realmente desea salir?',
+		'Al salir se pueden perder cambios. Se recomienda primero guardar'
+	);
+	confirmPopupInfo.actionCancel = () => {
+		confirmPopupInfo.show = false;
 	};
+	const trpcF = trpc();
 	type ChangeMain = {
 		name?: string;
 		year?: number;
@@ -52,8 +58,8 @@
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		id: defaultNumber.min(1),
-		name: defaultText.max(40),
-		month: defaultText.matches(new RegExp('^\\d{4}-\\d{2}$')),
+		name: defaultString.max(40),
+		month: defaultString.matches(new RegExp('^\\d{4}-\\d{2}$')),
 		fixedIncome: defaultNumber.min(0).max(9999999999.99),
 		additionalIncome: defaultNumber.min(0).max(9999999999.99)
 	});
@@ -93,21 +99,27 @@
 		if ($changes.length > 0) {
 			try {
 				changes.delete(changeList);
-				const sendChanges: Change<unknown>[] = [];
+				const sendChanges: Change<Record<string, unknown>>[] = [];
 
-				const groupBySection = groupBy<Change<unknown>>(changeList, (change) => change.section);
+				const groupBySection = groupBy<Change<Record<string, unknown>>>(
+					changeList,
+					(change) => change.section
+				);
 				Object.entries(groupBySection).forEach((group) => {
 					const [section, items] = group;
-					const groupByAction = groupBy<Change<unknown>>(items, (change) => change.action);
+					const groupByAction = groupBy<Change<Record<string, unknown>>>(
+						items,
+						(change) => change.action
+					);
 					Object.entries(groupByAction).forEach((group) => {
 						const [action, items] = group;
-						const groupById = groupBy<Change<unknown>>(items, (change) =>
+						const groupById = groupBy<Change<Record<string, unknown>>>(items, (change) =>
 							change.detail.id.toString()
 						);
 						Object.entries(groupById).forEach((group) => {
 							const [id, items] = group;
 
-							const sendChange: Change<unknown> = {
+							const sendChange: Change<Record<string, unknown>> = {
 								section: section as ChangeSectionEnum,
 								action: action as ChangeActionEnum,
 								detail: {
@@ -123,13 +135,10 @@
 					});
 				});
 
-				const response = await fetch('/api/changes', {
-					method: 'PUT',
-					body: JSON.stringify(sendChanges)
+				await trpcF.projects.receiveChanges.mutate({
+					projectId: 1,
+					changes: sendChanges
 				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
 			} catch (error) {
 				changes.revert(changeList);
 				Toast.error('Se presento un error al guardar', true);
@@ -140,15 +149,14 @@
 
 	function handleExit() {
 		confirmPopupInfo.show = true;
-	}
-
-	function handlePopUpAccept() {
-		goto('/dashboard');
-		confirmPopupInfo.show = false;
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
+		confirmPopupInfo.actionOk = async () => {
+			loading = true;
+			try {
+				await goto('/dashboard');
+			} finally {
+				loading = false;
+			}
+		};
 	}
 
 	function compareData() {
@@ -191,6 +199,10 @@
 	$: data.totalBalance = totalAvailable - totalBillPending;
 	$: if ($touched) compareData();
 </script>
+
+<svelte:head>
+	<title>Presupuesto | Tus Cuentas</title>
+</svelte:head>
 
 <article class="px-2 py-3 flex flex-col gap-[10px] mb-[5.2rem] md:mb-[7.6rem]">
 	<section class="px-1 flex justify-between">
@@ -261,7 +273,7 @@
 </article>
 
 <footer class="fixed bottom-0 flex flex-col w-full">
-	<Transactions projectId={data.id} />
+	<Transactions projectId={data.projectId} />
 	<article
 		class="flex flex-col min-h-[33px] shadow-[1px_0_3px_0_rgb(0_0_0_/_0.1)] shadow-gray-700 bg-white"
 	>
@@ -325,10 +337,4 @@
 	<ScreenLoading />
 {/if}
 
-<PopupConfirm
-	show={confirmPopupInfo.show}
-	question={confirmPopupInfo.question}
-	description={confirmPopupInfo.description}
-	on:accept={handlePopUpAccept}
-	on:cancel={handlePopUpCancel}
-/>
+<PopupConfirm data={confirmPopupInfo} />

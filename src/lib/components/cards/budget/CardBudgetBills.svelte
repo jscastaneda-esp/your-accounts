@@ -5,15 +5,17 @@
 	import SummaryValue from '../../SummaryValue.svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
+	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
 	import Toast from '../../../utils/toast.utils';
 	import ItemCardBudgetBill from './ItemCardBudgetBill.svelte';
-	import type { BudgetBill, CategoryBill, Change, ConfirmPopupInfo } from '../../../types';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
+	import type { BudgetBill, CategoryBill, Change } from '../../../types';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums';
 	import type { changes as changesStore } from '../../../stores';
 	import PopupConfirm from '../../popups/PopupConfirm.svelte';
 	import ChangeUtil from '../../../classes/ChangeUtil';
 	import dayjs from '../../../utils/dayjs.utils';
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import { trpc } from '$lib/trpc/client';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
@@ -26,15 +28,22 @@
 	export let totalSavings: number;
 
 	const now = dayjs();
+	const trpcF = trpc();
 	let show = false;
 	let daysMonth: number[] = [];
 	let categories: CategoryBill[] = [];
 	let countName = list.length + 1;
 	let totalPayment = 0;
 	let numberPending = 0;
-	const confirmPopupInfo: ConfirmPopupInfo<{ index: number; id: number; description: string }> = {
-		show: false,
-		question: '¿Está seguro que desea eliminar el gasto :DESC?'
+	let confirmPopupInfo = new ConfirmPopupInfo(
+		false,
+		'¿Está seguro que desea eliminar el gasto :DESC?'
+	);
+	confirmPopupInfo.actionCancel = () => {
+		confirmPopupInfo = confirmPopupInfo.reset(
+			false,
+			'¿Está seguro que desea eliminar el gasto :DESC?'
+		);
 	};
 	type ChangeBill = {
 		description?: string;
@@ -52,14 +61,14 @@
 		bills: yup.array().of(
 			yup.object().shape({
 				id: defaultNumber.min(1),
-				description: defaultText.max(200),
+				description: defaultString.max(200),
 				amount: defaultNumber.min(0).max(9999999999.99),
 				payment: defaultNumber.min(0).max(9999999999.99),
 				shared: defaultBoolean,
 				dueDate: yup.string().max(2),
 				complete: defaultBoolean,
 				budgetId: defaultNumber.min(1),
-				categoryId: defaultText
+				categoryId: defaultString
 			})
 		)
 	});
@@ -72,12 +81,7 @@
 
 	onMount(async () => {
 		try {
-			const response = await fetch('/api/params/category');
-			if (response.status != HttpStatus.OK) {
-				throw new Error(response.statusText);
-			}
-
-			categories = await response.json();
+			categories = await trpcF.budgets.getCategories.query();
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los tipos de pagos', true);
 			throw error;
@@ -93,27 +97,17 @@
 					description: `Gasto ${countName++}`,
 					budgetId
 				};
-
-				const response = await fetch('/api/budget/bill', {
-					method: 'POST',
-					body: JSON.stringify(request)
-				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				const body = await response.json();
+				const newBill = await trpcF.budgets.bills.create.mutate(request);
 				const newField = {
-					id: body.id,
-					description: request.description,
+					id: newBill.id,
 					amount: 0,
 					payment: 0,
 					shared: false,
 					dueDate: '',
 					complete: false,
-					budgetId,
 					categoryId: '',
-					totalShared: 0
+					totalShared: 0,
+					...request
 				};
 				addField('bills', newField);
 				list.push(newField);
@@ -133,21 +127,7 @@
 	}) {
 		confirmPopupInfo.show = true;
 		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', detail.description);
-		confirmPopupInfo.detail = detail;
-	}
-
-	function handlePopUpAccept() {
-		if (confirmPopupInfo.detail) {
-			unsetField(`bills.${confirmPopupInfo.detail.index}`);
-		}
-
-		handlePopUpCancel();
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '¿Está seguro que desea eliminar el gasto :DESC?';
-		confirmPopupInfo.detail = undefined;
+		confirmPopupInfo.actionOk = () => unsetField(`bills.${detail.index}`);
 	}
 
 	function compareData() {
@@ -349,10 +329,4 @@
 	</Card>
 </div>
 
-<PopupConfirm
-	show={confirmPopupInfo.show}
-	question={confirmPopupInfo.question}
-	description={confirmPopupInfo.description}
-	on:accept={handlePopUpAccept}
-	on:cancel={handlePopUpCancel}
-/>
+<PopupConfirm data={confirmPopupInfo} />

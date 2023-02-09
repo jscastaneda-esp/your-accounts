@@ -16,7 +16,7 @@ yup.setLocale({
 	}
 });
 
-export const defaultText = yup.string().required();
+export const defaultString = yup.string().required();
 export const defaultNumber = yup.number().required();
 export const defaultBoolean = yup.boolean().required();
 export const email = yup.string().email().required();

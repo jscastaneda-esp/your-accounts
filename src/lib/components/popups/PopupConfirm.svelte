@@ -1,24 +1,25 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Popup from './Popup.svelte';
 	import Button from '../buttons/Button.svelte';
+	import type ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
 
-	export let show: boolean;
-	export let question: string;
-	export let description: string | undefined = undefined;
+	export let data: ConfirmPopupInfo;
 
-	const dispatch = createEventDispatcher();
+	async function handleOk() {
+		await Promise.resolve(data.actionOk());
+		await Promise.resolve(data.actionCancel());
+	}
 </script>
 
-<Popup open={show}>
+<Popup open={data.show}>
 	<div class="w-screen sm:max-w-sm">
 		<div class="bg-white pt-6 px-6">
 			<h3 class="text-lg font-medium leading-6 text-black text-center" id="modal-title">
-				{question}
+				{data.question}
 			</h3>
-			{#if description}
+			{#if data.description}
 				<p class="text-sm text-gray-500 mt-2 text-justify">
-					{description}
+					{data.description}
 				</p>
 			{/if}
 		</div>
@@ -27,13 +28,13 @@
 				value="Aceptar"
 				className="h-max w-32 shadow-none"
 				classNameValue="tracking-wide text-base"
-				on:click={() => dispatch('accept')}
+				on:click={handleOk}
 			/>
 			<Button
 				value="Cancelar"
 				className="ml-2 h-max w-32 shadow-none bg-transparent active:bg-gray-500 hover:bg-gray-400 hover:bg-opacity-20"
 				classNameValue="tracking-wide text-base"
-				on:click={() => dispatch('cancel')}
+				on:click={data.actionCancel}
 			/>
 		</div>
 	</div>

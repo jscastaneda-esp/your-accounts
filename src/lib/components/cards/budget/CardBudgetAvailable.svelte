@@ -5,14 +5,16 @@
 	import ItemCardBudgetAvailable from './ItemCardBudgetAvailable.svelte';
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
-	import yup, { defaultText, defaultNumber } from '../../../utils/yup.utils';
+	import yup, { defaultString, defaultNumber } from '../../../utils/yup.utils';
 	import Toast from '../../../utils/toast.utils';
-	import type { BudgetAvailable, Change, ConfirmPopupInfo } from '../../../types';
+	import type { BudgetAvailable, Change } from '../../../types';
 	import PopupConfirm from '../../popups/PopupConfirm.svelte';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum, HttpStatus } from '../../../enums';
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums';
 	import { getContext } from 'svelte';
 	import type { changes as changesStore } from '../../../stores';
 	import ChangeUtil from '../../../classes/ChangeUtil';
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import { trpc } from '$lib/trpc/client';
 
 	export let isValidForm: boolean;
 	export let loading: boolean;
@@ -22,9 +24,15 @@
 
 	let show = false;
 	let countName = list.length + 1;
-	const confirmPopupInfo: ConfirmPopupInfo<{ index: number; id: number; name: string }> = {
-		show: false,
-		question: '¿Está seguro que desea eliminar el disponible :NAME?'
+	let confirmPopupInfo = new ConfirmPopupInfo(
+		false,
+		'¿Está seguro que desea eliminar el disponible :NAME?'
+	);
+	confirmPopupInfo.actionCancel = () => {
+		confirmPopupInfo = confirmPopupInfo.reset(
+			false,
+			'¿Está seguro que desea eliminar el disponible :NAME?'
+		);
 	};
 	type ChangeAvailable = {
 		name?: string;
@@ -32,13 +40,14 @@
 	};
 	const changeUtil = new ChangeUtil<keyof ChangeAvailable>();
 	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
+	const trpcF = trpc();
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		availables: yup.array().of(
 			yup.object().shape({
 				id: defaultNumber.min(1),
-				name: defaultText.max(40),
+				name: defaultString.max(40),
 				amount: defaultNumber.min(0).max(9999999999.99),
 				budgetId: defaultNumber.min(1)
 			})
@@ -60,17 +69,8 @@
 					name: `Disponible ${countName++}`,
 					budgetId
 				};
-
-				const response = await fetch('/api/budget/available', {
-					method: 'POST',
-					body: JSON.stringify(request)
-				});
-				if (response.status != HttpStatus.OK) {
-					throw new Error(response.statusText);
-				}
-
-				const body = await response.json();
-				const newField = { id: body.id, name: request.name, amount: 0, budgetId };
+				const newAvailable = await trpcF.budgets.availables.create.mutate(request);
+				const newField = { id: newAvailable.id, amount: 0, ...request };
 				addField('availables', newField);
 				list.push(newField);
 			} catch (error) {
@@ -85,21 +85,7 @@
 	function handleDelete({ detail }: { detail: { index: number; id: number; name: string } }) {
 		confirmPopupInfo.show = true;
 		confirmPopupInfo.question = confirmPopupInfo.question.replace(':NAME', detail.name);
-		confirmPopupInfo.detail = detail;
-	}
-
-	function handlePopUpAccept() {
-		if (confirmPopupInfo.detail) {
-			unsetField(`availables.${confirmPopupInfo.detail.index}`);
-		}
-
-		handlePopUpCancel();
-	}
-
-	function handlePopUpCancel() {
-		confirmPopupInfo.show = false;
-		confirmPopupInfo.question = '¿Está seguro que desea eliminar el disponible :NAME?';
-		confirmPopupInfo.detail = undefined;
+		confirmPopupInfo.actionOk = () => unsetField(`availables.${detail.index}`);
 	}
 
 	function compareData() {
@@ -198,10 +184,4 @@
 	</Card>
 </div>
 
-<PopupConfirm
-	show={confirmPopupInfo.show}
-	question={confirmPopupInfo.question}
-	description={confirmPopupInfo.description}
-	on:accept={handlePopUpAccept}
-	on:cancel={handlePopUpCancel}
-/>
+<PopupConfirm data={confirmPopupInfo} />

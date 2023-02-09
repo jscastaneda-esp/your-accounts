@@ -2,22 +2,23 @@
 	import { createForm } from 'felte';
 	import { validator } from '@felte/validator-yup';
 	import { createEventDispatcher } from 'svelte';
-	import yup, { defaultText, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
+	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
 	import { money } from '../../../utils/number.utils';
 	import Popup from '../Popup.svelte';
 	import Input from '../../inputs/Input.svelte';
 	import InputSwitch from '../../inputs/InputSwitch.svelte';
 	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import { HttpStatus } from '../../../enums';
 	import type { BudgetBillTransaction } from '../../../types';
 	import Toast from '../../../utils/toast.utils';
 	import dayjs from '../../../utils/dayjs.utils';
+	import { trpc } from '$lib/trpc/client';
 
 	export let budgetBillId: number;
 	export let pendingBill: number;
 
 	const awaitLoad = [1, 2, 3, 4];
 	const dispatch = createEventDispatcher<{ add: { payment: number } }>();
+	const trpcF = trpc();
 	let loading = false;
 	let tab = 1;
 	let loadTransactions = false;
@@ -25,7 +26,7 @@
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
-		description: defaultText.max(100),
+		description: defaultString.max(100),
 		all: defaultBoolean,
 		amount: defaultNumber.min(1).max(9999999999.99)
 	});
@@ -55,18 +56,11 @@
 			let value: number = $data.amount;
 			if (operation == '-') value *= -1;
 
-			const response = await fetch('/api/budget/bill/transaction', {
-				method: 'POST',
-				body: JSON.stringify({
-					description: $data.description,
-					amount: value,
-					budgetBillId
-				})
+			await trpcF.budgets.bills.createTransaction.mutate({
+				description: $data.description,
+				amount: value,
+				budgetBillId
 			});
-			if (response.status != HttpStatus.OK) {
-				throw new Error(response.statusText);
-			}
-
 			dispatch('add', {
 				payment: value
 			});
@@ -83,12 +77,7 @@
 		tab = 2;
 		loadTransactions = true;
 		try {
-			const response = await fetch(`/api/budget/bill/transaction?id=${budgetBillId}`);
-			if (response.status != HttpStatus.OK) {
-				throw new Error(response.statusText);
-			}
-
-			transactions = await response.json();
+			transactions = await trpcF.budgets.bills.getTransactionsById.query(budgetBillId);
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los movimientos', true);
 			throw error;

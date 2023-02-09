@@ -6,13 +6,6 @@ import type {
 	UserManagementActionsEnum
 } from './enums';
 
-export type ConfirmPopupInfo<D = null> = {
-	show: boolean;
-	question: string;
-	description?: string;
-	detail?: D;
-};
-
 export type PageDataAuth = {
 	type: TypeAuthEnum;
 };
@@ -32,11 +25,13 @@ export type Project = {
 	totalPendingPayment?: number;
 	totalBalance?: number;
 	pendingBills?: number;
+	userId: string;
 };
 
 export type ProjectTransaction = {
 	description: string;
 	createdAt: Date;
+	projectId: number;
 };
 
 export type Budget = {
@@ -51,6 +46,7 @@ export type Budget = {
 	estimatedBalance: number;
 	availableBalances: BudgetAvailable[];
 	bills: BudgetBill[];
+	projectId: number;
 };
 
 export type BudgetAvailable = {
@@ -83,6 +79,7 @@ export type BudgetBillTransaction = {
 	description: string;
 	amount: number;
 	createdAt: Date;
+	budgetBillId: number;
 };
 
 export type BudgetBillShared = {
