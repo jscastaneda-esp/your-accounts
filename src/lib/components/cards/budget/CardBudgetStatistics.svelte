@@ -81,8 +81,8 @@
 	const trpcF = trpc();
 	let show = false;
 	let loading = false;
-	let dataPie: ChartData | null;
-	let dataBar: ChartData | null;
+	let dataPie: ChartData<'pie', number[], unknown> | null;
+	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null;
 
 	async function handleShow() {
 		show = !show;
