@@ -44,8 +44,8 @@
 	/>
 	<div class="flex justify-center">
 		<ButtonRounded
-			textColor="text-red-500"
-			backgroundColor="bg-red-300"
+			textColor="text-red-800"
+			backgroundColor="bg-red-200"
 			activeBackgroundColor="active:bg-red-200"
 			className="col-span-1"
 			on:click={handleDelete}

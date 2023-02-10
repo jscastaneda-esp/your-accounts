@@ -7,7 +7,7 @@
 	import { validator } from '@felte/validator-yup';
 
 	// Assets
-	import logo from '../assets/images/logo.png';
+	import logo from '../assets/images/logo.webp';
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import budgetImage from '../../assets/images/budget.png';
+	import budgetImage from '../../assets/images/budget.webp';
 	import { goto } from '$app/navigation';
 	import { TypeProjectEnum } from '../../enums';
 	import { zeroPad } from '../../utils/number.utils';
@@ -92,8 +92,8 @@
 		<div class="flex items-center -space-x-3 hover:space-x-1">
 			<ButtonRounded
 				value="Borrar"
-				textColor="text-red-500"
-				backgroundColor="bg-red-300"
+				textColor="text-red-800"
+				backgroundColor="bg-red-200"
 				activeBackgroundColor="active:bg-red-200"
 				on:click={() => handleAction('delete')}
 			>
@@ -101,7 +101,7 @@
 			</ButtonRounded>
 			<ButtonRounded
 				value="Duplicar"
-				textColor="text-blue-500"
+				textColor="text-blue-800"
 				backgroundColor="bg-blue-300"
 				activeBackgroundColor="active:bg-blue-200"
 				on:click={() => handleAction('clone')}

@@ -7,9 +7,9 @@
 	import { validator } from '@felte/validator-yup';
 
 	// Assets
-	import logo from '../assets/images/logo.png';
-	import logoGoogle from '../assets/images/logo-google.png';
-	import forgotPassword from '../assets/images/forgot-password-icon.png';
+	import logo from '../assets/images/logo.webp';
+	import logoGoogle from '../assets/images/logo-google.webp';
+	import forgotPassword from '../assets/images/forgot-password-icon.webp';
 
 	// Enums, Classes, Types
 	import { FirebaseProviderEnum, TypeAuthEnum } from '../enums';

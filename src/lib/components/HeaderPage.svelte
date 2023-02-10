@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 
 	// Assets
-	import logo from '../assets/images/logo.png';
+	import logo from '../assets/images/logo.webp';
 
 	// Utilities
 	import type { FirebaseError } from 'firebase/app';
@@ -61,18 +61,18 @@
 
 		<nav class="main hidden md:block">
 			<ul id="menu" class="flex h-full items-center gap-1">
-				<a href="/dashboard">
-					<li class:active={$page.route.id === '/(app)/dashboard'}>
+				<li class:active={$page.route.id === '/(app)/dashboard'}>
+					<a href="/dashboard">
 						<i class="fa-solid fa-hand-holding-dollar" />
 						<span>Proyectos</span>
-					</li>
-				</a>
-				<!-- <a href="/reports">
-				<li class:active={$page.routeId === '/(app)/reports'}>
-					<i class="fa-solid fa-chart-pie" />
-					<span>Reportes</span>
+					</a>
 				</li>
-			</a> -->
+				<!-- <li class:active={$page.routeId === '/(app)/reports'}>
+					<a href="/reports">
+						<i class="fa-solid fa-chart-pie" />
+						<span>Reportes</span>
+					</a>
+				</li> -->
 			</ul>
 		</nav>
 
@@ -83,7 +83,7 @@
 			>
 				<div class="flex flex-col text-left">
 					<span class="text-lg font-bold">{$session?.displayName}</span>
-					<span class="text-sm text-gray-600">{$session?.email}</span>
+					<span class="text-sm text-gray-800">{$session?.email}</span>
 				</div>
 				<i class="fa-solid fa-right-from-bracket text-lg" />
 			</button>
@@ -108,18 +108,18 @@
 		class:-ml-[320px]={!showMenu}
 	>
 		<ul id="menu">
-			<a href="/dashboard">
-				<li class:active={$page.route.id === '/(app)/dashboard'}>
+			<li class:active={$page.route.id === '/(app)/dashboard'}>
+				<a href="/dashboard">
 					<i class="fa-solid fa-hand-holding-dollar" />
 					<span>Proyectos</span>
-				</li>
-			</a>
-			<!-- <a href="/reports">
-				<li class:active={$page.routeId === '/(app)/reports'}>
+				</a>
+			</li>
+			<!-- <li class:active={$page.routeId === '/(app)/reports'}>
+				<a href="/reports">
 					<i class="fa-solid fa-chart-pie" />
 					<span>Reportes</span>
-				</li>
-			</a> -->
+				</a>
+			</li> -->
 		</ul>
 
 		<button
