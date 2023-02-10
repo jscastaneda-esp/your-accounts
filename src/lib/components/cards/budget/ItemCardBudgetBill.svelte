@@ -147,7 +147,7 @@
 			{/each}
 		</select>
 		<ButtonRounded
-			textColor="text-blue-500"
+			textColor="text-blue-800"
 			backgroundColor="bg-blue-300"
 			activeBackgroundColor="active:bg-blue-200"
 			on:click={() => handleShowOption(1)}
@@ -156,7 +156,7 @@
 		</ButtonRounded>
 		{#if data.shared}
 			<ButtonRounded
-				textColor="text-blue-500"
+				textColor="text-blue-800"
 				backgroundColor="bg-blue-300"
 				activeBackgroundColor="active:bg-blue-200"
 				on:click={() => handleShowOption(2)}
@@ -165,8 +165,8 @@
 			</ButtonRounded>
 		{/if}
 		<ButtonRounded
-			textColor="text-red-500"
-			backgroundColor="bg-red-300"
+			textColor="text-red-800"
+			backgroundColor="bg-red-200"
 			activeBackgroundColor="active:bg-red-200"
 			on:click={handleDelete}
 		>

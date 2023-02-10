@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { SvelteToast, type SvelteToastOptions } from '@zerodevx/svelte-toast';
-
+	import '@fortawesome/fontawesome-free/css/all.min.css';
 	import '../app.css';
+	import { SvelteToast, type SvelteToastOptions } from '@zerodevx/svelte-toast';
 	import firebase from '$lib/configs/firebase.client';
 	import { session } from '$lib/stores';
 

@@ -115,7 +115,7 @@ export const budgets = t.router({
 		.use(logger)
 		.input(defaultNumber)
 		.query(async ({ input }) => {
-			await delay(1000);
+			await delay(500);
 			const budget: Budget = {
 				id: input,
 				name: 'Test',

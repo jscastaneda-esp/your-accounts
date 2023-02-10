@@ -140,7 +140,7 @@
 		<CardBase>
 			<button
 				type="button"
-				class="flex justify-center items-center gap-2 text-gray-400 font-bold w-full h-full select-none cursor-pointer"
+				class="flex justify-center items-center gap-2 text-gray-500 font-bold w-full h-full select-none cursor-pointer"
 				on:click={() => (showNewProject = !showNewProject)}
 			>
 				<i class="fa-solid fa-plus text-6xl" />

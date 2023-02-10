@@ -8,7 +8,7 @@
 	import { validator } from '@felte/validator-yup';
 
 	// Assets
-	import updatePassword from '$lib/assets/images/update-password.png';
+	import updatePassword from '$lib/assets/images/update-password.webp';
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';

@@ -207,8 +207,8 @@
 						/>
 						<div class="flex justify-center col-span-1">
 							<ButtonRounded
-								textColor="text-red-500"
-								backgroundColor="bg-red-300"
+								textColor="text-red-800"
+								backgroundColor="bg-red-200"
 								activeBackgroundColor="active:bg-red-200"
 								on:click={() => handleDelete(item, index)}
 							>

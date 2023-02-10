@@ -173,7 +173,7 @@
 						</button>
 					{:else}
 						<ButtonRounded
-							textColor="text-blue-500"
+							textColor="text-blue-800"
 							backgroundColor="bg-blue-300"
 							activeBackgroundColor="enabled:active:bg-blue-200"
 							on:click={() => handleRegister('+')}
@@ -182,8 +182,8 @@
 							<i class="fa-solid fa-plus" slot="right" />
 						</ButtonRounded>
 						<ButtonRounded
-							textColor="text-red-500"
-							backgroundColor="bg-red-300"
+							textColor="text-red-800"
+							backgroundColor="bg-red-200"
 							activeBackgroundColor="enabled:active:bg-red-200"
 							on:click={() => handleRegister('-')}
 							disabled={!$isValid}

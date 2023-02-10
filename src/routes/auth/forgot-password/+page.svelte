@@ -4,7 +4,7 @@
 	import { validator } from '@felte/validator-yup';
 
 	// Assets
-	import forgotPassword from '$lib/assets/images/forgot-password.png';
+	import forgotPassword from '$lib/assets/images/forgot-password.webp';
 
 	// Enums, Classes, Types
 	import type { FirebaseError } from 'firebase/app';
