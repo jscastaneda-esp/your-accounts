@@ -16,6 +16,7 @@
 	import { TypeProjectEnum } from '$lib/enums';
 	import type { EventDispatchProject, Project } from '$lib/types';
 	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import Error from '../../+error.svelte';
 
 	const awaitLoad = [1, 2, 3];
 	let confirmPopupInfo = new ConfirmPopupInfo();
