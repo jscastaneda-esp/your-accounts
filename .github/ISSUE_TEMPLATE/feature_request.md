@@ -4,7 +4,6 @@ about: Suggest an idea for this project
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **¿Tu solicitud de característica está relacionada con un problema? Por favor describa.**

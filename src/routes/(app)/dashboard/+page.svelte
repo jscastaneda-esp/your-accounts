@@ -1,114 +1,114 @@
 <script lang="ts">
 	// Utilities
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import Toast from '$lib/utils/toast.utils';
-	import { session } from '$lib/stores';
-	import { trpc } from '$lib/trpc/client';
+	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
+	import Toast from '$lib/utils/toast.utils'
+	import { session } from '$lib/stores'
+	import { trpc } from '$lib/trpc/client'
 
 	// Components
-	import CardBase from '$lib/components/cards/CardBase.svelte';
-	import CardProject from '$lib/components/cards/CardProject.svelte';
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
-	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte';
+	import CardBase from '$lib/components/cards/CardBase.svelte'
+	import CardProject from '$lib/components/cards/CardProject.svelte'
+	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte'
 
 	// Types, Enums
-	import { TypeProjectEnum } from '$lib/enums';
-	import type { EventDispatchProject, Project } from '$lib/types';
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
+	import { TypeProjectEnum } from '$lib/enums'
+	import type { EventDispatchProject, Project } from '$lib/types'
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
 
-	const awaitLoad = [1, 2, 3];
-	let confirmPopupInfo = new ConfirmPopupInfo();
+	const awaitLoad = [1, 2, 3]
+	let confirmPopupInfo = new ConfirmPopupInfo()
 	confirmPopupInfo.actionCancel = () => {
-		confirmPopupInfo = confirmPopupInfo.reset();
-	};
-	const trpcF = trpc();
-	let loading = false;
-	let projects: Project[];
-	let showNewProject = false;
+		confirmPopupInfo = confirmPopupInfo.reset()
+	}
+	const trpcF = trpc()
+	let loading = false
+	let projects: Project[]
+	let showNewProject = false
 
 	onMount(() => {
-		getProjects();
-	});
+		getProjects()
+	})
 
 	async function getProjects() {
 		if ($session && $session.uid) {
 			try {
-				projects = await trpcF.projects.getByUserId.query($session.uid);
+				projects = await trpcF.projects.getByUserId.query($session.uid)
 			} catch (error) {
-				Toast.error('Se presento un error al consultar los proyectos', true);
-				throw error;
+				Toast.error('Se presento un error al consultar los proyectos', true)
+				throw error
 			}
 		}
 	}
 
 	async function handleNewProject(type: TypeProjectEnum) {
 		if ($session && $session.uid) {
-			loading = true;
+			loading = true
 
-			let url = '';
+			let url = ''
 			if (TypeProjectEnum.BUDGET === type) {
-				url = '/budget';
+				url = '/budget'
 			}
 
 			try {
 				const newProject = await trpcF.projects.create.mutate({
 					userId: $session.uid,
 					type
-				});
-				await goto(`${url}/${newProject.id}`);
+				})
+				await goto(`${url}/${newProject.id}`)
 			} catch (error) {
-				Toast.error('Se presento un error al crear el proyecto', true);
-				throw error;
+				Toast.error('Se presento un error al crear el proyecto', true)
+				throw error
 			} finally {
-				loading = false;
+				loading = false
 			}
 		}
 	}
 
 	async function handleDeleteProject({ detail }: { detail: EventDispatchProject }) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea eliminar el ';
+		confirmPopupInfo.show = true
+		confirmPopupInfo.question = '¿Realmente desea eliminar el '
 
 		if (TypeProjectEnum.BUDGET === detail.type) {
-			confirmPopupInfo.question += `presupuesto ${detail.name}?`;
+			confirmPopupInfo.question += `presupuesto ${detail.name}?`
 			confirmPopupInfo.description =
-				'Se eliminará toda la información asociada y no será posible recuperarla';
+				'Se eliminará toda la información asociada y no será posible recuperarla'
 		}
 
 		confirmPopupInfo.actionOk = async () => {
-			loading = true;
+			loading = true
 
 			try {
-				await trpcF.projects.delete.mutate(detail.id);
-				Toast.success('Se elimino exitosamente el proyecto', true);
-				projects = projects.filter((project) => project.id != detail.id);
+				await trpcF.projects.delete.mutate(detail.id)
+				Toast.success('Se elimino exitosamente el proyecto', true)
+				projects = projects.filter((project) => project.id != detail.id)
 			} catch (error) {
-				Toast.error('Se presento un error al eliminar el proyecto', true);
-				throw error;
+				Toast.error('Se presento un error al eliminar el proyecto', true)
+				throw error
 			} finally {
-				loading = false;
+				loading = false
 			}
-		};
+		}
 	}
 
 	async function handleCloneProject({ detail }: { detail: EventDispatchProject }) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = '¿Realmente desea duplicar el ';
+		confirmPopupInfo.show = true
+		confirmPopupInfo.question = '¿Realmente desea duplicar el '
 
 		if (TypeProjectEnum.BUDGET === detail.type) {
-			confirmPopupInfo.question += `presupuesto ${detail.name}?`;
+			confirmPopupInfo.question += `presupuesto ${detail.name}?`
 			confirmPopupInfo.description =
-				'Se duplicará la información principal. Las transacciones no serán duplicadas';
+				'Se duplicará la información principal. Las transacciones no serán duplicadas'
 		}
 
 		confirmPopupInfo.actionOk = async () => {
 			if ($session && $session.uid) {
-				loading = true;
+				loading = true
 
-				let url = '';
+				let url = ''
 				if (TypeProjectEnum.BUDGET === detail.type) {
-					url = '/budget';
+					url = '/budget'
 				}
 
 				try {
@@ -116,16 +116,16 @@
 						userId: $session.uid,
 						type: detail.type,
 						baseId: detail.id
-					});
-					await goto(`${url}/${newProject.id}`);
+					})
+					await goto(`${url}/${newProject.id}`)
 				} catch (error) {
-					Toast.error('Se presento un error al duplicar el proyecto', true);
-					throw error;
+					Toast.error('Se presento un error al duplicar el proyecto', true)
+					throw error
 				} finally {
-					loading = false;
+					loading = false
 				}
 			}
-		};
+		}
 	}
 </script>
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Button from './Button.svelte';
+	import Button from './Button.svelte'
 
-	export let value: string;
-	export let loading = false;
+	export let value: string
+	export let loading = false
 </script>
 
 <Button

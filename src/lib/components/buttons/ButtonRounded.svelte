@@ -1,10 +1,10 @@
 <script lang="ts">
-	export let value: string | undefined = undefined;
-	export let textColor: string;
-	export let backgroundColor: string;
-	export let activeBackgroundColor: string;
-	export let className = '';
-	export let disabled = false;
+	export let value: string | undefined = undefined
+	export let textColor: string
+	export let backgroundColor: string
+	export let activeBackgroundColor: string
+	export let className = ''
+	export let disabled = false
 </script>
 
 <button

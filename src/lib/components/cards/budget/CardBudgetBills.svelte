@@ -1,60 +1,64 @@
 <script lang="ts">
-	import { getContext, onMount } from 'svelte';
-	import Card from '../Card.svelte';
-	import HeaderCardCompose from '../HeaderCardCompose.svelte';
-	import SummaryValue from '../../SummaryValue.svelte';
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
-	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
-	import Toast from '../../../utils/toast.utils';
-	import ItemCardBudgetBill from './ItemCardBudgetBill.svelte';
-	import type { BudgetBill, CategoryBill, Change } from '../../../types';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums';
-	import type { changes as changesStore } from '../../../stores';
-	import PopupConfirm from '../../popups/PopupConfirm.svelte';
-	import ChangeUtil from '../../../classes/ChangeUtil';
-	import dayjs from '../../../utils/dayjs.utils';
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
-	import { trpc } from '$lib/trpc/client';
+	import { getContext } from 'svelte'
+	import Card from '../Card.svelte'
+	import HeaderCardCompose from '../HeaderCardCompose.svelte'
+	import SummaryValue from '../../SummaryValue.svelte'
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
+	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils'
+	import Toast from '../../../utils/toast.utils'
+	import ItemCardBudgetBill from './ItemCardBudgetBill.svelte'
+	import type { BudgetBill, Change } from '../../../types'
+	import {
+		BudgetBillCategory,
+		ChangeActionEnum,
+		ChangeSectionEnum,
+		ContextNameEnum
+	} from '../../../enums'
+	import type { changes as changesStore } from '../../../stores'
+	import PopupConfirm from '../../popups/PopupConfirm.svelte'
+	import ChangeUtil from '../../../classes/ChangeUtil'
+	import dayjs from '../../../utils/dayjs.utils'
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
+	import { trpc } from '$lib/trpc/client'
 
-	export let isValidForm: boolean;
-	export let loading: boolean;
-	export let list: BudgetBill[];
-	export let budgetId: number;
-	export let budgetMonth: string;
-	export let total: number;
-	export let totalPending: number;
-	export let totalMaxPayment: number;
-	export let totalSavings: number;
+	export let isValidForm: boolean
+	export let loading: boolean
+	export let list: BudgetBill[]
+	export let budgetId: number
+	export let budgetMonth: string
+	export let total: number
+	export let totalPending: number
+	export let totalMaxPayment: number
+	export let totalSavings: number
 
-	const now = dayjs();
-	const trpcF = trpc();
-	let show = false;
-	let daysMonth: number[] = [];
-	let categories: CategoryBill[] = [];
-	let countName = list.length + 1;
-	let totalPayment = 0;
-	let numberPending = 0;
+	const now = dayjs()
+	const trpcF = trpc()
+	let show = false
+	let daysMonth: number[] = []
+	let countName = list.length + 1
+	let totalPayment = 0
+	let numberPending = 0
 	let confirmPopupInfo = new ConfirmPopupInfo(
 		false,
 		'¿Está seguro que desea eliminar el gasto :DESC?'
-	);
+	)
 	confirmPopupInfo.actionCancel = () => {
 		confirmPopupInfo = confirmPopupInfo.reset(
 			false,
 			'¿Está seguro que desea eliminar el gasto :DESC?'
-		);
-	};
+		)
+	}
 	type ChangeBill = {
-		description?: string;
-		amount?: number;
-		shared?: boolean;
-		dueDate?: string | number;
-		complete?: boolean;
-		categoryId?: string | number;
-	};
-	const changeUtil = new ChangeUtil<keyof ChangeBill>();
-	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
+		description?: string
+		amount?: number
+		shared?: boolean
+		dueDate?: string | number
+		complete?: boolean
+		categoryId?: string | number
+	}
+	const changeUtil = new ChangeUtil<keyof ChangeBill>()
+	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES)
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -68,36 +72,30 @@
 				dueDate: yup.string().max(2),
 				complete: defaultBoolean,
 				budgetId: defaultNumber.min(1),
-				categoryId: defaultString
+				category: yup
+					.mixed<BudgetBillCategory>()
+					.oneOf(Object.values(BudgetBillCategory))
+					.required()
 			})
 		)
-	});
+	})
 	const { form, data, errors, isValid, touched, addField, unsetField } = createForm({
 		initialValues: {
 			bills: list
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
-
-	onMount(async () => {
-		try {
-			categories = await trpcF.budgets.getCategories.query();
-		} catch (error) {
-			Toast.error('Se presento un error al consultar los tipos de pagos', true);
-			throw error;
-		}
-	});
+	})
 
 	async function handleAdd() {
 		if ($isValid) {
-			loading = true;
+			loading = true
 
 			try {
 				const request = {
 					description: `Gasto ${countName++}`,
 					budgetId
-				};
-				const newBill = await trpcF.budgets.bills.create.mutate(request);
+				}
+				const newBill = await trpcF.budgets.bills.create.mutate(request)
 				const newField = {
 					id: newBill.id,
 					amount: 0,
@@ -105,17 +103,17 @@
 					shared: false,
 					dueDate: '',
 					complete: false,
-					categoryId: '',
+					category: null as unknown as BudgetBillCategory,
 					totalShared: 0,
 					...request
-				};
-				addField('bills', newField);
-				list.push(newField);
+				}
+				addField('bills', newField)
+				list.push(newField)
 			} catch (error) {
-				Toast.error('Se presento un error al crear el gasto', true);
-				throw error;
+				Toast.error('Se presento un error al crear el gasto', true)
+				throw error
 			} finally {
-				loading = false;
+				loading = false
 			}
 		}
 	}
@@ -123,24 +121,24 @@
 	function handleDelete({
 		detail
 	}: {
-		detail: { index: number; id: number; description: string };
+		detail: { index: number; id: number; description: string }
 	}) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', detail.description);
-		confirmPopupInfo.actionOk = () => unsetField(`bills.${detail.index}`);
+		confirmPopupInfo.show = true
+		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', detail.description)
+		confirmPopupInfo.actionOk = () => unsetField(`bills.${detail.index}`)
 	}
 
 	function compareData() {
 		const changeBase = {
 			section: ChangeSectionEnum.BUDGET_BILL,
 			action: ChangeActionEnum.UPDATE
-		};
-		const newDatas = $data.bills;
-		const dataErrors = $errors.bills || [];
+		}
+		const newDatas = $data.bills
+		const dataErrors = $errors.bills || []
 
 		if (newDatas.length != list.length) {
-			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id));
-			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id));
+			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
+			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
 
 			deletes.forEach((del) => {
 				changes.add({
@@ -149,21 +147,21 @@
 					detail: {
 						id: del.id
 					}
-				});
-			});
+				})
+			})
 		} else {
 			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index];
-				const oldData = list[index];
-				const errorData = dataErrors[index];
+				const newData = newDatas[index]
+				const oldData = list[index]
+				const errorData = dataErrors[index]
 
-				let isChanges = false;
+				let isChanges = false
 				const change: Change<ChangeBill> = {
 					...changeBase,
 					detail: {
 						id: newData.id
 					}
-				};
+				}
 
 				isChanges = changeUtil.setChange(
 					errorData,
@@ -172,18 +170,11 @@
 					change,
 					'description',
 					isChanges
-				);
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges);
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'shared', isChanges);
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'dueDate', isChanges);
-				isChanges = changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'complete',
-					isChanges
-				);
+				)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'shared', isChanges)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'dueDate', isChanges)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'complete', isChanges)
 				isChanges = changeUtil.setChange(
 					errorData,
 					newData,
@@ -191,66 +182,66 @@
 					change,
 					'categoryId',
 					isChanges
-				);
+				)
 				if (isChanges) {
-					changes.add(change);
+					changes.add(change)
 				}
 			}
 		}
 	}
 
-	$: isValidForm = $isValid;
-	$: monthBudget = dayjs(budgetMonth, 'YYYY-MM');
+	$: isValidForm = $isValid
+	$: monthBudget = dayjs(budgetMonth, 'YYYY-MM')
 	$: {
-		daysMonth = [];
-		const daysInMonth = monthBudget.daysInMonth();
+		daysMonth = []
+		const daysInMonth = monthBudget.daysInMonth()
 		if (!isNaN(daysInMonth)) {
 			for (let day = 1; day <= daysInMonth; day++) {
-				daysMonth = [...daysMonth, day];
+				daysMonth = [...daysMonth, day]
 			}
 		}
 	}
 	$: {
-		total = 0;
-		totalPending = 0;
-		totalSavings = 0;
-		totalPayment = 0;
-		numberPending = 0;
-		totalMaxPayment = 0;
+		total = 0
+		totalPending = 0
+		totalSavings = 0
+		totalPayment = 0
+		numberPending = 0
+		totalMaxPayment = 0
 
 		$data.bills.forEach((bill) => {
-			total += bill.amount;
-			totalPayment += bill.payment;
+			total += bill.amount
+			totalPayment += bill.payment
 
-			const pending = bill.amount - bill.payment;
+			const pending = bill.amount - bill.payment
 			if (!bill.complete) {
-				totalPending += pending;
+				totalPending += pending
 			} else {
-				totalSavings += pending;
+				totalSavings += pending
 			}
 
 			if (bill.amount > bill.payment && !bill.complete) {
-				numberPending += 1;
+				numberPending += 1
 			}
 
 			if (bill.amount < bill.payment) {
-				let isTotalPayment = true;
+				let isTotalPayment = true
 				if (bill.shared) {
 					if (pending < 0) {
-						totalMaxPayment += bill.payment + pending;
-						isTotalPayment = false;
+						totalMaxPayment += bill.payment + pending
+						isTotalPayment = false
 					}
 				}
 
 				if (isTotalPayment) {
-					totalMaxPayment += bill.payment;
+					totalMaxPayment += bill.payment
 				}
 			} else {
-				totalMaxPayment += bill.amount;
+				totalMaxPayment += bill.amount
 			}
-		});
+		})
 	}
-	$: if ($touched) compareData();
+	$: if ($touched) compareData()
 </script>
 
 <div class="px-1">
@@ -260,14 +251,14 @@
 			iconAction={show ? 'caret-up' : 'caret-down'}
 			on:click={() => {
 				if (show && !$isValid) {
-					Toast.warn('Completa la información', true);
-					return;
+					Toast.warn('Completa la información', true)
+					return
 				} else if (!show && !budgetMonth) {
-					Toast.warn('Mes del presupuesto obligatorio', true);
-					return;
+					Toast.warn('Mes del presupuesto obligatorio', true)
+					return
 				}
 
-				show = !show;
+				show = !show
 			}}
 		>
 			<svelte:fragment slot="title">
@@ -308,7 +299,6 @@
 						{index}
 						{monthBudget}
 						{daysMonth}
-						{categories}
 						data={bill}
 						errors={$errors.bills?.[index]}
 						on:delete={handleDelete}

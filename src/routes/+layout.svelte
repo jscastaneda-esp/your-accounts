@@ -1,15 +1,16 @@
 <script lang="ts">
-	import '@fortawesome/fontawesome-free/css/all.min.css';
-	import '../app.css';
-	import { SvelteToast, type SvelteToastOptions } from '@zerodevx/svelte-toast';
-	import firebase from '$lib/configs/firebase.client';
-	import { session } from '$lib/stores';
+	import '@fortawesome/fontawesome-free/css/all.min.css'
+	import '../app.css'
+	import { SvelteToast } from '@zerodevx/svelte-toast'
+	import firebase from '$lib/configs/firebase.client'
+	import { session } from '$lib/stores'
+	import type { SvelteToastOptions } from '@zerodevx/svelte-toast/stores'
 
 	firebase.authFunctions.onAuthStateChanged((user) => {
-		$session = user;
-	});
+		$session = user
+	})
 
-	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } };
+	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } }
 </script>
 
 <slot />

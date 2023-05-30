@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let classNameContainer = '';
-	export let showBody = false;
+	export let classNameContainer = ''
+	export let showBody = false
 </script>
 
 <article

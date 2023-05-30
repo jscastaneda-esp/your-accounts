@@ -1,0 +1,11 @@
+FROM node:18
+
+RUN apt-get update && apt install -y zsh
+RUN sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
+RUN chsh -s $(which zsh)
+
+WORKDIR /code
+
+COPY ["package.json", "package-lock.json", "./"]
+
+RUN npm install

@@ -1,60 +1,58 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import Input from '../../inputs/Input.svelte';
-	import type { BudgetBill, CategoryBill, FelteError } from '../../../types';
-	import SummaryValue from '../../SummaryValue.svelte';
-	import InputSwitch from '../../inputs/InputSwitch.svelte';
-	import PopupBillRegister from '../../popups/budget/PopupBillRegister.svelte';
-	import PopupBillShared from '../../popups/budget/PopupBillShared.svelte';
-	import type dayjs from '../../../utils/dayjs.utils';
+	import { createEventDispatcher } from 'svelte'
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte'
+	import Input from '../../inputs/Input.svelte'
+	import type { BudgetBill, FelteError } from '../../../types'
+	import SummaryValue from '../../SummaryValue.svelte'
+	import InputSwitch from '../../inputs/InputSwitch.svelte'
+	import PopupBillRegister from '../../popups/budget/PopupBillRegister.svelte'
+	import PopupBillShared from '../../popups/budget/PopupBillShared.svelte'
+	import type dayjs from '../../../utils/dayjs.utils'
+	import { BudgetBillCategory } from '$lib/enums'
 
-	export let now: dayjs.Dayjs;
-	export let index: number;
-	export let monthBudget: dayjs.Dayjs;
-	export let daysMonth: number[];
-	export let categories: CategoryBill[];
-	export let data: BudgetBill;
+	export let now: dayjs.Dayjs
+	export let index: number
+	export let monthBudget: dayjs.Dayjs
+	export let daysMonth: number[]
+	export let data: BudgetBill
 	export let errors: {
-		description: FelteError;
-		amount: FelteError;
-		shared: FelteError;
-		complete: FelteError;
-	};
+		description: FelteError
+		amount: FelteError
+		shared: FelteError
+		complete: FelteError
+	}
 
 	const dispatch = createEventDispatcher<{
-		delete: { index: number; id: number; description: string };
-	}>();
-	const prefixFieldName = `bills.${index}`;
-	let optionRegister = 0;
+		delete: { index: number; id: number; description: string }
+	}>()
+	const prefixFieldName = `bills.${index}`
+	let optionRegister = 0
 
 	function handleDelete() {
 		dispatch('delete', {
 			index,
 			id: data.id,
 			description: data.description
-		});
+		})
 	}
 
 	function handleShowOption(option: number) {
-		optionRegister = optionRegister != option ? option : 0;
+		optionRegister = optionRegister != option ? option : 0
 	}
 
 	function handleRegisterBill({ detail }: { detail: { payment: number } }) {
-		data.payment += detail.payment;
+		data.payment += detail.payment
 	}
 
 	function handleChangeTotalShared({ detail }: { detail: number }) {
-		data.totalShared = detail;
+		data.totalShared = detail
 	}
 
-	$: pending = data.complete ? 0 : data.amount - data.payment;
-	$: category = categories.find((category) => category.id == data.categoryId);
+	$: pending = data.complete ? 0 : data.amount - data.payment
 </script>
 
 <article
 	class="bg-gray-200 p-[6px] flex flex-col items-center gap-2 border-b-2 border-b-gray-300 border-l-[5px] border-l-white"
-	style={`border-left-color: ${category?.color};`}
 >
 	<section class="w-full grid grid-cols-4 gap-2">
 		<Input
@@ -103,7 +101,7 @@
 			class="ml-1 col-span-4 lg:col-span-2 flex gap-1 items-center transition-all duration-75 text-sm text-gray-500"
 			class:text-red-500={data.dueDate != 0 &&
 				now.month() === monthBudget.month() &&
-				now.day() > data.dueDate}
+				now.date() > Number(data.dueDate)}
 		>
 			<span class="leading-none">Vencimiento</span>
 			<select
@@ -139,12 +137,17 @@
 			id={`${prefixFieldName}.categoryId`}
 			name={`${prefixFieldName}.categoryId`}
 			class="h-[23px] p-1 pr-7 leading-none rounded border-none outline-none text-xs"
-			bind:value={data.categoryId}
+			bind:value={data.category}
 		>
 			<option value="" disabled>Seleccione</option>
-			{#each categories as { id, name }}
-				<option value={id.toString()}>{name}</option>
-			{/each}
+			<option value={BudgetBillCategory.HOUSE}>Hogar</option>
+			<option value={BudgetBillCategory.ENTERTAINMENT}>Entretenimiento</option>
+			<option value={BudgetBillCategory.PERSONAL}>Personal</option>
+			<option value={BudgetBillCategory.VEHICLE_TRANSPORTATION}>Vehículo o Transporte</option>
+			<option value={BudgetBillCategory.EDUCATION}>Educación</option>
+			<option value={BudgetBillCategory.SERVICES}>Servicios</option>
+			<option value={BudgetBillCategory.SAVING}>Ahorros</option>
+			<option value={BudgetBillCategory.OTHERS}>Otros</option>
 		</select>
 		<ButtonRounded
 			textColor="text-blue-800"

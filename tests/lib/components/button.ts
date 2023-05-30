@@ -1,44 +1,44 @@
-import { describe, expect, it, afterEach } from 'vitest';
-import { render, screen, cleanup, fireEvent } from '@testing-library/svelte';
-import Button from '../../../src/lib/components/buttons/Button.svelte';
+import { describe, expect, it, afterEach } from 'vitest'
+import { render, screen, cleanup, fireEvent } from '@testing-library/svelte'
+import Button from '../../../src/lib/components/buttons/Button.svelte'
 
 describe('Button', () => {
-	const value = 'Test';
+	const value = 'Test'
 
-	afterEach(() => cleanup());
+	afterEach(() => cleanup())
 
 	it('required properties', () => {
 		render(Button, {
 			props: {
 				value
 			}
-		});
+		})
 
-		const button = screen.getByRole('button');
-		const span = button.querySelector('span');
-		expect(span).toBeTruthy();
+		const button = screen.getByRole('button')
+		const span = button.querySelector('span')
+		expect(span).toBeTruthy()
 		if (span) {
-			expect(span.textContent).toEqual(value);
+			expect(span.textContent).toEqual(value)
 		}
-	});
+	})
 
 	it('type property', () => {
-		const type = 'submit';
+		const type = 'submit'
 
 		render(Button, {
 			props: {
 				type,
 				value
 			}
-		});
+		})
 
-		const button: HTMLButtonElement = screen.getByRole('button');
-		expect(button.type).toEqual(type);
-	});
+		const button: HTMLButtonElement = screen.getByRole('button')
+		expect(button.type).toEqual(type)
+	})
 
 	it('class properties', () => {
-		const className = 'test';
-		const classNameValue = 'test-value';
+		const className = 'test'
+		const classNameValue = 'test-value'
 
 		render(Button, {
 			props: {
@@ -46,17 +46,17 @@ describe('Button', () => {
 				className,
 				classNameValue
 			}
-		});
+		})
 
-		const button = screen.getByRole('button');
-		expect([...button.classList.values()]).toContain(className);
+		const button = screen.getByRole('button')
+		expect([...button.classList.values()]).toContain(className)
 
-		const span = button.querySelector('span');
-		expect(span).toBeTruthy();
+		const span = button.querySelector('span')
+		expect(span).toBeTruthy()
 		if (span) {
-			expect([...span.classList.values()]).toContain(classNameValue);
+			expect([...span.classList.values()]).toContain(classNameValue)
 		}
-	});
+	})
 
 	it('disabled property', () => {
 		render(Button, {
@@ -64,14 +64,14 @@ describe('Button', () => {
 				value,
 				disabled: true
 			}
-		});
+		})
 
-		const button: HTMLButtonElement = screen.getByRole('button');
-		expect(button.disabled).toBeTruthy();
+		const button: HTMLButtonElement = screen.getByRole('button')
+		expect(button.disabled).toBeTruthy()
 
-		const span = button.querySelector('span');
-		expect(span).toBeTruthy();
-	});
+		const span = button.querySelector('span')
+		expect(span).toBeTruthy()
+	})
 
 	it('loading property', () => {
 		render(Button, {
@@ -79,32 +79,32 @@ describe('Button', () => {
 				value,
 				loading: true
 			}
-		});
+		})
 
-		const button: HTMLButtonElement = screen.getByRole('button');
-		expect(button.disabled).toBeTruthy();
+		const button: HTMLButtonElement = screen.getByRole('button')
+		expect(button.disabled).toBeTruthy()
 
-		const span = button.querySelector('span');
-		expect(span).toBeNull();
+		const span = button.querySelector('span')
+		expect(span).toBeNull()
 
-		const svg = button.querySelector('svg');
-		expect(svg).toBeTruthy();
-	});
+		const svg = button.querySelector('svg')
+		expect(svg).toBeTruthy()
+	})
 
 	it('click event', async () => {
 		const { component } = render(Button, {
 			props: {
 				value
 			}
-		});
+		})
 
-		let clicked = false;
+		let clicked = false
 		component.$on('click', (event) => {
-			clicked = !!event.target;
-		});
+			clicked = !!event.target
+		})
 
-		const button = screen.getByRole('button');
-		await fireEvent.click(button);
-		expect(clicked).toBeTruthy();
-	});
-});
+		const button = screen.getByRole('button')
+		await fireEvent.click(button)
+		expect(clicked).toBeTruthy()
+	})
+})

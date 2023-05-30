@@ -1,7 +1,7 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/stores'
 
-	import error from '$lib/assets/images/error.webp';
+	import error from '$lib/assets/images/error.webp'
 </script>
 
 <svelte:head>

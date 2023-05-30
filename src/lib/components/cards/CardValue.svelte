@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { money } from '../../utils/number.utils';
+	import { money } from '../../utils/number.utils'
 
-	export let icon: string;
-	export let title: string;
-	export let value: number;
+	export let icon: string
+	export let title: string
+	export let value: number
 </script>
 
 <div class="flex items-center gap-1">

@@ -1,12 +1,12 @@
 <script lang="ts">
 	// Enums, Classes, Types
-	import type { PageDataAuth } from '$lib/types';
-	import { TypeAuthEnum } from '$lib/enums';
+	import type { PageDataAuth } from '$lib/types'
+	import { TypeAuthEnum } from '$lib/enums'
 
-	import FormLogin from '$lib/components/FormLogin.svelte';
-	import FormSignUp from '$lib/components/FormSignUp.svelte';
+	import FormLogin from '$lib/components/FormLogin.svelte'
+	import FormSignUp from '$lib/components/FormSignUp.svelte'
 
-	export let data: PageDataAuth;
+	export let data: PageDataAuth
 </script>
 
 <svelte:head>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Pie, Bar } from 'svelte-chartjs';
+	import { Pie, Bar } from 'svelte-chartjs'
 	import {
 		Chart as ChartJS,
 		Title,
@@ -12,15 +12,15 @@
 		type ChartData,
 		type ChartOptions,
 		type TooltipItem
-	} from 'chart.js';
-	import Card from '../Card.svelte';
-	import HeaderCardSimple from '../HeaderCardSimple.svelte';
-	import Toast from '$lib/utils/toast.utils';
-	import { trpc } from '$lib/trpc/client';
+	} from 'chart.js'
+	import Card from '../Card.svelte'
+	import HeaderCardSimple from '../HeaderCardSimple.svelte'
+	import Toast from '$lib/utils/toast.utils'
+	import { trpc } from '$lib/trpc/client'
 
-	export let budgetId: number;
+	export let budgetId: number
 
-	ChartJS.register(Title, Tooltip, Legend, ArcElement, BarElement, CategoryScale, LinearScale);
+	ChartJS.register(Title, Tooltip, Legend, ArcElement, BarElement, CategoryScale, LinearScale)
 
 	const CHART_COLORS = {
 		red: 'rgb(255, 99, 132)',
@@ -30,7 +30,7 @@
 		blue: 'rgb(54, 162, 235)',
 		purple: 'rgb(153, 102, 255)',
 		grey: 'rgb(201, 203, 207)'
-	};
+	}
 	const options: ChartOptions = {
 		maintainAspectRatio: false,
 		layout: {
@@ -47,7 +47,7 @@
 				position: 'bottom'
 			}
 		}
-	};
+	}
 	const optionsPie: ChartOptions<'pie'> = {
 		...(options as ChartOptions<'pie'>),
 		plugins: {
@@ -59,15 +59,15 @@
 			tooltip: {
 				callbacks: {
 					label: function (context: TooltipItem<'pie'>) {
-						const { dataset, parsed } = context;
-						const total = dataset.data.reduce((previous, current) => previous + current);
-						const percentage = (parsed / total) * 100;
-						return `${percentage.toFixed(1)}% (${parsed})`;
+						const { dataset, parsed } = context
+						const total = dataset.data.reduce((previous, current) => previous + current)
+						const percentage = (parsed / total) * 100
+						return `${percentage.toFixed(1)}% (${parsed})`
 					}
 				}
 			}
 		}
-	};
+	}
 	const optionsBar: ChartOptions<'bar'> = {
 		...(options as ChartOptions<'bar'>),
 		plugins: {
@@ -77,22 +77,22 @@
 				text: 'Balance'
 			}
 		}
-	};
-	const trpcF = trpc();
-	let show = false;
-	let loading = false;
-	let dataPie: ChartData<'pie', number[], unknown> | null;
-	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null;
+	}
+	const trpcF = trpc()
+	let show = false
+	let loading = false
+	let dataPie: ChartData<'pie', number[], unknown> | null
+	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null
 
 	async function handleShow() {
-		show = !show;
+		show = !show
 
-		dataPie = null;
-		dataBar = null;
+		dataPie = null
+		dataBar = null
 		if (show) {
-			loading = true;
+			loading = true
 			try {
-				const chartData = await trpcF.budgets.getStatisticsById.query(budgetId);
+				const chartData = await trpcF.budgets.getStatisticsById.query(budgetId)
 				dataPie = {
 					labels: chartData.labels,
 					datasets: [
@@ -101,7 +101,7 @@
 							backgroundColor: Object.values(CHART_COLORS)
 						}
 					]
-				};
+				}
 
 				dataBar = {
 					labels: chartData.labels,
@@ -119,12 +119,12 @@
 							borderColor: ['rgba(255, 134, 159, 1)']
 						}
 					]
-				};
+				}
 			} catch (error) {
-				Toast.error('Se presento un error al consultar las transacciones', true);
-				throw error;
+				Toast.error('Se presento un error al consultar las transacciones', true)
+				throw error
 			} finally {
-				loading = false;
+				loading = false
 			}
 		}
 	}
@@ -146,8 +146,8 @@
 						<div
 							class="p-5 w-full h-full flex flex-col gap-2 justify-center items-center animate-pulse"
 						>
-							<div class="w-1/2 h-6 mb-2 bg-slate-400 " />
-							<div class="w-[350px] h-[350px] bg-slate-400 rounded-full " />
+							<div class="w-1/2 h-6 mb-2 bg-slate-400" />
+							<div class="w-[350px] h-[350px] bg-slate-400 rounded-full" />
 							<div class="w-full h-5 bg-slate-400" />
 						</div>
 					{:else if !dataPie?.datasets[0].data.length}
@@ -161,7 +161,7 @@
 						<div
 							class="p-5 w-full h-full flex flex-col gap-2 justify-center items-center animate-pulse"
 						>
-							<div class="w-1/2 h-6 mb-2 bg-slate-400 " />
+							<div class="w-1/2 h-6 mb-2 bg-slate-400" />
 							<div class="w-full h-[350px] bg-slate-400" />
 							<div class="w-full h-5 bg-slate-400" />
 						</div>

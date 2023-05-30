@@ -1,59 +1,59 @@
 <script lang="ts">
 	// Enums, Types, Utilities
-	import { onDestroy, onMount, setContext } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
-	import type { Budget, Change } from '$lib/types';
-	import yup, { defaultString, defaultNumber } from '$lib/utils/yup.utils';
-	import { zeroPad } from '$lib/utils/number.utils';
-	import Toast from '$lib/utils/toast.utils';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums';
-	import { groupBy } from '$lib/utils/array.utils';
-	import { changes } from '$lib/stores';
-	import ChangeUtil from '$lib/classes/ChangeUtil';
+	import { onDestroy, onMount, setContext } from 'svelte'
+	import { goto } from '$app/navigation'
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
+	import type { Budget, Change } from '$lib/types'
+	import yup, { defaultString, defaultNumber } from '$lib/utils/yup.utils'
+	import { zeroPad } from '$lib/utils/number.utils'
+	import Toast from '$lib/utils/toast.utils'
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums'
+	import { groupBy } from '$lib/utils/array.utils'
+	import { changes } from '$lib/stores'
+	import ChangeUtil from '$lib/classes/ChangeUtil'
 
 	// Components
-	import Input from '$lib/components/inputs/Input.svelte';
-	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte';
-	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte';
-	import SummaryValue from '$lib/components/SummaryValue.svelte';
-	import Transactions from '$lib/components/Transactions.svelte';
-	import CardBudgetAvailable from '$lib/components/cards/budget/CardBudgetAvailable.svelte';
-	import CardBudgetBills from '$lib/components/cards/budget/CardBudgetBills.svelte';
-	import CardBudgetStatistics from '$lib/components/cards/budget/CardBudgetStatistics.svelte';
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte';
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
-	import { trpc } from '$lib/trpc/client';
+	import Input from '$lib/components/inputs/Input.svelte'
+	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte'
+	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte'
+	import SummaryValue from '$lib/components/SummaryValue.svelte'
+	import Transactions from '$lib/components/Transactions.svelte'
+	import CardBudgetAvailable from '$lib/components/cards/budget/CardBudgetAvailable.svelte'
+	import CardBudgetBills from '$lib/components/cards/budget/CardBudgetBills.svelte'
+	import CardBudgetStatistics from '$lib/components/cards/budget/CardBudgetStatistics.svelte'
+	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
+	import { trpc } from '$lib/trpc/client'
 
-	export let data: Budget;
+	export let data: Budget
 
-	let loading = false;
-	let showSummary = false;
-	let interval: ReturnType<typeof setInterval>;
-	let isValidAvailable = false;
-	let isValidBills = false;
-	let totalAvailable = 0;
-	let totalBillPending = 0;
-	let totalBillMaxPayment = 0;
-	let totalBillSavings = 0;
+	let loading = false
+	let showSummary = false
+	let interval: ReturnType<typeof setInterval>
+	let isValidAvailable = false
+	let isValidBills = false
+	let totalAvailable = 0
+	let totalBillPending = 0
+	let totalBillMaxPayment = 0
+	let totalBillSavings = 0
 	const confirmPopupInfo = new ConfirmPopupInfo(
 		false,
 		'¿Realmente desea salir?',
 		'Al salir se pueden perder cambios. Se recomienda primero guardar'
-	);
+	)
 	confirmPopupInfo.actionCancel = () => {
-		confirmPopupInfo.show = false;
-	};
-	const trpcF = trpc();
+		confirmPopupInfo.show = false
+	}
+	const trpcF = trpc()
 	type ChangeMain = {
-		name?: string;
-		year?: number;
-		month?: number;
-		fixedIncome?: number;
-		additionalIncome?: number;
-	};
-	const changeUtil = new ChangeUtil<keyof ChangeMain>();
+		name?: string
+		year?: number
+		month?: number
+		fixedIncome?: number
+		additionalIncome?: number
+	}
+	const changeUtil = new ChangeUtil<keyof ChangeMain>()
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -62,7 +62,7 @@
 		month: defaultString.matches(new RegExp('^\\d{4}-\\d{2}$')),
 		fixedIncome: defaultNumber.min(0).max(9999999999.99),
 		additionalIncome: defaultNumber.min(0).max(9999999999.99)
-	});
+	})
 	const {
 		form,
 		data: dataForm,
@@ -78,46 +78,46 @@
 			additionalIncome: data.additionalIncome
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 
 	onMount(() => {
 		interval = setInterval(() => {
-			handleSave();
-		}, 10000);
-	});
+			handleSave()
+		}, 10000)
+	})
 
 	onDestroy(() => {
-		clearInterval(interval);
-	});
+		clearInterval(interval)
+	})
 
 	setContext(ContextNameEnum.CHANGES, {
 		changes
-	});
+	})
 
 	async function handleSave() {
-		const changeList = [...$changes];
+		const changeList = [...$changes]
 		if ($changes.length > 0) {
 			try {
-				changes.delete(changeList);
-				const sendChanges: Change<Record<string, unknown>>[] = [];
+				changes.delete(changeList)
+				const sendChanges: Change<Record<string, unknown>>[] = []
 
 				const groupBySection = groupBy<Change<Record<string, unknown>>>(
 					changeList,
 					(change) => change.section
-				);
+				)
 				Object.entries(groupBySection).forEach((group) => {
-					const [section, items] = group;
+					const [section, items] = group
 					const groupByAction = groupBy<Change<Record<string, unknown>>>(
 						items,
 						(change) => change.action
-					);
+					)
 					Object.entries(groupByAction).forEach((group) => {
-						const [action, items] = group;
+						const [action, items] = group
 						const groupById = groupBy<Change<Record<string, unknown>>>(items, (change) =>
 							change.detail.id.toString()
-						);
+						)
 						Object.entries(groupById).forEach((group) => {
-							const [id, items] = group;
+							const [id, items] = group
 
 							const sendChange: Change<Record<string, unknown>> = {
 								section: section as ChangeSectionEnum,
@@ -125,63 +125,63 @@
 								detail: {
 									id: Number(id)
 								}
-							};
+							}
 
 							items.forEach(
 								(item) => (sendChange.detail = { ...sendChange.detail, ...item.detail })
-							);
-							sendChanges.push(sendChange);
-						});
-					});
-				});
+							)
+							sendChanges.push(sendChange)
+						})
+					})
+				})
 
 				await trpcF.projects.receiveChanges.mutate({
 					projectId: 1,
 					changes: sendChanges
-				});
+				})
 			} catch (error) {
-				changes.revert(changeList);
-				Toast.error('Se presento un error al guardar', true);
-				throw error;
+				changes.revert(changeList)
+				Toast.error('Se presento un error al guardar', true)
+				throw error
 			}
 		}
 	}
 
 	function handleExit() {
-		confirmPopupInfo.show = true;
+		confirmPopupInfo.show = true
 		confirmPopupInfo.actionOk = async () => {
-			loading = true;
+			loading = true
 			try {
-				await goto('/dashboard');
+				await goto('/dashboard')
 			} finally {
-				loading = false;
+				loading = false
 			}
-		};
+		}
 	}
 
 	function compareData() {
-		const newData = $dataForm;
-		const errorData = $errors;
+		const newData = $dataForm
+		const errorData = $errors
 
-		let isChanges = false;
+		let isChanges = false
 		const change: Change<ChangeMain> = {
 			section: ChangeSectionEnum.BUDGET_MAIN,
 			action: ChangeActionEnum.UPDATE,
 			detail: {
 				id: data.id
 			}
-		};
-
-		if (!errorData?.month) {
-			const monthParts = newData.month.split('-');
-			const year = Number(monthParts[0]);
-			const month = Number(monthParts[1]);
-			isChanges = changeUtil.setChangeDirect(year, data, change, 'year', isChanges);
-			isChanges = changeUtil.setChangeDirect(month, data, change, 'month', isChanges);
 		}
 
-		isChanges = changeUtil.setChange(errorData, newData, data, change, 'name', isChanges);
-		isChanges = changeUtil.setChange(errorData, newData, data, change, 'fixedIncome', isChanges);
+		if (!errorData?.month) {
+			const monthParts = newData.month.split('-')
+			const year = Number(monthParts[0])
+			const month = Number(monthParts[1])
+			isChanges = changeUtil.setChangeDirect(year, data, change, 'year', isChanges)
+			isChanges = changeUtil.setChangeDirect(month, data, change, 'month', isChanges)
+		}
+
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'name', isChanges)
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'fixedIncome', isChanges)
 		isChanges = changeUtil.setChange(
 			errorData,
 			newData,
@@ -189,15 +189,15 @@
 			change,
 			'additionalIncome',
 			isChanges
-		);
+		)
 		if (isChanges) {
-			changes.add(change);
+			changes.add(change)
 		}
 	}
 
-	$: data.estimatedBalance = data.fixedIncome + data.additionalIncome - data.total;
-	$: data.totalBalance = totalAvailable - totalBillPending;
-	$: if ($touched) compareData();
+	$: data.estimatedBalance = data.fixedIncome + data.additionalIncome - data.total
+	$: data.totalBalance = totalAvailable - totalBillPending
+	$: if ($touched) compareData()
 </script>
 
 <svelte:head>

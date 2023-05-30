@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let iconAction: string | null = null;
-	export let clickable = true;
+	export let iconAction: string | null = null
+	export let clickable = true
 </script>
 
 <button

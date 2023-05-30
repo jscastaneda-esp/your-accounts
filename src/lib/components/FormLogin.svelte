@@ -1,37 +1,37 @@
 <script lang="ts">
 	// Svelte
-	import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation'
 
 	// Felte
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
 
 	// Assets
-	import logo from '../assets/images/logo.webp';
-	import logoGoogle from '../assets/images/logo-google.webp';
-	import forgotPassword from '../assets/images/forgot-password-icon.webp';
+	import logo from '../assets/images/logo.webp'
+	import logoGoogle from '../assets/images/logo-google.webp'
+	import forgotPassword from '../assets/images/forgot-password-icon.webp'
 
 	// Enums, Classes, Types
-	import { FirebaseProviderEnum, TypeAuthEnum } from '../enums';
-	import type { FirebaseError } from 'firebase/app';
+	import { FirebaseProviderEnum, TypeAuthEnum } from '../enums'
+	import type { FirebaseError } from 'firebase/app'
 
 	// Components
-	import ButtonExternalAuth from './buttons/ButtonExternalAuth.svelte';
-	import Input from './inputs/Input.svelte';
-	import InputPassword from './inputs/InputPassword.svelte';
-	import Button from './buttons/Button.svelte';
-	import ButtonLink from './buttons/ButtonLink.svelte';
+	import ButtonExternalAuth from './buttons/ButtonExternalAuth.svelte'
+	import Input from './inputs/Input.svelte'
+	import InputPassword from './inputs/InputPassword.svelte'
+	import Button from './buttons/Button.svelte'
+	import ButtonLink from './buttons/ButtonLink.svelte'
 
 	// Utilities
-	import firebase from '../configs/firebase.client';
-	import Toast from '../utils/toast.utils';
-	import yup, { email, password } from '../utils/yup.utils';
+	import firebase from '../configs/firebase.client'
+	import Toast from '../utils/toast.utils'
+	import yup, { email, password } from '../utils/yup.utils'
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		email,
 		password
-	});
+	})
 	const { form, errors, isValid, isSubmitting, reset } = createForm({
 		initialValues: {
 			email: '',
@@ -44,24 +44,24 @@
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.LOGIN,
 				(error as FirebaseError).code
-			);
+			)
 			if (isError) {
-				Toast.error(msg, true);
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg, true);
+				Toast.warn(msg, true)
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 
-	let loading = false;
+	let loading = false
 
 	async function signInGoogle() {
-		loading = true;
+		loading = true
 
 		try {
-			await firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE);
-			goto('/dashboard');
+			await firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE)
+			goto('/dashboard')
 		} catch (error: unknown) {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.LOGIN,
@@ -69,18 +69,18 @@
 				{
 					PROVIDER: FirebaseProviderEnum.GOOGLE
 				}
-			);
+			)
 			if (isError) {
-				Toast.error(msg, true);
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg, true);
+				Toast.warn(msg, true)
 			}
 		} finally {
-			loading = false;
+			loading = false
 		}
 	}
 
-	$: loadingEvent = $isSubmitting || loading;
+	$: loadingEvent = $isSubmitting || loading
 </script>
 
 <form class="flex flex-col justify-center items-center min-w-[238px] max-w-[238px]" use:form>

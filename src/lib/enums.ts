@@ -19,6 +19,17 @@ export enum TypeProjectEnum {
 	BUDGET = 'BUDGET'
 }
 
+export enum BudgetBillCategory {
+	HOUSE = 'house',
+	ENTERTAINMENT = 'entertainment',
+	PERSONAL = 'personal',
+	VEHICLE_TRANSPORTATION = 'vehicle_transportation',
+	EDUCATION = 'education',
+	SERVICES = 'services',
+	SAVING = 'saving',
+	OTHERS = 'others'
+}
+
 export enum UserManagementActionsEnum {
 	resetPassword
 }

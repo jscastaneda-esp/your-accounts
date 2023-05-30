@@ -1,16 +1,16 @@
 <script lang="ts">
-	import Input from './Input.svelte';
+	import Input from './Input.svelte'
 
-	export let id: string;
-	export let name: string;
-	export let placeholder: string;
-	export let disabled = false;
-	export let errors: string[] | null = null;
+	export let id: string
+	export let name: string
+	export let placeholder: string
+	export let disabled = false
+	export let errors: string[] | null = null
 
-	let show = false;
+	let show = false
 
 	function toggle() {
-		show = !show;
+		show = !show
 	}
 </script>
 
