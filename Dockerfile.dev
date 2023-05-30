@@ -4,6 +4,9 @@ RUN apt-get update && apt install -y zsh
 RUN sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 RUN chsh -s $(which zsh)
 
+ENV LANG=en_US.utf-8
+ENV LC_ALL=en_US.utf-8
+
 WORKDIR /code
 
 COPY ["package.json", "package-lock.json", "./"]
