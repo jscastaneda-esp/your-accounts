@@ -1,10 +1,10 @@
 <script lang="ts">
-	export let type: 'button' | 'submit' = 'button';
-	export let value: string;
-	export let className = '';
-	export let classNameValue = '';
-	export let disabled = false;
-	export let loading = false;
+	export let type: 'button' | 'submit' = 'button'
+	export let value: string
+	export let className = ''
+	export let classNameValue = ''
+	export let disabled = false
+	export let loading = false
 </script>
 
 <button

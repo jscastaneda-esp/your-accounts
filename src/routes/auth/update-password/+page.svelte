@@ -1,56 +1,56 @@
 <script lang="ts">
 	// Svelte
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation'
 
 	// Felte
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
 
 	// Assets
-	import updatePassword from '$lib/assets/images/update-password.webp';
+	import updatePassword from '$lib/assets/images/update-password.webp'
 
 	// Enums, Classes, Types
-	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '$lib/enums';
+	import type { FirebaseError } from 'firebase/app'
+	import { TypeAuthEnum } from '$lib/enums'
 
 	// Components
-	import InputPassword from '$lib/components/inputs/InputPassword.svelte';
-	import Button from '$lib/components/buttons/Button.svelte';
+	import InputPassword from '$lib/components/inputs/InputPassword.svelte'
+	import Button from '$lib/components/buttons/Button.svelte'
 
 	// Utilities
-	import firebase from '$lib/configs/firebase.client';
-	import Toast from '$lib/utils/toast.utils';
-	import yup, { password } from '$lib/utils/yup.utils';
-	import type { PageDataUserManagementAction } from '$lib/types';
+	import firebase from '$lib/configs/firebase.client'
+	import Toast from '$lib/utils/toast.utils'
+	import yup, { password } from '$lib/utils/yup.utils'
+	import type { PageDataUserManagementAction } from '$lib/types'
 
-	export let data: PageDataUserManagementAction;
+	export let data: PageDataUserManagementAction
 
 	onMount(async () => {
 		try {
-			await firebase.authFunctions.verifyPasswordResetCode(data.actionCode);
+			await firebase.authFunctions.verifyPasswordResetCode(data.actionCode)
 		} catch (error: unknown) {
 			const msg = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
-			)[0];
+			)[0]
 
-			Toast.error(msg, true);
-			goto('/auth/login');
+			Toast.error(msg, true)
+			goto('/auth/login')
 		}
-	});
+	})
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		password,
 		confirmPassword: password.test('equals', 'Contraseña no coincide', (value, context) => {
 			if (context.parent.password && value) {
-				return context.parent.password === value;
+				return context.parent.password === value
 			}
 
-			return true;
+			return true
 		})
-	});
+	})
 	const { form, errors, isValid, isSubmitting } = createForm({
 		initialValues: {
 			password: '',
@@ -59,24 +59,24 @@
 		onSubmit: (values) =>
 			firebase.authFunctions.confirmPasswordReset(data.actionCode, values.password),
 		onSuccess: async () => {
-			Toast.success('Se asigno la contraseña exitosamente', true);
+			Toast.success('Se asigno la contraseña exitosamente', true)
 
-			await new Promise<void>((resolve) => setTimeout(resolve, 2000));
-			return goto('/auth/login');
+			await new Promise<void>((resolve) => setTimeout(resolve, 2000))
+			return goto('/auth/login')
 		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
-			);
+			)
 			if (isError) {
-				Toast.error(msg, true);
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg, true);
+				Toast.warn(msg, true)
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 </script>
 
 <svelte:head>

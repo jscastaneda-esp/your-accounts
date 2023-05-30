@@ -1,8 +1,8 @@
 <script lang="ts">
-	export let text: string;
-	export let href = '#';
-	export let className = '';
-	export let disabled = false;
+	export let text: string
+	export let href = '#'
+	export let className = ''
+	export let disabled = false
 </script>
 
 <a

@@ -1,26 +1,26 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import Input from '../../inputs/Input.svelte';
-	import type { FelteError } from '../../../types';
+	import { createEventDispatcher } from 'svelte'
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte'
+	import Input from '../../inputs/Input.svelte'
+	import type { FelteError } from '../../../types'
 
-	export let index: number;
-	export let id: number;
-	export let name: string;
+	export let index: number
+	export let id: number
+	export let name: string
 	export let errors: {
-		name: FelteError;
-		amount: FelteError;
-	};
+		name: FelteError
+		amount: FelteError
+	}
 
-	const dispatch = createEventDispatcher<{ delete: { index: number; id: number; name: string } }>();
-	const prefixFieldName = `availables.${index}`;
+	const dispatch = createEventDispatcher<{ delete: { index: number; id: number; name: string } }>()
+	const prefixFieldName = `availables.${index}`
 
 	function handleDelete() {
 		dispatch('delete', {
 			index,
 			id,
 			name
-		});
+		})
 	}
 </script>
 

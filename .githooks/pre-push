@@ -2,6 +2,5 @@
 
 set -e
 
-pnpm install --frozen-lockfile
-pnpm lint
-pnpm check
+npm run lint
+npm run check

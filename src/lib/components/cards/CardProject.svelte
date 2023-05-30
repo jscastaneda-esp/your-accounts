@@ -1,39 +1,39 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import budgetImage from '../../assets/images/budget.webp';
-	import { goto } from '$app/navigation';
-	import { TypeProjectEnum } from '../../enums';
-	import { zeroPad } from '../../utils/number.utils';
-	import CardBase from './CardBase.svelte';
-	import SummaryValue from '../SummaryValue.svelte';
-	import ButtonRounded from '../buttons/ButtonRounded.svelte';
-	import type { EventDispatchProject } from '../../types';
+	import { createEventDispatcher } from 'svelte'
+	import budgetImage from '../../assets/images/budget.webp'
+	import { goto } from '$app/navigation'
+	import { TypeProjectEnum } from '../../enums'
+	import { zeroPad } from '../../utils/number.utils'
+	import CardBase from './CardBase.svelte'
+	import SummaryValue from '../SummaryValue.svelte'
+	import ButtonRounded from '../buttons/ButtonRounded.svelte'
+	import type { EventDispatchProject } from '../../types'
 
-	export let loading: boolean;
-	export let id: number;
-	export let name: string;
-	export let type: TypeProjectEnum;
+	export let loading: boolean
+	export let id: number
+	export let name: string
+	export let type: TypeProjectEnum
 
-	let img: string | undefined = undefined;
-	let additionalName: string | undefined = undefined;
+	let img: string | undefined = undefined
+	let additionalName: string | undefined = undefined
 	const dispatch = createEventDispatcher<{
-		delete: EventDispatchProject;
-		clone: EventDispatchProject;
-	}>();
+		delete: EventDispatchProject
+		clone: EventDispatchProject
+	}>()
 
 	if (TypeProjectEnum.BUDGET == type) {
-		img = budgetImage;
-		additionalName = `${zeroPad($$props.month, 2)}/${$$props.year}`;
+		img = budgetImage
+		additionalName = `${zeroPad($$props.month, 2)}/${$$props.year}`
 	}
 
 	async function handleEdit() {
-		loading = true;
-		let url = '';
+		loading = true
+		let url = ''
 		if (TypeProjectEnum.BUDGET === type) {
-			url = '/budget';
+			url = '/budget'
 		}
-		await goto(`${url}/${id}`);
-		loading = false;
+		await goto(`${url}/${id}`)
+		loading = false
 	}
 
 	function handleAction(action: 'delete' | 'clone') {
@@ -41,7 +41,7 @@
 			id,
 			name,
 			type
-		});
+		})
 	}
 </script>
 

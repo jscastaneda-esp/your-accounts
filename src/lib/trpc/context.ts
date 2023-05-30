@@ -1,7 +1,7 @@
-import type { inferAsyncReturnType } from '@trpc/server';
+import type { inferAsyncReturnType } from '@trpc/server'
 
 export async function createContext() {
-	return {};
+	return {}
 }
 
-export type Context = inferAsyncReturnType<typeof createContext>;
+export type Context = inferAsyncReturnType<typeof createContext>

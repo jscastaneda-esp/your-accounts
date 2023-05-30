@@ -1,29 +1,29 @@
 <script lang="ts">
 	// Svelte
-	import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation'
 
 	// Felte
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
 
 	// Assets
-	import logo from '../assets/images/logo.webp';
+	import logo from '../assets/images/logo.webp'
 
 	// Enums, Classes, Types
-	import type { FirebaseError } from 'firebase/app';
-	import type { UserCredential } from 'firebase/auth';
-	import { TypeAuthEnum } from '../enums';
+	import type { FirebaseError } from 'firebase/app'
+	import type { UserCredential } from 'firebase/auth'
+	import { TypeAuthEnum } from '../enums'
 
 	// Components
-	import Input from './inputs/Input.svelte';
-	import InputPassword from './inputs/InputPassword.svelte';
-	import Button from './buttons/Button.svelte';
-	import ButtonLink from './buttons/ButtonLink.svelte';
+	import Input from './inputs/Input.svelte'
+	import InputPassword from './inputs/InputPassword.svelte'
+	import Button from './buttons/Button.svelte'
+	import ButtonLink from './buttons/ButtonLink.svelte'
 
 	// Utilities
-	import firebase from '../configs/firebase.client';
-	import Toast from '../utils/toast.utils';
-	import yup, { defaultString, email, password } from '../utils/yup.utils';
+	import firebase from '../configs/firebase.client'
+	import Toast from '../utils/toast.utils'
+	import yup, { defaultString, email, password } from '../utils/yup.utils'
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -32,12 +32,12 @@
 		password,
 		confirmPassword: password.test('equals', 'Contraseña no coincide', (value, context) => {
 			if (context.parent.password && value) {
-				return context.parent.password === value;
+				return context.parent.password === value
 			}
 
-			return true;
+			return true
 		})
-	});
+	})
 	const { form, data, errors, isValid, isSubmitting, reset } = createForm({
 		initialValues: {
 			fullName: '',
@@ -48,23 +48,23 @@
 		onSubmit: (values) =>
 			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password),
 		onSuccess: async (response: unknown) => {
-			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user);
-			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password);
-			return goto('/dashboard');
+			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user)
+			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password)
+			return goto('/dashboard')
 		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.SIGNUP,
 				(error as FirebaseError).code
-			);
+			)
 			if (isError) {
-				Toast.error(msg, true);
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg, true);
+				Toast.warn(msg, true)
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 </script>
 
 <form class="flex flex-col justify-center items-center min-w-[238px] max-w-[238px]" use:form>

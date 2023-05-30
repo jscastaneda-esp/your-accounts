@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let open: boolean;
-	export let showCloseButton = false;
+	export let open: boolean
+	export let showCloseButton = false
 </script>
 
 <dialog {open} class="z-[100] bg-transparent" aria-modal="true">

@@ -1,18 +1,18 @@
-const pesosCOLocale = Intl.NumberFormat('en-CO');
+const pesosCOLocale = Intl.NumberFormat('en-CO')
 
 export function money(value: number) {
 	if (isNaN(value)) {
-		value = 0;
+		value = 0
 	}
 
-	const isNegative = value < 0;
+	const isNegative = value < 0
 	if (isNegative) {
-		return `$(${pesosCOLocale.format(value * -1)})`;
+		return `$(${pesosCOLocale.format(value * -1)})`
 	} else {
-		return `$${pesosCOLocale.format(value)}`;
+		return `$${pesosCOLocale.format(value)}`
 	}
 }
 
 export function zeroPad(num: number, places: number) {
-	return String(num).padStart(places, '0');
+	return String(num).padStart(places, '0')
 }

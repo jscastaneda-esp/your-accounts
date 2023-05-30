@@ -8,11 +8,12 @@
 		"vscode": {
 			"extensions": [
 				"streetsidesoftware.code-spell-checker",
+				"ms-azuretools.vscode-docker",
 				"dotenv.dotenv-vscode",
-				"dbaeumer.vscode-eslint",
 				"GitHub.vscode-pull-request-github",
 				"eamodio.gitlens",
 				"kisstkondoros.vscode-gutter-preview",
+				"dbaeumer.vscode-eslint",
 				"wix.vscode-import-cost",
 				"Tyriar.lorem-ipsum",
 				"yzhang.markdown-all-in-one",
@@ -22,15 +23,21 @@
 				"esbenp.prettier-vscode",
 				"streetsidesoftware.code-spell-checker-spanish",
 				"svelte.svelte-vscode",
-				"TabNine.tabnine-vscode",
 				"bradlc.vscode-tailwindcss",
 				"meganrogge.template-string-converter",
 				"Gruntfuggly.todo-tree",
 				"pflannery.vscode-versionlens",
 				"aaron-bond.better-comments",
-				"usernamehw.errorlens",
-				"adamhartford.vscode-base64"
-			]
+				"SirTori.indenticator",
+				"rafamel.subtle-brackets",
+				"github.vscode-github-actions",
+				"usernamehw.errorlens"
+			],
+			"settings": {
+				"dotenv.enableAutocloaking": false,
+				"editor.tabSize": 2,
+				"editor.defaultFormatter": "esbenp.prettier-vscode"
+			}
 		}
 	}
 }

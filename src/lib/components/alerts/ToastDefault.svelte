@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let message: string;
+	export let message: string
 </script>
 
 <div class="grid grid-cols-[max-content_auto] items-center p-3 gap-2" role="alert">

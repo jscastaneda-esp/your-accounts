@@ -1,35 +1,35 @@
 <script lang="ts">
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
-	import { createEventDispatcher } from 'svelte';
-	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils';
-	import { money } from '../../../utils/number.utils';
-	import Popup from '../Popup.svelte';
-	import Input from '../../inputs/Input.svelte';
-	import InputSwitch from '../../inputs/InputSwitch.svelte';
-	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import type { BudgetBillTransaction } from '../../../types';
-	import Toast from '../../../utils/toast.utils';
-	import dayjs from '../../../utils/dayjs.utils';
-	import { trpc } from '$lib/trpc/client';
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
+	import { createEventDispatcher } from 'svelte'
+	import yup, { defaultString, defaultNumber, defaultBoolean } from '../../../utils/yup.utils'
+	import { money } from '../../../utils/number.utils'
+	import Popup from '../Popup.svelte'
+	import Input from '../../inputs/Input.svelte'
+	import InputSwitch from '../../inputs/InputSwitch.svelte'
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte'
+	import type { BudgetBillTransaction } from '../../../types'
+	import Toast from '../../../utils/toast.utils'
+	import dayjs from '../../../utils/dayjs.utils'
+	import { trpc } from '$lib/trpc/client'
 
-	export let budgetBillId: number;
-	export let pendingBill: number;
+	export let budgetBillId: number
+	export let pendingBill: number
 
-	const awaitLoad = [1, 2, 3, 4];
-	const dispatch = createEventDispatcher<{ add: { payment: number } }>();
-	const trpcF = trpc();
-	let loading = false;
-	let tab = 1;
-	let loadTransactions = false;
-	let transactions: BudgetBillTransaction[] = [];
+	const awaitLoad = [1, 2, 3, 4]
+	const dispatch = createEventDispatcher<{ add: { payment: number } }>()
+	const trpcF = trpc()
+	let loading = false
+	let tab = 1
+	let loadTransactions = false
+	let transactions: BudgetBillTransaction[] = []
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		description: defaultString.max(100),
 		all: defaultBoolean,
 		amount: defaultNumber.min(1).max(9999999999.99)
-	});
+	})
 	const { form, data, errors, isValid, setFields, resetField, reset } = createForm({
 		initialValues: {
 			description: '',
@@ -37,52 +37,52 @@
 			amount: 0
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 
 	function handleChangeAll(event: Event) {
-		const { checked } = event.currentTarget as HTMLInputElement;
+		const { checked } = event.currentTarget as HTMLInputElement
 		if (checked) {
-			setFields('amount', pendingBill, true);
+			setFields('amount', pendingBill, true)
 		} else {
-			resetField('amount');
+			resetField('amount')
 		}
-		setFields('all', checked, true);
+		setFields('all', checked, true)
 	}
 
 	async function handleRegister(operation: string) {
-		loading = true;
+		loading = true
 
 		try {
-			let value: number = $data.amount;
-			if (operation == '-') value *= -1;
+			let value: number = $data.amount
+			if (operation == '-') value *= -1
 
 			await trpcF.budgets.bills.createTransaction.mutate({
 				description: $data.description,
 				amount: value,
 				budgetBillId
-			});
+			})
 			dispatch('add', {
 				payment: value
-			});
-			reset();
+			})
+			reset()
 		} catch (error) {
-			Toast.error('Se presento un error al consultar los movimientos', true);
-			throw error;
+			Toast.error('Se presento un error al consultar los movimientos', true)
+			throw error
 		} finally {
-			loading = false;
+			loading = false
 		}
 	}
 
 	async function showTabTransactions() {
-		tab = 2;
-		loadTransactions = true;
+		tab = 2
+		loadTransactions = true
 		try {
-			transactions = await trpcF.budgets.bills.getTransactionsById.query(budgetBillId);
+			transactions = await trpcF.budgets.bills.getTransactionsById.query(budgetBillId)
 		} catch (error) {
-			Toast.error('Se presento un error al consultar los movimientos', true);
-			throw error;
+			Toast.error('Se presento un error al consultar los movimientos', true)
+			throw error
 		} finally {
-			loadTransactions = false;
+			loadTransactions = false
 		}
 	}
 </script>

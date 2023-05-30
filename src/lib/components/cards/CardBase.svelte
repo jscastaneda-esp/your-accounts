@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let img: string | undefined = undefined;
+	export let img: string | undefined = undefined
 </script>
 
 <article

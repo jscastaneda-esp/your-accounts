@@ -1,9 +1,9 @@
-import { ChangeActionEnum, ChangeSectionEnum, TypeProjectEnum } from '$lib/enums';
-import { logger } from '$lib/trpc/middleware/logger';
-import { t } from '$lib/trpc/t';
-import type { Project } from '$lib/types';
-import z, { defaultNumber, defaultString } from '$lib/utils/zod.utils';
-import delay from 'delay';
+import { ChangeActionEnum, ChangeSectionEnum, TypeProjectEnum } from '$lib/enums'
+import { logger } from '$lib/trpc/middleware/logger'
+import { t } from '$lib/trpc/t'
+import type { Project } from '$lib/types'
+import z, { defaultNumber, defaultString } from '$lib/utils/zod.utils'
+import delay from 'delay'
 
 export const projects = t.router({
 	create: t.procedure
@@ -16,18 +16,18 @@ export const projects = t.router({
 			})
 		)
 		.mutation(async ({ input }) => {
-			await delay(1000);
+			await delay(1000)
 			const project = {
 				id: new Date().getTime(),
 				userId: input.userId
-			};
-			return project;
+			}
+			return project
 		}),
 	getByUserId: t.procedure
 		.use(logger)
 		.input(defaultString)
 		.query(async ({ input }) => {
-			await delay(1000);
+			await delay(1000)
 			const projects: Project[] = [
 				{
 					id: 1,
@@ -53,8 +53,8 @@ export const projects = t.router({
 					pendingBills: 10,
 					userId: input
 				}
-			];
-			return projects;
+			]
+			return projects
 		}),
 	receiveChanges: t.procedure
 		.use(logger)
@@ -76,16 +76,16 @@ export const projects = t.router({
 			})
 		)
 		.mutation(async ({ input }) => {
-			console.log('Receive changes', input);
-			await delay(1000);
-			return true;
+			console.log('Receive changes', input)
+			await delay(1000)
+			return true
 		}),
 	delete: t.procedure
 		.use(logger)
 		.input(defaultNumber)
 		.mutation(async ({ input }) => {
-			console.log('Delete ID', input);
-			await delay(1000);
-			return true;
+			console.log('Delete ID', input)
+			await delay(1000)
+			return true
 		})
-});
+})

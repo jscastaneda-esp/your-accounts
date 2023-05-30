@@ -1,29 +1,29 @@
 <script lang="ts">
 	// Felte
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
 
 	// Assets
-	import forgotPassword from '$lib/assets/images/forgot-password.webp';
+	import forgotPassword from '$lib/assets/images/forgot-password.webp'
 
 	// Enums, Classes, Types
-	import type { FirebaseError } from 'firebase/app';
-	import { TypeAuthEnum } from '$lib/enums';
+	import type { FirebaseError } from 'firebase/app'
+	import { TypeAuthEnum } from '$lib/enums'
 
 	// Components
-	import Input from '$lib/components/inputs/Input.svelte';
-	import Button from '$lib/components/buttons/Button.svelte';
-	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte';
+	import Input from '$lib/components/inputs/Input.svelte'
+	import Button from '$lib/components/buttons/Button.svelte'
+	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte'
 
 	// Utilities
-	import firebase from '$lib/configs/firebase.client';
-	import Toast from '$lib/utils/toast.utils';
-	import yup, { email } from '$lib/utils/yup.utils';
+	import firebase from '$lib/configs/firebase.client'
+	import Toast from '$lib/utils/toast.utils'
+	import yup, { email } from '$lib/utils/yup.utils'
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
 		email
-	});
+	})
 	const { form, errors, isValid, isSubmitting } = createForm({
 		initialValues: {
 			email: ''
@@ -38,15 +38,15 @@
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.FORGOT_PASSWORD,
 				(error as FirebaseError).code
-			);
+			)
 			if (isError) {
-				Toast.error(msg, true);
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg, true);
+				Toast.warn(msg, true)
 			}
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 </script>
 
 <svelte:head>

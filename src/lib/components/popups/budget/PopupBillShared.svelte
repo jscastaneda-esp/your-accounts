@@ -1,48 +1,48 @@
 <script lang="ts">
-	import { createEventDispatcher, getContext, onMount } from 'svelte';
-	import { createForm } from 'felte';
-	import { validator } from '@felte/validator-yup';
-	import yup, { defaultString, defaultNumber } from '../../../utils/yup.utils';
-	import Popup from '../Popup.svelte';
-	import Input from '../../inputs/Input.svelte';
-	import ButtonRounded from '../../buttons/ButtonRounded.svelte';
-	import type { BudgetBillShared, Change } from '../../../types';
-	import Card from '../../cards/Card.svelte';
-	import HeaderCardCompose from '../../cards/HeaderCardCompose.svelte';
-	import SummaryValue from '../../SummaryValue.svelte';
-	import PopupConfirm from '../PopupConfirm.svelte';
-	import Toast from '../../../utils/toast.utils';
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums';
-	import type { changes as changesStore } from '../../../stores';
-	import ScreenLoading from '../../ScreenLoading.svelte';
-	import ChangeUtil from '../../../classes/ChangeUtil';
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo';
-	import { trpc } from '$lib/trpc/client';
+	import { createEventDispatcher, getContext, onMount } from 'svelte'
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
+	import yup, { defaultString, defaultNumber } from '../../../utils/yup.utils'
+	import Popup from '../Popup.svelte'
+	import Input from '../../inputs/Input.svelte'
+	import ButtonRounded from '../../buttons/ButtonRounded.svelte'
+	import type { BudgetBillShared, Change } from '../../../types'
+	import Card from '../../cards/Card.svelte'
+	import HeaderCardCompose from '../../cards/HeaderCardCompose.svelte'
+	import SummaryValue from '../../SummaryValue.svelte'
+	import PopupConfirm from '../PopupConfirm.svelte'
+	import Toast from '../../../utils/toast.utils'
+	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '../../../enums'
+	import type { changes as changesStore } from '../../../stores'
+	import ScreenLoading from '../../ScreenLoading.svelte'
+	import ChangeUtil from '../../../classes/ChangeUtil'
+	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
+	import { trpc } from '$lib/trpc/client'
 
-	export let budgetBillId: number;
+	export let budgetBillId: number
 
-	const trpcF = trpc();
-	let loading: boolean;
-	let isLoadingData = false;
-	let countName = 0;
-	let list: BudgetBillShared[] = [];
+	const trpcF = trpc()
+	let loading: boolean
+	let isLoadingData = false
+	let countName = 0
+	let list: BudgetBillShared[] = []
 	let confirmPopupInfo = new ConfirmPopupInfo(
 		false,
 		'¿Está seguro que desea eliminar el gasto compartido :DESC?'
-	);
+	)
 	confirmPopupInfo.actionCancel = () => {
 		confirmPopupInfo = confirmPopupInfo.reset(
 			false,
 			'¿Está seguro que desea eliminar el gasto compartido :DESC?'
-		);
-	};
+		)
+	}
 	type ChangeBillShared = {
-		description?: string;
-		amount?: number;
-	};
-	const changeUtil = new ChangeUtil<keyof ChangeBillShared>();
-	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES);
-	const dispatch = createEventDispatcher<{ changeTotal: number }>();
+		description?: string
+		amount?: number
+	}
+	const changeUtil = new ChangeUtil<keyof ChangeBillShared>()
+	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES)
+	const dispatch = createEventDispatcher<{ changeTotal: number }>()
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -54,74 +54,74 @@
 				budgetBillId: defaultNumber.min(1)
 			})
 		)
-	});
+	})
 	const { form, data, errors, isValid, touched, setFields, addField, unsetField } = createForm<{
-		shared: BudgetBillShared[];
+		shared: BudgetBillShared[]
 	}>({
 		initialValues: {
 			shared: []
 		},
 		extend: [validator({ schema: validationSchema })]
-	});
+	})
 
 	onMount(async () => {
-		isLoadingData = true;
+		isLoadingData = true
 
 		try {
-			list = await trpcF.budgets.bills.getSharedById.query(budgetBillId);
-			countName = list.length + 1;
-			setFields('shared', list, true);
+			list = await trpcF.budgets.bills.getSharedById.query(budgetBillId)
+			countName = list.length + 1
+			setFields('shared', list, true)
 		} catch (error) {
-			Toast.error('Se presento un error al consultar los gastos compartidos', true);
-			throw error;
+			Toast.error('Se presento un error al consultar los gastos compartidos', true)
+			throw error
 		} finally {
-			isLoadingData = false;
+			isLoadingData = false
 		}
-	});
+	})
 
 	async function handleAdd() {
 		if ($isValid) {
-			loading = true;
+			loading = true
 
 			try {
 				const request = {
 					description: `Gasto Compartido ${countName++}`,
 					budgetBillId
-				};
-				const newShared = await trpcF.budgets.bills.createShared.mutate(request);
+				}
+				const newShared = await trpcF.budgets.bills.createShared.mutate(request)
 				const newField = {
 					id: newShared.id,
 					amount: 0,
 					...request
-				};
-				addField('shared', newField);
-				list.push(newField);
+				}
+				addField('shared', newField)
+				list.push(newField)
 			} catch (error) {
-				Toast.error('Se presento un error al crear el gasto compartido', true);
-				throw error;
+				Toast.error('Se presento un error al crear el gasto compartido', true)
+				throw error
 			} finally {
-				loading = false;
+				loading = false
 			}
 		}
 	}
 
 	function handleDelete({ description }: BudgetBillShared, index: number) {
-		confirmPopupInfo.show = true;
-		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', description);
-		confirmPopupInfo.actionOk = () => unsetField(`shared.${index}`);
+		confirmPopupInfo.show = true
+		confirmPopupInfo.question = confirmPopupInfo.question.replace(':DESC', description)
+		confirmPopupInfo.actionOk = () => unsetField(`shared.${index}`)
 	}
 
 	function compareData() {
 		const changeBase = {
 			section: ChangeSectionEnum.BUDGET_BILL_SHARED,
 			action: ChangeActionEnum.UPDATE
-		};
-		const newDatas = $data.shared;
-		const dataErrors = $errors.shared || [];
+		}
+		const newDatas = $data.shared
+		const dataErrors = $errors.shared || []
 
 		if (newDatas.length != list.length) {
-			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id));
-			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id));
+			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
+			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
 
 			deletes.forEach((del) => {
 				changes.add({
@@ -130,21 +130,21 @@
 					detail: {
 						id: del.id
 					}
-				});
-			});
+				})
+			})
 		} else {
 			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index];
-				const oldData = list[index];
-				const errorData = dataErrors[index];
+				const newData = newDatas[index]
+				const oldData = list[index]
+				const errorData = dataErrors[index]
 
-				let isChanges = false;
+				let isChanges = false
 				const change: Change<ChangeBillShared> = {
 					...changeBase,
 					detail: {
 						id: newData.id
 					}
-				};
+				}
 
 				isChanges = changeUtil.setChange(
 					errorData,
@@ -153,18 +153,18 @@
 					change,
 					'description',
 					isChanges
-				);
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges);
+				)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges)
 				if (isChanges) {
-					changes.add(change);
+					changes.add(change)
 				}
 			}
 		}
 	}
 
-	$: total = $data.shared.reduce((previous, current) => previous + current.amount, 0);
-	$: dispatch('changeTotal', total);
-	$: if ($touched) compareData();
+	$: total = $data.shared.reduce((previous, current) => previous + current.amount, 0)
+	$: dispatch('changeTotal', total)
+	$: if ($touched) compareData()
 </script>
 
 <Popup open showCloseButton on:click>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	export let title: string;
-	export let iconHeader: string;
-	export let iconAction: string;
+	export let title: string
+	export let iconHeader: string
+	export let iconAction: string
 </script>
 
 <button

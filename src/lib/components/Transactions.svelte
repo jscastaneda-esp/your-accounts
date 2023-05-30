@@ -1,29 +1,29 @@
 <script lang="ts">
-	import type { ProjectTransaction } from '../types';
-	import Toast from '../utils/toast.utils';
-	import dayjs from '../utils/dayjs.utils';
-	import Card from './cards/Card.svelte';
-	import HeaderCardSimple from './cards/HeaderCardSimple.svelte';
-	import { trpc } from '$lib/trpc/client';
+	import type { ProjectTransaction } from '../types'
+	import Toast from '../utils/toast.utils'
+	import dayjs from '../utils/dayjs.utils'
+	import Card from './cards/Card.svelte'
+	import HeaderCardSimple from './cards/HeaderCardSimple.svelte'
+	import { trpc } from '$lib/trpc/client'
 
-	export let projectId: number;
+	export let projectId: number
 
-	const awaitLoad = [1, 2, 3, 4];
-	const trpcF = trpc();
-	let show = false;
-	let loading = false;
-	let transactions: ProjectTransaction[] = [];
+	const awaitLoad = [1, 2, 3, 4]
+	const trpcF = trpc()
+	let show = false
+	let loading = false
+	let transactions: ProjectTransaction[] = []
 
 	async function handleShow() {
-		show = true;
-		loading = true;
+		show = true
+		loading = true
 		try {
-			transactions = await trpcF.transactions.getByProjectId.query(projectId);
+			transactions = await trpcF.transactions.getByProjectId.query(projectId)
 		} catch (error) {
-			Toast.error('Se presento un error al consultar las transacciones', true);
-			throw error;
+			Toast.error('Se presento un error al consultar las transacciones', true)
+			throw error
 		} finally {
-			loading = false;
+			loading = false
 		}
 	}
 </script>

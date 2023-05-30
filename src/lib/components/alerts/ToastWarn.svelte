@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ToastDefault from './ToastDefault.svelte';
+	import ToastDefault from './ToastDefault.svelte'
 
-	export let message: string;
+	export let message: string
 </script>
 
 <ToastDefault {message}>

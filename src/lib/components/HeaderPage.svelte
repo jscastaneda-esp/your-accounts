@@ -1,37 +1,37 @@
 <script lang="ts">
 	// Svelte
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 
 	// Assets
-	import logo from '../assets/images/logo.webp';
+	import logo from '../assets/images/logo.webp'
 
 	// Utilities
-	import type { FirebaseError } from 'firebase/app';
-	import firebase from '../configs/firebase.client';
-	import Toast from '../utils/toast.utils';
-	import { TypeAuthEnum } from '../enums';
-	import { session } from '../stores';
+	import type { FirebaseError } from 'firebase/app'
+	import firebase from '../configs/firebase.client'
+	import Toast from '../utils/toast.utils'
+	import { TypeAuthEnum } from '../enums'
+	import { session } from '../stores'
 
-	let showMenu = false;
+	let showMenu = false
 
 	function toggleMenu() {
-		showMenu = !showMenu;
+		showMenu = !showMenu
 	}
 
 	async function signOut() {
 		try {
-			await firebase.authFunctions.signOut();
-			goto('/auth/login');
+			await firebase.authFunctions.signOut()
+			goto('/auth/login')
 		} catch (error) {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.SIGNOUT,
 				(error as FirebaseError).code
-			);
+			)
 			if (isError) {
-				Toast.error(msg);
+				Toast.error(msg)
 			} else {
-				Toast.warn(msg);
+				Toast.warn(msg)
 			}
 		}
 	}

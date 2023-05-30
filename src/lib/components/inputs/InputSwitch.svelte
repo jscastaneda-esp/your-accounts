@@ -1,22 +1,22 @@
 <script lang="ts">
-	import type { FelteError } from '../../types';
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import type { FelteError } from '../../types'
+	import { onMount } from 'svelte'
+	import { slide } from 'svelte/transition'
 
-	export let id: string;
-	export let name: string;
-	export let text: string;
-	export let disabled = false;
-	export let errors: FelteError = null;
-	export let className = '';
+	export let id: string
+	export let name: string
+	export let text: string
+	export let disabled = false
+	export let errors: FelteError = null
+	export let className = ''
 
 	onMount(() => {
 		if (crypto.randomUUID) {
-			id = `${id}_${crypto.randomUUID()}`;
+			id = `${id}_${crypto.randomUUID()}`
 		} else {
-			id = `${id}_${new Date().getTime()}`;
+			id = `${id}_${new Date().getTime()}`
 		}
-	});
+	})
 </script>
 
 <fieldset {disabled} class={className}>
