@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ProjectTransaction } from '../types'
+	import type { ProjectLog } from '../types'
 	import Toast from '../utils/toast.utils'
 	import dayjs from '../utils/dayjs.utils'
 	import Card from './cards/Card.svelte'
@@ -12,13 +12,13 @@
 	const trpcF = trpc()
 	let show = false
 	let loading = false
-	let transactions: ProjectTransaction[] = []
+	let logs: ProjectLog[] = []
 
 	async function handleShow() {
 		show = true
 		loading = true
 		try {
-			transactions = await trpcF.transactions.getByProjectId.query(projectId)
+			logs = await trpcF.projects.getLogsByProjectId.query(projectId)
 		} catch (error) {
 			Toast.error('Se presento un error al consultar las transacciones', true)
 			throw error
@@ -34,7 +34,7 @@
 			<Card showBody>
 				<HeaderCardSimple
 					slot="header"
-					title="Transacciones"
+					title="Registro de cambios"
 					iconHeader="list"
 					iconAction="xmark"
 					on:click={() => (show = false)}
@@ -57,7 +57,7 @@
 								</tr>
 							{/each}
 						{:else}
-							{#each transactions as transaction}
+							{#each logs as transaction}
 								<tr class="grid grid-cols-[100px_1fr] text-gray-900 py-2 text-left">
 									<td class="px-4">{dayjs(transaction.createdAt).fromNow()}</td>
 									<td class="px-4 max-h-[26px] text-clip overflow-hidden"

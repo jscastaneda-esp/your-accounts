@@ -1,7 +1,7 @@
 import { ChangeActionEnum, ChangeSectionEnum, TypeProjectEnum } from '$lib/enums'
 import { logger } from '$lib/trpc/middleware/logger'
 import { t } from '$lib/trpc/t'
-import type { Project } from '$lib/types'
+import type { Project, ProjectLog } from '$lib/types'
 import z, { defaultNumber, defaultString } from '$lib/utils/zod.utils'
 import delay from 'delay'
 
@@ -79,6 +79,21 @@ export const projects = t.router({
 			console.log('Receive changes', input)
 			await delay(1000)
 			return true
+		}),
+	getLogsByProjectId: t.procedure
+		.use(logger)
+		.input(defaultNumber)
+		.query(async ({ input }) => {
+			await delay(1000)
+			const logs: ProjectLog[] = []
+			for (let index = 1; index <= 5; index++) {
+				logs.push({
+					description: `Cambio ${index}`,
+					createdAt: new Date(),
+					projectId: input
+				})
+			}
+			return logs
 		}),
 	delete: t.procedure
 		.use(logger)
