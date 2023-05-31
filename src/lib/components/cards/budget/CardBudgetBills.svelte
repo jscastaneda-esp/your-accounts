@@ -55,7 +55,7 @@
 		shared?: boolean
 		dueDate?: string | number
 		complete?: boolean
-		categoryId?: string | number
+		category?: string | number
 	}
 	const changeUtil = new ChangeUtil<keyof ChangeBill>()
 	const { changes } = getContext<{ changes: typeof changesStore }>(ContextNameEnum.CHANGES)
@@ -175,14 +175,7 @@
 				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'shared', isChanges)
 				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'dueDate', isChanges)
 				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'complete', isChanges)
-				isChanges = changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'categoryId',
-					isChanges
-				)
+				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'category', isChanges)
 				if (isChanges) {
 					changes.add(change)
 				}

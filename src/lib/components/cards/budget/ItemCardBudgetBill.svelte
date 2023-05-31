@@ -134,8 +134,8 @@
 
 	<section class="flex items-center space-x-1 sm:-space-x-2 hover:space-x-1">
 		<select
-			id={`${prefixFieldName}.categoryId`}
-			name={`${prefixFieldName}.categoryId`}
+			id={`${prefixFieldName}.category`}
+			name={`${prefixFieldName}.category`}
 			class="h-[23px] p-1 pr-7 leading-none rounded border-none outline-none text-xs"
 			bind:value={data.category}
 		>

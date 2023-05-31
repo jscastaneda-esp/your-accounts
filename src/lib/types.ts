@@ -29,7 +29,7 @@ export type Project = {
 	userId: string
 }
 
-export type ProjectTransaction = {
+export type ProjectLog = {
 	description: string
 	createdAt: Date
 	projectId: number

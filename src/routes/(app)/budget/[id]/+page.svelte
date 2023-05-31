@@ -18,7 +18,7 @@
 	import ButtonLink from '$lib/components/buttons/ButtonLink.svelte'
 	import PopupConfirm from '$lib/components/popups/PopupConfirm.svelte'
 	import SummaryValue from '$lib/components/SummaryValue.svelte'
-	import Transactions from '$lib/components/Transactions.svelte'
+	import Logs from '$lib/components/Logs.svelte'
 	import CardBudgetAvailable from '$lib/components/cards/budget/CardBudgetAvailable.svelte'
 	import CardBudgetBills from '$lib/components/cards/budget/CardBudgetBills.svelte'
 	import CardBudgetStatistics from '$lib/components/cards/budget/CardBudgetStatistics.svelte'
@@ -273,7 +273,7 @@
 </article>
 
 <footer class="fixed bottom-0 flex flex-col w-full">
-	<Transactions projectId={data.projectId} />
+	<Logs projectId={data.projectId} />
 	<article
 		class="flex flex-col min-h-[33px] shadow-[1px_0_3px_0_rgb(0_0_0_/_0.1)] shadow-gray-700 bg-white"
 	>
