@@ -21,7 +21,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          cache: true
       - run: npm install
       - run: npm run lint
       - run: npm run check
@@ -33,7 +32,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          cache: true
       - run: npm install
       - run: npm run test:unit
       - name: Archive test coverage
