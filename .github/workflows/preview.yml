@@ -6,9 +6,17 @@ on:
       - main
 
 jobs:
+  test:
+    name: Test and lint
+    uses: jscastaneda-esp/your-accounts/.github/workflows/ci.yml@main
+
   deploy:
+    name: Deploy in preview
+    needs: test
     runs-on: ubuntu-latest
-    environment: Preview
+    environment:
+      name: Preview
+      url: https://your-accounts-preview.vercel.app/
     if: "${{ (!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.ref_name, 'main')) }}"
     steps:
       - name: Checkout
@@ -33,16 +41,14 @@ jobs:
         if: ${{ steps.vercel-deploy.outputs.DEPLOYMENT_CREATED }}
         with:
           message: |
-            This pull request has been deployed to Vercel.
+            This pull request has been deployed to Railway.
 
             <table>
               <tr>
                 <td><strong>✅ Preview:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}'>${{ steps.vercel-deploy.outputs.PREVIEW_URL }}</a></td>
-              </tr>
-              <tr>
+                <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}' target='_blank'>Verify</a></td>
                 <td><strong>🔍 Inspect:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}'>${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}</a></td>
+                <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}' target='_blank'>To Inspect</a></td>
               </tr>
             </table>
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
