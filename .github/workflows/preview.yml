@@ -6,9 +6,17 @@ on:
       - main
 
 jobs:
+  test:
+    name: Test and lint
+    uses: jscastaneda-esp/your-accounts/.github/workflows/ci.yml@main
+
   deploy:
+    name: Deploy in preview
+    needs: test
     runs-on: ubuntu-latest
-    environment: Preview
+    environment:
+      name: Preview
+      url: https://your-accounts-preview.vercel.app/
     if: "${{ (!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.ref_name, 'main')) }}"
     steps:
       - name: Checkout
