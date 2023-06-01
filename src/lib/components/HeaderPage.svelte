@@ -11,7 +11,7 @@
 	import firebase from '../configs/firebase.client'
 	import Toast from '../utils/toast.utils'
 	import { TypeAuthEnum } from '../enums'
-	import { session } from '../stores'
+	import { session, sessionToken } from '../stores'
 
 	let showMenu = false
 
@@ -19,10 +19,11 @@
 		showMenu = !showMenu
 	}
 
-	async function signOut() {
+	function signOut() {
 		try {
-			await firebase.authFunctions.signOut()
 			goto('/auth/login')
+			firebase.authFunctions.signOut()
+			$sessionToken = null
 		} catch (error) {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.SIGNOUT,
