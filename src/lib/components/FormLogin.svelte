@@ -14,6 +14,7 @@
 	// Enums, Classes, Types
 	import { FirebaseProviderEnum, TypeAuthEnum } from '../enums'
 	import type { FirebaseError } from 'firebase/app'
+	import type { UserCredential } from 'firebase/auth'
 
 	// Components
 	import ButtonExternalAuth from './buttons/ButtonExternalAuth.svelte'
@@ -26,6 +27,10 @@
 	import firebase from '../configs/firebase.client'
 	import Toast from '../utils/toast.utils'
 	import yup, { email, password } from '../utils/yup.utils'
+	import { trpc } from '$lib/trpc/client'
+	import { sessionToken } from '$lib/stores'
+
+	const trpcF = trpc()
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -39,7 +44,17 @@
 		},
 		onSubmit: (values) =>
 			firebase.authFunctions.signInWithEmailAndPassword(values.email, values.password),
-		onSuccess: () => goto('/dashboard'),
+		onSuccess: async (response: unknown) => {
+			const userCredential = response as UserCredential
+			if (userCredential.user.email) {
+				$sessionToken = await trpcF.users.auth.mutate({
+					uuid: userCredential.user.uid,
+					email: userCredential.user.email
+				})
+			}
+
+			goto('/dashboard')
+		},
 		onError: (error: unknown) => {
 			const [msg, isError] = firebase.authFunctions.getError(
 				TypeAuthEnum.LOGIN,
@@ -60,7 +75,16 @@
 		loading = true
 
 		try {
-			await firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE)
+			const userCredential = await firebase.authFunctions.signInWithPopup(
+				FirebaseProviderEnum.GOOGLE
+			)
+			if (userCredential.user.email) {
+				$sessionToken = await trpcF.users.auth.mutate({
+					uuid: userCredential.user.uid,
+					email: userCredential.user.email
+				})
+			}
+
 			goto('/dashboard')
 		} catch (error: unknown) {
 			const [msg, isError] = firebase.authFunctions.getError(

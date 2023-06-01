@@ -24,6 +24,10 @@
 	import firebase from '../configs/firebase.client'
 	import Toast from '../utils/toast.utils'
 	import yup, { defaultString, email, password } from '../utils/yup.utils'
+	import { sessionToken } from '$lib/stores'
+	import { trpc } from '$lib/trpc/client'
+
+	const trpcF = trpc()
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -45,11 +49,22 @@
 			password: '',
 			confirmPassword: ''
 		},
-		onSubmit: (values) =>
+		onSubmit: async (values) =>
 			firebase.authFunctions.createUserWithEmailAndPassword(values.email, values.password),
 		onSuccess: async (response: unknown) => {
 			await firebase.authFunctions.updateProfile($data.fullName, (response as UserCredential).user)
-			await firebase.authFunctions.signInWithEmailAndPassword($data.email, $data.password)
+
+			const userCredential = await firebase.authFunctions.signInWithEmailAndPassword(
+				$data.email,
+				$data.password
+			)
+			if (userCredential.user.email) {
+				$sessionToken = await trpcF.users.auth.mutate({
+					uuid: userCredential.user.uid,
+					email: userCredential.user.email
+				})
+			}
+
 			return goto('/dashboard')
 		},
 		onError: (error: unknown) => {
