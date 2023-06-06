@@ -1,7 +1,7 @@
 import { describe, expect, it, afterEach, vi } from 'vitest'
 import { AuthErrorCodes } from 'firebase/auth'
 import firebase from '../../../src/lib/configs/firebase.client'
-import { FirebaseProviderEnum, TypeAuthEnum } from '../../../src/lib/enums'
+import { FirebaseProviderEnum } from '../../../src/lib/enums'
 
 vi.mock('$env/static/public', () => ({
 	PUBLIC_FIREBASE_OPTIONS: Buffer.from('{"apiKey": "test"}').toString('base64')
@@ -68,11 +68,7 @@ describe('firebase.client', () => {
 		const tags = {
 			PROVIDER: FirebaseProviderEnum.GOOGLE
 		}
-		const [msg, isError] = firebase.authFunctions.getError(
-			TypeAuthEnum.LOGIN,
-			AuthErrorCodes.POPUP_BLOCKED,
-			tags
-		)
+		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.POPUP_BLOCKED, tags)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual(`Se presento un error al autenticar con ${tags.PROVIDER}`)
@@ -82,10 +78,7 @@ describe('firebase.client', () => {
 	})
 
 	it('auth functions getError User/Password Invalid', () => {
-		const [msg, isError] = firebase.authFunctions.getError(
-			TypeAuthEnum.LOGIN,
-			AuthErrorCodes.USER_DELETED
-		)
+		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.USER_DELETED)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual('Correo electrónico y/o contraseña inválidos')
@@ -95,10 +88,7 @@ describe('firebase.client', () => {
 	})
 
 	it('auth functions getError Email already exists', () => {
-		const [msg, isError] = firebase.authFunctions.getError(
-			TypeAuthEnum.SIGNUP,
-			AuthErrorCodes.EMAIL_EXISTS
-		)
+		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.EMAIL_EXISTS)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual('Correo electrónico ya se encuentra registrado')
@@ -108,7 +98,7 @@ describe('firebase.client', () => {
 	})
 
 	it('auth functions getError without code', () => {
-		const [msg, isError] = firebase.authFunctions.getError(TypeAuthEnum.LOGIN, null)
+		const [msg, isError] = firebase.authFunctions.getError(null)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual('Error inesperado. Por favor vuelva a intentarlo')

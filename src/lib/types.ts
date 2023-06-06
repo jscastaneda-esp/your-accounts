@@ -2,14 +2,9 @@ import type {
 	BudgetBillCategory,
 	ChangeActionEnum,
 	ChangeSectionEnum,
-	TypeAuthEnum,
 	TypeProjectEnum,
 	UserManagementActionsEnum
 } from './enums'
-
-export type PageDataAuth = {
-	type: TypeAuthEnum
-}
 
 export type PageDataUserManagementAction = {
 	mode: UserManagementActionsEnum
