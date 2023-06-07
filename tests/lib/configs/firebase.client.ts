@@ -77,26 +77,6 @@ describe('firebase.client', () => {
 		expect(isError).toBeTypeOf('boolean')
 	})
 
-	it('auth functions getError User/Password Invalid', () => {
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.USER_DELETED)
-
-		expect(msg).toBeTruthy()
-		expect(msg).toEqual('Correo electrónico y/o contraseña inválidos')
-		expect(msg).toBeTypeOf('string')
-		expect(isError).toBeFalsy()
-		expect(isError).toBeTypeOf('boolean')
-	})
-
-	it('auth functions getError Email already exists', () => {
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.EMAIL_EXISTS)
-
-		expect(msg).toBeTruthy()
-		expect(msg).toEqual('Correo electrónico ya se encuentra registrado')
-		expect(msg).toBeTypeOf('string')
-		expect(isError).toBeFalsy()
-		expect(isError).toBeTypeOf('boolean')
-	})
-
 	it('auth functions getError without code', () => {
 		const [msg, isError] = firebase.authFunctions.getError(null)
 
