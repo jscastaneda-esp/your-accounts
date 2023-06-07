@@ -9,7 +9,7 @@
 			if ($session) {
 				goto('/dashboard')
 			} else {
-				goto('/auth/login')
+				goto('/login')
 			}
 		}, 1000)
 	)

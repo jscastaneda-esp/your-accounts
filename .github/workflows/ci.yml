@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUBLIC_FIREBASE_OPTIONS: 'firebase config options'
+      PUBLIC_ENV: 'ci'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

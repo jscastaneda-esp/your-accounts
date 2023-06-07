@@ -2,6 +2,7 @@
 	// Enums, Types, Utilities
 	import { onDestroy, onMount, setContext } from 'svelte'
 	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 	import { createForm } from 'felte'
 	import { validator } from '@felte/validator-yup'
 	import type { Budget, Change } from '$lib/types'
@@ -45,7 +46,7 @@
 	confirmPopupInfo.actionCancel = () => {
 		confirmPopupInfo.show = false
 	}
-	const trpcF = trpc()
+	const trpcF = trpc($page)
 	type ChangeMain = {
 		name?: string
 		year?: number

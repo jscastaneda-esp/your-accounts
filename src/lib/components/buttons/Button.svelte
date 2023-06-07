@@ -9,7 +9,7 @@
 
 <button
 	{type}
-	class={`bg-blue-200 hover:bg-blue-300 active:bg-blue-500 w-full flex justify-center items-center py-2 h-12 shadow-md shadow-gray-500/80 disabled:bg-gray-500/80 disabled:pointer-events-none ${className}`}
+	class={`bg-blue-200 hover:bg-blue-300 active:bg-blue-500 w-full flex justify-center items-center h-12 shadow-md shadow-gray-500/80 disabled:bg-gray-500/80 disabled:pointer-events-none ${className}`}
 	disabled={loading || disabled}
 	on:click
 >

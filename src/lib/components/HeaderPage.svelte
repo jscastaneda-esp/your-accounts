@@ -10,7 +10,6 @@
 	import type { FirebaseError } from 'firebase/app'
 	import firebase from '../configs/firebase.client'
 	import Toast from '../utils/toast.utils'
-	import { TypeAuthEnum } from '../enums'
 	import { session, sessionToken } from '../stores'
 
 	let showMenu = false
@@ -21,14 +20,11 @@
 
 	function signOut() {
 		try {
-			goto('/auth/login')
+			goto('/login')
 			firebase.authFunctions.signOut()
 			$sessionToken = null
 		} catch (error) {
-			const [msg, isError] = firebase.authFunctions.getError(
-				TypeAuthEnum.SIGNOUT,
-				(error as FirebaseError).code
-			)
+			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code)
 			if (isError) {
 				Toast.error(msg)
 			} else {
@@ -83,7 +79,7 @@
 				on:click={signOut}
 			>
 				<div class="flex flex-col text-left">
-					<span class="text-lg font-bold">{$session?.displayName}</span>
+					<span class="text-lg font-bold">{$session?.displayName || 'Pruebas'}</span>
 					<span class="text-sm text-gray-800">{$session?.email}</span>
 				</div>
 				<i class="fa-solid fa-right-from-bracket text-lg" />
@@ -127,7 +123,7 @@
 			class="flex flex-col justify-start px-4 py-1 text-left hover:bg-blue-200 rounded-tr-full transition-all duration-100"
 			on:click={signOut}
 		>
-			<span class="text-lg font-bold">{$session?.displayName}</span>
+			<span class="text-lg font-bold">{$session?.displayName || 'Pruebas'}</span>
 			<span class="text-sm text-gray-500">{$session?.email}</span>
 			<section class="text-sm">
 				<i class="fa-solid fa-right-from-bracket" />
