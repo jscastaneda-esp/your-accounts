@@ -2,6 +2,7 @@
 	// Utilities
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 	import Toast from '$lib/utils/toast.utils'
 	import { session } from '$lib/stores'
 	import { trpc } from '$lib/trpc/client'
@@ -22,7 +23,7 @@
 	confirmPopupInfo.actionCancel = () => {
 		confirmPopupInfo = confirmPopupInfo.reset()
 	}
-	const trpcF = trpc()
+	const trpcF = trpc($page)
 	let loading = false
 	let projects: Project[]
 	let showNewProject = false

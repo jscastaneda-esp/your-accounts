@@ -3,56 +3,32 @@ import { PUBLIC_FIREBASE_OPTIONS } from '$env/static/public'
 import { initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app'
 import {
 	getAuth,
-	onAuthStateChanged as onAuthStateChangedFB,
-	createUserWithEmailAndPassword as createUserWithEmailAndPasswordFB,
-	sendPasswordResetEmail as sendPasswordResetEmailFB,
-	signInWithEmailAndPassword as signInWithEmailAndPasswordFB,
-	signInWithPopup as signInWithPopupFB,
-	signOut as signOutFB,
-	updateProfile as updateProfileFB,
-	verifyPasswordResetCode as verifyPasswordResetCodeFB,
-	confirmPasswordReset as confirmPasswordResetFB,
+	onAuthStateChanged as onAuthStateChangedFire,
+	signInWithPopup as signInWithPopupFire,
+	signInWithEmailAndPassword as signInWithEmailAndPasswordFire,
+	signOut as signOutFire,
 	GoogleAuthProvider,
 	type NextOrObserver,
 	type ErrorFn,
 	type CompleteFn,
 	type User,
 	type Auth,
-	type ActionCodeSettings,
 	type PopupRedirectResolver,
 	AuthErrorCodes
 } from 'firebase/auth'
-import { FirebaseProviderEnum, TypeAuthEnum } from '../enums'
+import { FirebaseProviderEnum } from '../enums'
 
 class FirebaseAuth {
-	private readonly ERROR_MESSAGES: Record<string, Record<string, [string, boolean]>> = {
-		[TypeAuthEnum.FORGOT_PASSWORD]: {
-			[AuthErrorCodes.USER_DELETED]: ['Correo electrónico no existe', false],
-			[AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER]: [
-				'Excedió el número de intentos para recuperar contraseña. Por favor intente más tarde',
-				false
-			],
-			[AuthErrorCodes.EXPIRED_OOB_CODE]: ['La URL es invalida o ya expiro', true],
-			[AuthErrorCodes.INVALID_OOB_CODE]: ['La URL es invalida o ya expiro', true]
-		},
-		other: {
-			[AuthErrorCodes.EXPIRED_POPUP_REQUEST]: [
-				'Se presento un error al autenticar con {PROVIDER}',
-				true
-			],
-			[AuthErrorCodes.POPUP_BLOCKED]: ['Se presento un error al autenticar con {PROVIDER}', true],
-			[AuthErrorCodes.POPUP_CLOSED_BY_USER]: [
-				'Se presento un error al autenticar con {PROVIDER}',
-				true
-			],
-			[AuthErrorCodes.USER_DELETED]: ['Correo electrónico y/o contraseña inválidos', false],
-			[AuthErrorCodes.INVALID_PASSWORD]: ['Correo electrónico y/o contraseña inválidos', false],
-			[AuthErrorCodes.CREDENTIAL_ALREADY_IN_USE]: [
-				'Correo electrónico ya se encuentra registrado',
-				false
-			],
-			[AuthErrorCodes.EMAIL_EXISTS]: ['Correo electrónico ya se encuentra registrado', false]
-		}
+	private readonly ERROR_MESSAGES: Record<string, [string, boolean]> = {
+		[AuthErrorCodes.EXPIRED_POPUP_REQUEST]: [
+			'Se presento un error al autenticar con {PROVIDER}',
+			true
+		],
+		[AuthErrorCodes.POPUP_BLOCKED]: ['Se presento un error al autenticar con {PROVIDER}', true],
+		[AuthErrorCodes.POPUP_CLOSED_BY_USER]: [
+			'Se presento un error al autenticar con {PROVIDER}',
+			true
+		]
 	}
 
 	private readonly _googleAuthProvider: GoogleAuthProvider
@@ -66,65 +42,30 @@ class FirebaseAuth {
 		error?: ErrorFn | undefined,
 		completed?: CompleteFn | undefined
 	) {
-		return onAuthStateChangedFB(this._auth, nextOrObserver, error, completed)
-	}
-
-	createUserWithEmailAndPassword(email: string, password: string) {
-		return createUserWithEmailAndPasswordFB(this._auth, email, password)
-	}
-
-	signInWithEmailAndPassword(email: string, password: string) {
-		return signInWithEmailAndPasswordFB(this._auth, email, password)
+		return onAuthStateChangedFire(this._auth, nextOrObserver, error, completed)
 	}
 
 	signInWithPopup(provider: FirebaseProviderEnum, resolver?: PopupRedirectResolver | undefined) {
 		if (FirebaseProviderEnum.GOOGLE === provider) {
-			return signInWithPopupFB(this._auth, this._googleAuthProvider, resolver)
+			return signInWithPopupFire(this._auth, this._googleAuthProvider, resolver)
 		}
 
 		throw new Error('Provider no implemented')
 	}
 
+	signInWithEmailAndPassword(email: string, password: string) {
+		return signInWithEmailAndPasswordFire(this._auth, email, password)
+	}
+
 	signOut() {
-		return signOutFB(this._auth)
+		return signOutFire(this._auth)
 	}
 
-	updateProfile(displayName: string, user: User | null = this._auth.currentUser) {
-		if (user) {
-			return updateProfileFB(user, { displayName })
-		}
-	}
-
-	sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings | undefined) {
-		return sendPasswordResetEmailFB(this._auth, email, actionCodeSettings)
-	}
-
-	verifyPasswordResetCode(code: string) {
-		return verifyPasswordResetCodeFB(this._auth, code)
-	}
-
-	confirmPasswordReset(oobCode: string, newPassword: string) {
-		return confirmPasswordResetFB(this._auth, oobCode, newPassword)
-	}
-
-	getError(
-		type: TypeAuthEnum,
-		code: string | null | undefined,
-		tags?: Record<string, string>
-	): [string, boolean] {
+	getError(code: string | null | undefined, tags?: Record<string, string>): [string, boolean] {
 		let msg: string | null = null
 		let isError = true
-		if (type && code) {
-			const messagesType = this.ERROR_MESSAGES[type]
-			let messageCode: [string, boolean] | null | undefined = null
-			if (messagesType) {
-				messageCode = messagesType[code]
-			}
-
-			if (!messageCode) {
-				messageCode = this.ERROR_MESSAGES.other[code]
-			}
-
+		if (code) {
+			const messageCode = this.ERROR_MESSAGES[code]
 			if (messageCode) {
 				msg = messageCode[0]
 				isError = messageCode[1]

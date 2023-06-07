@@ -19,7 +19,5 @@ yup.setLocale({
 export const defaultString = yup.string().required()
 export const defaultNumber = yup.number().required()
 export const defaultBoolean = yup.boolean().required()
-export const email = yup.string().email().required()
-export const password = yup.string().trim().min(8).required()
 
 export default yup
