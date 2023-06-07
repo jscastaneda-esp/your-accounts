@@ -19,8 +19,8 @@
 	import PopupConfirm from '../../popups/PopupConfirm.svelte'
 	import ChangeUtil from '../../../classes/ChangeUtil'
 	import dayjs from '../../../utils/dayjs.utils'
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
-	import { trpc } from '$lib/trpc/client'
+	import ConfirmPopupInfo from '../../../classes/ConfirmPopupInfo'
+	import { trpc } from '../../../trpc/client'
 
 	export let isValidForm: boolean
 	export let loading: boolean

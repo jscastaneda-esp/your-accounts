@@ -10,7 +10,7 @@
 	import type { FirebaseError } from 'firebase/app'
 	import firebase from '../configs/firebase.client'
 	import Toast from '../utils/toast.utils'
-	import { session, sessionToken } from '../stores'
+	import { session } from '../stores'
 
 	let showMenu = false
 
@@ -18,11 +18,13 @@
 		showMenu = !showMenu
 	}
 
-	function signOut() {
+	async function signOut() {
 		try {
+			await firebase.authFunctions.signOut()
+			await fetch('/login', {
+				method: 'DELETE'
+			})
 			goto('/login')
-			firebase.authFunctions.signOut()
-			$sessionToken = null
 		} catch (error) {
 			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code)
 			if (isError) {

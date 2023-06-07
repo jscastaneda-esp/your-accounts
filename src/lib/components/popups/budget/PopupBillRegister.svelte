@@ -11,7 +11,7 @@
 	import type { BudgetBillTransaction } from '../../../types'
 	import Toast from '../../../utils/toast.utils'
 	import dayjs from '../../../utils/dayjs.utils'
-	import { trpc } from '$lib/trpc/client'
+	import { trpc } from '../../../trpc/client'
 
 	export let budgetBillId: number
 	export let pendingBill: number

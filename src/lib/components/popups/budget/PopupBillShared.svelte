@@ -16,8 +16,8 @@
 	import type { changes as changesStore } from '../../../stores'
 	import ScreenLoading from '../../ScreenLoading.svelte'
 	import ChangeUtil from '../../../classes/ChangeUtil'
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
-	import { trpc } from '$lib/trpc/client'
+	import ConfirmPopupInfo from '../../../classes/ConfirmPopupInfo'
+	import { trpc } from '../../../trpc/client'
 
 	export let budgetBillId: number
 
