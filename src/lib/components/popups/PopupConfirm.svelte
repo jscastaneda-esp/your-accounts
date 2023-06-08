@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Popup from './Popup.svelte'
 	import Button from '../buttons/Button.svelte'
-	import type ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
+	import type ConfirmPopupInfo from '../../classes/ConfirmPopupInfo'
 
 	export let data: ConfirmPopupInfo
 

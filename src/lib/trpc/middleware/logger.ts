@@ -1,22 +1,18 @@
-import type { MiddlewareFunction, ProcedureParams } from '@trpc/server'
 import { t } from '../t'
 
-const middleware: MiddlewareFunction<ProcedureParams, ProcedureParams> = async ({
-	type,
-	path,
-	rawInput,
-	next
-}) => {
+export const logger = t.middleware(async ({ type, path, rawInput, next, ctx }) => {
+	const requestId = crypto.randomUUID()
 	const input = rawInput ?? 'N/A'
 
-	console.log(`${new Date().toISOString()} ([${type}][${path}]) - Init execute with input`, input)
+	console.log(
+		`${new Date().toISOString()} - ${requestId} - ([${type}][${path}][`,
+		ctx,
+		']) - Executing with input',
+		input
+	)
 	const result = await next()
 	console.log(
-		`${new Date().toISOString()} ([${type}][${path}]) - Execute with input`,
-		input,
-		`result ${result.ok ? 'OK' : 'ERR'}`
+		`${new Date().toISOString()} - ${requestId} - Execute with result ${result.ok ? 'OK' : 'ERR'}`
 	)
 	return result
-}
-
-export const logger = t.middleware(middleware)
+})

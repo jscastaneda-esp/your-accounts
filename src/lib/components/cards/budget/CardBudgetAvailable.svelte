@@ -13,8 +13,8 @@
 	import { getContext } from 'svelte'
 	import type { changes as changesStore } from '../../../stores'
 	import ChangeUtil from '../../../classes/ChangeUtil'
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
-	import { trpc } from '$lib/trpc/client'
+	import ConfirmPopupInfo from '../../../classes/ConfirmPopupInfo'
+	import { trpc } from '../../../trpc/client'
 
 	export let isValidForm: boolean
 	export let loading: boolean

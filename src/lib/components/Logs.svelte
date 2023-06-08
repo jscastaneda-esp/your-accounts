@@ -4,7 +4,7 @@
 	import dayjs from '../utils/dayjs.utils'
 	import Card from './cards/Card.svelte'
 	import HeaderCardSimple from './cards/HeaderCardSimple.svelte'
-	import { trpc } from '$lib/trpc/client'
+	import { trpc } from '../trpc/client'
 
 	export let projectId: number
 

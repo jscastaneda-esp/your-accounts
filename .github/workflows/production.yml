@@ -32,3 +32,4 @@ jobs:
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
             PUBLIC_ENV=production
+            JWT_SECRET=${{ vars.JWT_SECRET }}

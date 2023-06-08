@@ -1,13 +1,12 @@
-import { BudgetBillCategory } from '$lib/enums'
-import { logger } from '$lib/trpc/middleware/logger'
-import { t } from '$lib/trpc/t'
-import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetStatistics } from '$lib/types'
-import z, { defaultNumber, defaultString } from '$lib/utils/zod.utils'
+import { BudgetBillCategory } from '../../enums'
+import { t } from '../t'
+import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetStatistics } from '../../types'
+import z, { defaultNumber, defaultString } from '../../utils/zod.utils'
 import delay from 'delay'
+import { procedure } from '../middleware'
 
 const availables = t.router({
-	create: t.procedure
-		.use(logger)
+	create: procedure
 		.input(
 			z.object({
 				name: defaultString,
@@ -25,8 +24,7 @@ const availables = t.router({
 })
 
 const bills = t.router({
-	create: t.procedure
-		.use(logger)
+	create: procedure
 		.input(
 			z.object({
 				description: defaultString,
@@ -41,8 +39,7 @@ const bills = t.router({
 			}
 			return bill
 		}),
-	createTransaction: t.procedure
-		.use(logger)
+	createTransaction: procedure
 		.input(
 			z.object({
 				description: defaultString,
@@ -55,24 +52,20 @@ const bills = t.router({
 			await delay(1000)
 			return true
 		}),
-	getTransactionsById: t.procedure
-		.use(logger)
-		.input(defaultNumber)
-		.query(async ({ input }) => {
-			await delay(1000)
-			const transactions: BudgetBillTransaction[] = []
-			for (let index = 1; index <= 4; index++) {
-				transactions.push({
-					description: `Compra ${index}`,
-					amount: (index % 2 == 0 ? index * -1 : index) * 1000,
-					createdAt: new Date(),
-					budgetBillId: input
-				})
-			}
-			return transactions
-		}),
-	createShared: t.procedure
-		.use(logger)
+	getTransactionsById: procedure.input(defaultNumber).query(async ({ input }) => {
+		await delay(1000)
+		const transactions: BudgetBillTransaction[] = []
+		for (let index = 1; index <= 4; index++) {
+			transactions.push({
+				description: `Compra ${index}`,
+				amount: (index % 2 == 0 ? index * -1 : index) * 1000,
+				createdAt: new Date(),
+				budgetBillId: input
+			})
+		}
+		return transactions
+	}),
+	createShared: procedure
 		.input(
 			z.object({
 				description: defaultString,
@@ -87,100 +80,91 @@ const bills = t.router({
 			}
 			return shared
 		}),
-	getSharedById: t.procedure
-		.use(logger)
-		.input(defaultNumber)
-		.query(async ({ input }) => {
-			await delay(1000)
-			const shared: BudgetBillShared[] = []
-			if (input == 1) {
-				shared.push({
-					id: 1,
-					description: 'Lau',
-					amount: 100000,
-					budgetBillId: input
-				})
-			}
-			return shared
-		})
+	getSharedById: procedure.input(defaultNumber).query(async ({ input }) => {
+		await delay(1000)
+		const shared: BudgetBillShared[] = []
+		if (input == 1) {
+			shared.push({
+				id: 1,
+				description: 'Lau',
+				amount: 100000,
+				budgetBillId: input
+			})
+		}
+		return shared
+	})
 })
 
 export const budgets = t.router({
-	getById: t.procedure
-		.use(logger)
-		.input(defaultNumber)
-		.query(async ({ input }) => {
-			await delay(500)
-			const budget: Budget = {
-				id: input,
-				name: 'Test',
-				year: new Date().getFullYear(),
-				month: new Date().getMonth() + 1,
-				fixedIncome: 6370000,
-				additionalIncome: 0,
-				totalBalance: 6370000,
-				total: 0,
-				estimatedBalance: 6370000,
-				availableBalances: [
-					{
-						id: 1,
-						name: 'Cuenta Ahorros',
-						amount: 6370000,
-						budgetId: input
-					}
-				],
-				bills: [
-					{
-						id: 1,
-						description: 'Pagos financieros',
-						amount: 1000000,
-						payment: 0,
-						shared: true,
-						dueDate: '10',
-						complete: false,
-						budgetId: input,
-						category: BudgetBillCategory.SERVICES,
-						totalShared: 100000
-					},
-					{
-						id: 2,
-						description: 'Pagos personales',
-						amount: 2000000,
-						payment: 0,
-						shared: false,
-						dueDate: '',
-						complete: false,
-						budgetId: input,
-						category: BudgetBillCategory.PERSONAL,
-						totalShared: 0
-					}
-				],
-				projectId: 1
-			}
-			return budget
-		}),
-	getStatisticsById: t.procedure
-		.use(logger)
-		.input(defaultNumber)
-		.query(async ({ input }) => {
-			console.log(`Statistics to ${input}`)
-			await delay(1000)
-			const statistics: BudgetStatistics = {
-				labels: ['PERSONAL', 'CASA', 'AHORRO', 'FINANCIERO', 'IMPUESTOS', 'OTROS'],
-				pie: {
-					data: [10, 20.5, 5, 50, 6.5, 80]
+	getById: procedure.input(defaultNumber).query(async ({ input }) => {
+		await delay(500)
+		const budget: Budget = {
+			id: input,
+			name: 'Test',
+			year: new Date().getFullYear(),
+			month: new Date().getMonth() + 1,
+			fixedIncome: 6370000,
+			additionalIncome: 0,
+			totalBalance: 6370000,
+			total: 0,
+			estimatedBalance: 6370000,
+			availableBalances: [
+				{
+					id: 1,
+					name: 'Cuenta Ahorros',
+					amount: 6370000,
+					budgetId: input
+				}
+			],
+			bills: [
+				{
+					id: 1,
+					description: 'Pagos financieros',
+					amount: 1000000,
+					payment: 0,
+					shared: true,
+					dueDate: '10',
+					complete: false,
+					budgetId: input,
+					category: BudgetBillCategory.SERVICES,
+					totalShared: 100000
 				},
-				bar: {
-					amount: {
-						data: [12, 19, 3, 5, 2, 3]
-					},
-					payment: {
-						data: [0, -19, 1, 4, 0, 4]
-					}
+				{
+					id: 2,
+					description: 'Pagos personales',
+					amount: 2000000,
+					payment: 0,
+					shared: false,
+					dueDate: '',
+					complete: false,
+					budgetId: input,
+					category: BudgetBillCategory.PERSONAL,
+					totalShared: 0
+				}
+			],
+			projectId: 1
+		}
+		return budget
+	}),
+	getStatisticsById: procedure.input(defaultNumber).query(async ({ input }) => {
+		console.log(`Statistics to ${input}`)
+		await delay(1000)
+		const statistics: BudgetStatistics = {
+			labels: ['PERSONAL', 'CASA', 'AHORRO', 'FINANCIERO', 'IMPUESTOS', 'OTROS'],
+			pie: {
+				data: [10, 20.5, 5, 50, 6.5, 80]
+			},
+			bar: {
+				amount: {
+					data: [12, 19, 3, 5, 2, 3]
+				},
+				payment: {
+					data: [0, -19, 1, 4, 0, 4]
 				}
 			}
-			return statistics
-		}),
+		}
+		return statistics
+	}),
 	availables,
 	bills
 })

@@ -15,8 +15,8 @@
 	} from 'chart.js'
 	import Card from '../Card.svelte'
 	import HeaderCardSimple from '../HeaderCardSimple.svelte'
-	import Toast from '$lib/utils/toast.utils'
-	import { trpc } from '$lib/trpc/client'
+	import Toast from '../../../utils/toast.utils'
+	import { trpc } from '../../../trpc/client'
 
 	export let budgetId: number
 

@@ -35,6 +35,7 @@ jobs:
           BUILD_ENV: |
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
             PUBLIC_ENV=preview
+            JWT_SECRET=${{ vars.JWT_SECRET }}
           ALIAS_DOMAINS: |
             {REPO}-preview.vercel.app
       - name: Comment PR

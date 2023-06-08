@@ -8,7 +8,7 @@
 	import PopupBillRegister from '../../popups/budget/PopupBillRegister.svelte'
 	import PopupBillShared from '../../popups/budget/PopupBillShared.svelte'
 	import type dayjs from '../../../utils/dayjs.utils'
-	import { BudgetBillCategory } from '$lib/enums'
+	import { BudgetBillCategory } from '../../../enums'
 
 	export let now: dayjs.Dayjs
 	export let index: number
