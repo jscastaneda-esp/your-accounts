@@ -6,3 +6,5 @@ declare namespace App {
 	// interface PageData {}
 	// interface Platform {}
 }
+
+declare const __APP_VERSION__: string;

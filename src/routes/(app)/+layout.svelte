@@ -4,8 +4,8 @@
 	import { goto } from '$app/navigation'
 
 	// Components
-	import HeaderPage from '$lib/components/HeaderPage.svelte'
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import Header from '$components/shared/Header.svelte'
+	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 
 	// Utilities
 	import { session } from '$lib/stores'
@@ -26,8 +26,6 @@
 {#if screenLoading}
 	<ScreenLoading />
 {:else}
-	<HeaderPage />
-	<main class="min-h-full">
-		<slot />
-	</main>
+	<Header />
+	<slot />
 {/if}

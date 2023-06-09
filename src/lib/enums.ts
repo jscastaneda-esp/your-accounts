@@ -1,15 +1,6 @@
-export enum HttpStatus {
-	OK = 200,
-	BAD_REQUEST = 400
-}
-
 export enum FirebaseProviderEnum {
 	GOOGLE = 'Google',
 	FACEBOOK = 'Facebook'
-}
-
-export enum TypeProjectEnum {
-	BUDGET = 'BUDGET'
 }
 
 export enum BudgetBillCategory {
@@ -21,10 +12,6 @@ export enum BudgetBillCategory {
 	SERVICES = 'services',
 	SAVING = 'saving',
 	OTHERS = 'others'
-}
-
-export enum UserManagementActionsEnum {
-	resetPassword
 }
 
 export enum ChangeActionEnum {

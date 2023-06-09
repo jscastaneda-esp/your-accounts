@@ -2,12 +2,12 @@
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
 	import { session } from '$lib/stores'
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 
 	onMount(() =>
 		setTimeout(() => {
 			if ($session) {
-				goto('/dashboard')
+				goto('/budget')
 			} else {
 				goto('/login')
 			}

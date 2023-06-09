@@ -1,33 +1,20 @@
-import type {
-	BudgetBillCategory,
-	ChangeActionEnum,
-	ChangeSectionEnum,
-	TypeProjectEnum,
-	UserManagementActionsEnum
-} from './enums'
-
-export type PageDataUserManagementAction = {
-	mode: UserManagementActionsEnum
-	actionCode: string
-}
-
-export type Project = {
-	id: number
-	name: string
-	type: TypeProjectEnum
-	month?: number
-	year?: number
-	totalAvailableBalance?: number
-	totalPendingPayment?: number
-	totalBalance?: number
-	pendingBills?: number
-	userId: string
-}
+import type { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from './enums'
 
 export type ProjectLog = {
+	id: number
 	description: string
 	createdAt: Date
-	projectId: number
+}
+
+export type BudgetMinimal = {
+	id: number
+	name: string
+	year: number
+	month: number
+	totalAvailableBalance: number
+	totalPendingPayment: number
+	totalBalance: number
+	pendingBills: number
 }
 
 export type Budget = {
@@ -95,12 +82,6 @@ export type BudgetStatistics = {
 }
 
 export type FelteError = string[] | null
-
-export type EventDispatchProject = {
-	readonly id: number
-	readonly name: string
-	readonly type: TypeProjectEnum
-}
 
 export type Change<T> = {
 	index?: number

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import '@fortawesome/fontawesome-free/css/all.min.css'
 	import '../app.css'
+	import 'boxicons/css/boxicons.min.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import firebase from '$lib/configs/firebase.client'
 	import { session } from '$lib/stores'

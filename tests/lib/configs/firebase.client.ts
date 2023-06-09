@@ -1,7 +1,7 @@
 import { describe, expect, it, afterEach, vi } from 'vitest'
 import { AuthErrorCodes } from 'firebase/auth'
-import firebase from '../../../src/lib/configs/firebase.client'
-import { FirebaseProviderEnum } from '../../../src/lib/enums'
+import firebase from '$lib/configs/firebase.client'
+import { FirebaseProviderEnum } from '$lib/enums'
 
 vi.mock('$env/static/public', () => ({
 	PUBLIC_FIREBASE_OPTIONS: Buffer.from('{"apiKey": "test"}').toString('base64')

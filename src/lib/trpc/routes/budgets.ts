@@ -1,7 +1,13 @@
-import { BudgetBillCategory } from '../../enums'
+import { BudgetBillCategory } from '$lib/enums'
 import { t } from '../t'
-import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetStatistics } from '../../types'
-import z, { defaultNumber, defaultString } from '../../utils/zod.utils'
+import type {
+	Budget,
+	BudgetBillShared,
+	BudgetBillTransaction,
+	BudgetMinimal,
+	BudgetStatistics
+} from '$lib/types'
+import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
 
@@ -96,6 +102,66 @@ const bills = t.router({
 })
 
 export const budgets = t.router({
+	create: procedure
+		.input(
+			z.object({
+				name: defaultString,
+				cloneId: defaultNumber.optional()
+			})
+		)
+		.mutation(async () => {
+			await delay(1000)
+			const project = {
+				id: new Date().getTime()
+			}
+			return project
+		}),
+	getByUserId: procedure.query(async () => {
+		await delay(1000)
+		const budgets: BudgetMinimal[] = [
+			{
+				id: 1,
+				name: 'Test',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 3,
+				totalAvailableBalance: 100000,
+				totalPendingPayment: 10000,
+				totalBalance: 90000,
+				pendingBills: 1
+			},
+			{
+				id: 2,
+				name: 'Test 2',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 2,
+				totalAvailableBalance: 7000000,
+				totalPendingPayment: 6000000,
+				totalBalance: 1000000,
+				pendingBills: 10
+			},
+			{
+				id: 3,
+				name: 'Test 3',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 1,
+				totalAvailableBalance: 10000,
+				totalPendingPayment: 60000,
+				totalBalance: -50000,
+				pendingBills: 2
+			},
+			{
+				id: 4,
+				name: 'Test 4',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth(),
+				totalAvailableBalance: -10500,
+				totalPendingPayment: 40000,
+				totalBalance: -50500,
+				pendingBills: 1
+			}
+		]
+		return budgets
+	}),
 	getById: procedure.input(defaultNumber).query(async ({ input }) => {
 		await delay(500)
 		const budget: Budget = {
@@ -164,6 +230,10 @@ export const budgets = t.router({
 			}
 		}
 		return statistics
+	}),
+	delete: procedure.input(defaultNumber).mutation(async () => {
+		await delay(1000)
+		return
 	}),
 	availables,
 	bills

@@ -1,14 +1,12 @@
 <script>
 	import { page } from '$app/stores'
-
-	import error from '$lib/assets/images/error.webp'
 </script>
 
 <svelte:head>
 	<title>{$page.status} Error!</title>
 </svelte:head>
 
-<div class="h-full w-full flex flex-col justify-center items-center bg-blue-400">
+<div class="fixed inset-0 flex flex-col justify-center items-center bg-primary-focus">
 	{#if $page.status === 404}
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +41,7 @@
 		<h1>Hmmm!</h1>
 		<span>No encontramos lo que buscabas</span>
 	{:else}
-		<img src={error} alt="Error" class="h-1/3" />
+		<img src="/error.webp" alt="Error" class="h-1/3" />
 		<h1>Ops!</h1>
 		<span>Estamos trabajando en la solución</span>
 	{/if}

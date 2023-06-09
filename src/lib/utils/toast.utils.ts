@@ -1,8 +1,8 @@
 import { toast } from '@zerodevx/svelte-toast'
-import ToastDefault from '../components/alerts/ToastDefault.svelte'
-import ToastError from '../components/alerts/ToastError.svelte'
-import ToastWarn from '../components/alerts/ToastWarn.svelte'
-import ToastSuccess from '../components/alerts/ToastSuccess.svelte'
+import ToastDefault from '$components/old/alerts/ToastDefault.svelte'
+import ToastError from '$components/old/alerts/ToastError.svelte'
+import ToastWarn from '$components/old/alerts/ToastWarn.svelte'
+import ToastSuccess from '$components/old/alerts/ToastSuccess.svelte'
 import type { SvelteComponent } from 'svelte'
 
 class Toast {

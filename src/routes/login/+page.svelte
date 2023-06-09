@@ -4,21 +4,17 @@
 	import { goto } from '$app/navigation'
 	import { PUBLIC_ENV } from '$env/static/public'
 
-	// Assets
-	import logo from '$lib/assets/images/logo.webp'
-	import logoGoogle from '$lib/assets/images/logo-google.webp'
-
 	// Enums, Classes, Types
 	import { FirebaseProviderEnum } from '$lib/enums'
 	import type { FirebaseError } from 'firebase/app'
 
 	// Components
-	import ButtonExternalAuth from '$lib/components/buttons/ButtonExternalAuth.svelte'
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import ButtonBlock from '$components/shared/buttons/ButtonBlock.svelte'
+	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client'
-	import Toast from '$lib/utils/toast.utils'
+	import Toast from '$utils/toast.utils'
 	import { session } from '$lib/stores'
 	import type { UserCredential } from 'firebase/auth'
 
@@ -28,7 +24,7 @@
 	onMount(() =>
 		setTimeout(() => {
 			if ($session) {
-				goto('/dashboard')
+				goto('/budget')
 			} else {
 				screenLoading = false
 			}
@@ -67,7 +63,7 @@
 				}
 			}
 
-			await goto('/dashboard')
+			await goto('/budget')
 		} catch (error: unknown) {
 			const [msg, isError] = firebase.authFunctions.getError(
 				(error as FirebaseError).code,
@@ -91,26 +87,26 @@
 {#if screenLoading}
 	<ScreenLoading />
 {:else}
-	<div
-		class="fixed inset-0 flex justify-center bg-blue-400 bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
+	<main
+		class="fixed inset-0 flex justify-center bg-neutral bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
 	>
 		<article class="flex flex-col justify-center">
-			<section class="flex justify-center items-center gap-2 mb-[10px]">
-				<img src={logo} alt="Logo" class="w-12 h-12" />
-				<span class="text-center text-white text-xl leading-6">Ingresar a Tus Cuentas</span>
+			<section class="flex justify-center items-center gap-2 mb-[15px]">
+				<img src="/logo.svg" alt="Logo" class="w-10 h-10" />
+				<span class="text-center text-xl leading-6">Ingresar a Tus Cuentas</span>
 			</section>
 
 			<section class="flex flex-col gap-3">
-				<ButtonExternalAuth value="Google" on:click={signInGoogle} {loading}>
-					<img src={logoGoogle} alt="Logo Google" />
-				</ButtonExternalAuth>
+				<ButtonBlock value="Google" on:click={signInGoogle} {loading}>
+					<i class="bx bxl-google" />
+				</ButtonBlock>
 
 				{#if PUBLIC_ENV != 'production'}
-					<ButtonExternalAuth value="Pruebas" on:click={signInTest} {loading}>
+					<ButtonBlock value="Pruebas" on:click={signInTest} {loading}>
 						<i class="fas fa-code" />
-					</ButtonExternalAuth>
+					</ButtonBlock>
 				{/if}
 			</section>
 		</article>
-	</div>
+	</main>
 {/if}
