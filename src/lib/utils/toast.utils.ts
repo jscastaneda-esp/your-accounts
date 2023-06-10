@@ -1,9 +1,9 @@
 import { toast } from '@zerodevx/svelte-toast'
-import ToastDefault from '$components/old/alerts/ToastDefault.svelte'
-import ToastError from '$components/old/alerts/ToastError.svelte'
-import ToastWarn from '$components/old/alerts/ToastWarn.svelte'
-import ToastSuccess from '$components/old/alerts/ToastSuccess.svelte'
+import ToastError from '$components/shared/alerts/ToastError.svelte'
+import ToastWarn from '$components/shared/alerts/ToastWarn.svelte'
+import ToastSuccess from '$components/shared/alerts/ToastSuccess.svelte'
 import type { SvelteComponent } from 'svelte'
+import ToastInfo from '$components/shared/alerts/ToastInfo.svelte'
 
 class Toast {
 	private static add(
@@ -29,8 +29,8 @@ class Toast {
 			this.clear()
 		}
 
-		Toast.add(ToastDefault, msg, {
-			'--toastColor': '#ffffff'
+		Toast.add(ToastInfo, msg, {
+			'--toastBackground': '#2563eb'
 		})
 	}
 
@@ -43,8 +43,7 @@ class Toast {
 			ToastError,
 			msg,
 			{
-				'--toastBackground': '#fca5a5',
-				'--toastBarBackground': '#ef4444'
+				'--toastBackground': '#dc2626'
 			},
 			false
 		)
@@ -55,10 +54,14 @@ class Toast {
 			this.clear()
 		}
 
-		Toast.add(ToastWarn, msg, {
-			'--toastBackground': '#fde68a',
-			'--toastBarBackground': '#F59E0B'
-		})
+		Toast.add(
+			ToastWarn,
+			msg,
+			{
+				'--toastBackground': '#d97706'
+			},
+			false
+		)
 	}
 
 	static success(msg: string, clear = false) {
@@ -67,8 +70,7 @@ class Toast {
 		}
 
 		Toast.add(ToastSuccess, msg, {
-			'--toastBackground': '#86efac',
-			'--toastBarBackground': '#22c55e'
+			'--toastBackground': '#16a34a'
 		})
 	}
 

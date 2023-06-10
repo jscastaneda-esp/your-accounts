@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import Card from '../Card.svelte'
 	import HeaderCardCompose from '../HeaderCardCompose.svelte'
 	import SummaryValue from '../../Stat.svelte'
@@ -184,4 +184,4 @@
 	</Card>
 </div>
 
-<PopupConfirm data={confirmPopupInfo} />
+<PopupConfirm data={confirmPopupInfo} /> -->

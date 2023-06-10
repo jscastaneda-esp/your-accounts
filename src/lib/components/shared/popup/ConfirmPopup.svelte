@@ -3,7 +3,6 @@
 	import BaseButton from '../buttons/BaseButton.svelte'
 	import type ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
 
-	export let id: string
 	export let data: ConfirmPopupInfo
 
 	async function handleOk() {
@@ -12,7 +11,7 @@
 	}
 </script>
 
-<BasePopup {id} open={data.show}>
+<BasePopup open={data.show}>
 	<h3 class="font-bold text-lg">{data.question}</h3>
 	{#if data.description}
 		<p class="py-4">{data.description}</p>

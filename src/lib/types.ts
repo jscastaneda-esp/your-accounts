@@ -67,17 +67,12 @@ export type BudgetBillShared = {
 }
 
 export type BudgetStatistics = {
-	labels: string[]
-	pie: {
+	categories: string[]
+	amount: {
 		data: number[]
 	}
-	bar: {
-		amount: {
-			data: number[]
-		}
-		payment: {
-			data: number[]
-		}
+	payment: {
+		data: number[]
 	}
 }
 

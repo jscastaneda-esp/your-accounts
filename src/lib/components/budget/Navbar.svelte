@@ -16,7 +16,7 @@
 		</a>
 	</div>
 	<div class="basis-full tooltip tooltip-top" data-tip="Estadísticas">
-		<a class="tab w-full gap-x-2" href="#report" class:tab-active={tab == 3}>
+		<a class="tab w-full gap-x-2" href="#statistics" class:tab-active={tab == 3}>
 			<i class="bx bxs-bar-chart-alt-2" />
 			<span class="hidden sm:block">Estadísticas</span>
 		</a>

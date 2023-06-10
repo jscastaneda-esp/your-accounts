@@ -10,6 +10,7 @@ import type {
 import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
+import { categoryTranslate } from '$utils/i18n'
 
 const availables = t.router({
 	create: procedure
@@ -212,21 +213,19 @@ export const budgets = t.router({
 		}
 		return budget
 	}),
-	getStatisticsById: procedure.input(defaultNumber).query(async ({ input }) => {
-		console.log(`Statistics to ${input}`)
+	getStatisticsById: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
+
+		const categories = Object.values(BudgetBillCategory).map((category) =>
+			categoryTranslate(category)
+		) as string[]
 		const statistics: BudgetStatistics = {
-			labels: ['PERSONAL', 'CASA', 'AHORRO', 'FINANCIERO', 'IMPUESTOS', 'OTROS'],
-			pie: {
-				data: [10, 20.5, 5, 50, 6.5, 80]
+			categories,
+			amount: {
+				data: [100000, 1350000, 55000, 2000000, 87420, 100000, 1800000, 80000]
 			},
-			bar: {
-				amount: {
-					data: [12, 19, 3, 5, 2, 3]
-				},
-				payment: {
-					data: [0, -19, 1, 4, 0, 4]
-				}
+			payment: {
+				data: [0, 0, 60000, 400000, 0, 100000, 0, 10000]
 			}
 		}
 		return statistics

@@ -16,22 +16,13 @@
 	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 	import ConfirmPopup from '$components/shared/popup/ConfirmPopup.svelte'
 	import Resume from '$components/budget/Resume.svelte'
-	import Logs from '$components/old/Logs.svelte'
 	import Navbar from '$components/budget/Navbar.svelte'
+	import Statistics from '$components/budget/Statistics.svelte'
 	// import CardBudgetAvailable from '$components/cards/budget/CardBudgetAvailable.svelte'
 	// import CardBudgetBills from '$components/cards/budget/CardBudgetBills.svelte'
-	// import CardBudgetStatistics from '$components/cards/budget/CardBudgetStatistics.svelte'
 
 	export let data: Budget
 
-	let tab = 1
-	let loading = false
-	let interval: ReturnType<typeof setInterval>
-	let totalAvailable = 0
-	let totalPending = 0
-	let totalPayment = 0
-	let totalMaxPayment = 0
-	let totalSavings = 0
 	const confirmPopupInfo = new ConfirmPopupInfo(
 		false,
 		'¿Realmente desea salir?',
@@ -41,6 +32,15 @@
 		confirmPopupInfo.show = false
 	}
 	const trpcF = trpc($page)
+
+	let tab = 1
+	let loading = false
+	let interval: ReturnType<typeof setInterval>
+	let totalAvailable = 0
+	let totalPending = 0
+	let totalPayment = 0
+	let totalMaxPayment = 0
+	let totalSavings = 0
 
 	onMount(() => {
 		interval = setInterval(() => {
@@ -124,7 +124,7 @@
 	$: {
 		const url = $page.url.toString()
 		if (url.endsWith('#register')) tab = 2
-		else if (url.endsWith('#report')) tab = 3
+		else if (url.endsWith('#statistics')) tab = 3
 		else tab = 1
 	}
 	$: data.estimatedBalance = data.fixedIncome + data.additionalIncome - data.total
@@ -145,7 +145,6 @@
 		</ButtonLink>
 	</section>
 
-	<!-- svelte-ignore a11y-missing-attribute -->
 	<section class="p-2">
 		<Navbar {tab} />
 
@@ -155,7 +154,7 @@
 			{:else if tab == 2}
 				<h1>Registro de Datos</h1>
 			{:else if tab == 3}
-				<h1>Estadísticas</h1>
+				<Statistics id={data.id} />
 			{/if}
 		</section>
 	</section>
@@ -182,13 +181,10 @@
 			list={data.bills}
 		/>
 	</section>
-	<CardBudgetStatistics budgetId={data.id} />
 </article> -->
-
-<Logs projectId={data.projectId} />
 
 {#if loading}
 	<ScreenLoading />
 {/if}
 
-<ConfirmPopup id={`budget_${data.id}`} data={confirmPopupInfo} />
+<ConfirmPopup data={confirmPopupInfo} />

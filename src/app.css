@@ -7,3 +7,26 @@
 		place-content: start space-evenly;
 	}
 }
+
+:root {
+	--toastContainerTop: 5rem;
+	--toastPadding: 0;
+	--toastMsgPadding: 0;
+	--toastMinHeight: auto;
+	--toastColor: #4b5563;
+	--toastBorderRadius: 1rem;
+	--toastColor: hsl(239 85% 93% / 1);
+	--toastBarBackground: hsl(239 85% 93% / 1);
+}
+
+@media (max-width: 768px) {
+	:root {
+		--toastContainerTop: auto;
+		--toastContainerBottom: 0.5rem;
+		--toastContainerLeft: calc(50vw - 8rem);
+	}
+}
+
+._toastBtn {
+	padding-right: 0.5rem;
+}

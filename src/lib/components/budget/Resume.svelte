@@ -10,6 +10,7 @@
 	import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 	import ResumeData from '$components/budget/ResumeData.svelte'
 	import Stat from '$components/shared/Stat.svelte'
+	import Logs from '$components/shared/Logs.svelte'
 
 	export let data: Budget
 	export let totalPayment: number
@@ -90,7 +91,7 @@
 
 <section class="flex flex-col w-full">
 	<form
-		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 p-2"
+		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 px-4 pt-4"
 		use:form
 	>
 		<Input id="name" name="name" label="Nombre" errors={$errors.name} />
@@ -115,7 +116,7 @@
 
 	<div class="divider" />
 
-	<section class="grid grid-cols-1 sm:grid-cols-2 justify-center items-center gap-5 pb-9">
+	<section class="grid grid-cols-1 sm:grid-cols-2 justify-center items-center gap-5 px-4">
 		<ResumeData name="Pago" estimated={data.total} total={totalPayment} />
 		<ResumeData name="Saldo" estimated={data.estimatedBalance} total={data.totalBalance} />
 		<section class="flex justify-center items-center md:col-span-2">
@@ -139,4 +140,8 @@
 			</section>
 		</section>
 	</section>
+
+	<div class="divider" />
+
+	<Logs projectId={data.projectId} />
 </section>

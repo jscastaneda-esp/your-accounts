@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
 	import ButtonRounded from '../../shared/buttons/ButtonGroup.svelte'
 	import Input from '../../../shared/Input.svelte'
@@ -191,4 +191,4 @@
 		on:click={() => handleShowOption(2)}
 		on:changeTotal={handleChangeTotalShared}
 	/>
-{/if}
+{/if} -->

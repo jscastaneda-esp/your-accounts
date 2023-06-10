@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import type { FelteError } from '../../types'
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
@@ -55,4 +55,4 @@
 			<span>{errors}</span>
 		</div>
 	{/if}
-</fieldset>
+</fieldset> -->

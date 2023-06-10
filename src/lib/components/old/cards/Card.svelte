@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	export let classNameContainer = ''
 	export let showBody = false
 </script>
@@ -12,4 +12,4 @@
 	<main class="border-t-2 border-gray-300" class:hidden={!showBody}>
 		<slot name="body" />
 	</main>
-</article>
+</article> -->

@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { createForm } from 'felte'
 	import { validator } from '@felte/validator-yup'
 	import { createEventDispatcher } from 'svelte'
@@ -255,4 +255,4 @@
 			</section>
 		{/if}
 	</div>
-</Popup>
+</Popup> -->

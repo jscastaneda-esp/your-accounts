@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	export let iconAction: string | null = null
 	export let clickable = true
 </script>
@@ -19,4 +19,4 @@
 	{#if iconAction}
 		<i class={`fa-solid fa-${iconAction}`} />
 	{/if}
-</button>
+</button> -->

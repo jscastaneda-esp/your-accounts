@@ -2,14 +2,12 @@
 	import { onMount } from 'svelte'
 	import BaseButton from '../buttons/BaseButton.svelte'
 
-	export let id: string
 	export let open: boolean
 	export let showCloseButton = false
 
 	let element: HTMLDialogElement
 
 	onMount(() => {
-		element = document.getElementById(id) as HTMLDialogElement
 		element.addEventListener('close', () => {
 			open = false
 		})
@@ -24,7 +22,7 @@
 	}
 </script>
 
-<dialog {id} class="modal modal-bottom sm:modal-middle text-base-content">
+<dialog bind:this={element} class="modal modal-bottom sm:modal-middle text-base-content">
 	<form method="dialog" class="modal-box">
 		{#if !showCloseButton}
 			<BaseButton

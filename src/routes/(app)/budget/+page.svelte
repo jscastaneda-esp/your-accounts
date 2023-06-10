@@ -17,6 +17,7 @@
 	// Types, Enums
 	import type { BudgetMinimal } from '$lib/types'
 	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
+	import { zeroPad } from '$utils/number.utils'
 
 	const awaitLoad = [1, 2, 3, 4]
 	let confirmPopupInfo = new ConfirmPopupInfo()
@@ -46,7 +47,7 @@
 		try {
 			const now = dayjs()
 			const newProject = await trpcF.budgets.create.mutate({
-				name: `Presupuesto ${now.month()}/${now.year()}`
+				name: `Presupuesto ${zeroPad(now.month(), 2)}/${now.year()}`
 			})
 			await goto(`/budget/${newProject.id}`)
 		} catch (error) {
@@ -157,4 +158,4 @@
 	<ScreenLoading />
 {/if}
 
-<ConfirmPopup id="budget" data={confirmPopupInfo} />
+<ConfirmPopup data={confirmPopupInfo} />

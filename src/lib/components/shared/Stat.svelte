@@ -4,7 +4,7 @@
 	export let title: string
 	export let value: number
 	export let desc: string | null = null
-	export let className: string = ''
+	export let className = ''
 </script>
 
 <article class={`stat p-3 text-base ${className}`}>

@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	export let title: string
 	export let iconHeader: string
 	export let iconAction: string
@@ -14,4 +14,4 @@
 		<span>{title}</span>
 	</div>
 	<i class={`fa-solid fa-${iconAction}`} />
-</button>
+</button> -->

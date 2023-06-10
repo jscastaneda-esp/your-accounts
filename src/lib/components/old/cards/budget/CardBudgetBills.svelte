@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { getContext } from 'svelte'
 	import Card from '../Card.svelte'
 	import HeaderCardCompose from '../HeaderCardCompose.svelte'
@@ -312,4 +312,4 @@
 	</Card>
 </div>
 
-<PopupConfirm data={confirmPopupInfo} />
+<PopupConfirm data={confirmPopupInfo} /> -->

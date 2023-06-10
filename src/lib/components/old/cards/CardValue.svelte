@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { money } from '$utils/number.utils'
 
 	export let icon: string
@@ -14,4 +14,4 @@
 			{money(value)}
 		</span>
 	</div>
-</div>
+</div> -->

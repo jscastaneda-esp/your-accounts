@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	export let img: string | undefined = undefined
 </script>
 
@@ -15,4 +15,4 @@
 		background-position: bottom right;
 		background-size: 140px;
 	}
-</style>
+</style> -->
