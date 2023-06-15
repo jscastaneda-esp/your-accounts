@@ -5,8 +5,8 @@
 	export let estimated: number
 	export let total: number
 
-	let progress = (total * 100) / estimated
-	if (progress > 100) {
+	let progress = Math.floor((total * 100) / estimated)
+	if (progress > 100 || isNaN(progress)) {
 		progress = 100
 	} else if (progress < 0) {
 		progress = 0
@@ -31,11 +31,11 @@
 		{progress}%
 	</section>
 
-	<div class="stats shadow grid-cols-2">
-		<Stat title="Estimado" value={estimated}>
+	<div class="stats shadow grid-cols-2 w-full max-w-[500px]">
+		<Stat title="Estimado" value={estimated} className="text-lg">
 			<i class="bx bxs-check-shield" />
 		</Stat>
-		<Stat title="Total" value={total} {desc}>
+		<Stat title="Total" value={total} {desc} className="text-lg">
 			<i class="bx bxs-coin-stack" />
 		</Stat>
 	</div>

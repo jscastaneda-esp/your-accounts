@@ -1,10 +1,10 @@
 <script lang="ts">
-	import BaseButton from './BaseButton.svelte'
+	import Button from './Button.svelte'
 
 	export let value: string
 	export let loading = false
 </script>
 
-<BaseButton {value} className="btn-block btn-primary" {loading} on:click>
+<Button {value} className="btn-block btn-primary" {loading} on:click>
 	<slot />
-</BaseButton>
+</Button>

@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
-	import { session } from '$lib/stores'
-	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
+	import { screenLoading, session } from '$lib/stores/shared'
+
+	screenLoading.show()
 
 	onMount(() =>
-		setTimeout(() => {
+		setTimeout(async () => {
 			if ($session) {
-				goto('/budget')
+				await goto('/budget')
 			} else {
-				goto('/login')
+				await goto('/login')
 			}
+			screenLoading.hide()
 		}, 1000)
 	)
 </script>
-
-<ScreenLoading />

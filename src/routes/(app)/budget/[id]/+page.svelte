@@ -1,174 +1,186 @@
 <script lang="ts">
 	// Enums, Types, Utilities
-	import { onDestroy, onMount, setContext } from 'svelte'
-	import { goto } from '$app/navigation'
-	import { page } from '$app/stores'
-	import type { Budget, Change } from '$lib/types'
-	import Toast from '$utils/toast.utils'
+	import { createForm } from 'felte'
+	import { validator } from '@felte/validator-yup'
+	import type { Budget, BudgetBill, Change, ChangeStore, TotalsBills } from '$lib/types'
+	import { zeroPad } from '$utils/number.utils'
+	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
+	import ChangeUtil from '$lib/classes/ChangeUtil'
 	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums'
-	import { groupBy } from '$utils/array.utils'
-	import { changes } from '$lib/stores'
-	import ConfirmPopupInfo from '$lib/classes/ConfirmPopupInfo'
-	import { trpc } from '$lib/trpc/client'
 
 	// Components
-	import ButtonLink from '$components/shared/buttons/ButtonLink.svelte'
-	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
-	import ConfirmPopup from '$components/shared/popup/ConfirmPopup.svelte'
-	import Resume from '$components/budget/Resume.svelte'
-	import Navbar from '$components/budget/Navbar.svelte'
-	import Statistics from '$components/budget/Statistics.svelte'
-	// import CardBudgetAvailable from '$components/cards/budget/CardBudgetAvailable.svelte'
+	import Input from '$components/shared/Input.svelte'
+	import Stat from '$components/shared/Stat.svelte'
+	import Logs from '$components/shared/Logs.svelte'
+	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
+	import { getContext } from 'svelte'
+	import type { Writable, Readable } from 'svelte/store'
 	// import CardBudgetBills from '$components/cards/budget/CardBudgetBills.svelte'
 
 	export let data: Budget
 
-	const confirmPopupInfo = new ConfirmPopupInfo(
-		false,
-		'¿Realmente desea salir?',
-		'Al salir se pueden perder cambios. Se recomienda primero guardar'
+	type ChangeMain = {
+		name?: string
+		year?: number
+		month?: number
+		fixedIncome?: number
+		additionalIncome?: number
+	}
+
+	const changeUtil = new ChangeUtil<keyof ChangeMain>()
+	const { changes } = getContext<{
+		changes: Readable<Change<ChangeMain>[]> & ChangeStore<ChangeMain>
+	}>(ContextNameEnum.CHANGES)
+	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(
+		ContextNameEnum.BUDGET_AVAILABLES
 	)
-	confirmPopupInfo.actionCancel = () => {
-		confirmPopupInfo.show = false
-	}
-	const trpcF = trpc($page)
+	const { month } = getContext<{
+		month: Writable<string>
+	}>(ContextNameEnum.BUDGET_RESUME)
+	const { totals: totalsBills } = getContext<{
+		totals: Readable<TotalsBills>
+	}>(ContextNameEnum.BUDGET_BILLS)
 
-	let tab = 1
-	let loading = false
-	let interval: ReturnType<typeof setInterval>
-	let totalAvailable = 0
-	let totalPending = 0
-	let totalPayment = 0
-	let totalMaxPayment = 0
-	let totalSavings = 0
-
-	onMount(() => {
-		interval = setInterval(() => {
-			handleSave()
-		}, 30000)
+	// Form Definition
+	const validationSchema = yup.object().shape({
+		id: defaultNumber.min(1),
+		name: defaultString.max(40),
+		month: defaultString.matches(new RegExp('^\\d{4}-\\d{2}$')),
+		fixedIncome: defaultNumber.min(0).max(9999999999.99),
+		additionalIncome: defaultNumber.min(0).max(9999999999.99)
+	})
+	const {
+		form,
+		data: dataForm,
+		errors,
+		touched
+	} = createForm({
+		initialValues: {
+			id: data.id,
+			name: data.name,
+			month: `${data.year}-${zeroPad(data.month, 2)}`,
+			fixedIncome: data.fixedIncome,
+			additionalIncome: data.additionalIncome
+		},
+		extend: [validator({ schema: validationSchema })]
 	})
 
-	onDestroy(() => {
-		clearInterval(interval)
-	})
+	function compareData() {
+		const newData = $dataForm
+		const errorData = $errors
 
-	setContext(ContextNameEnum.CHANGES, {
-		changes
-	})
-
-	async function handleSave() {
-		const changeList = [...$changes]
-		if ($changes.length > 0) {
-			try {
-				changes.delete(changeList)
-				const sendChanges: Change<Record<string, unknown>>[] = []
-
-				const groupBySection = groupBy<Change<Record<string, unknown>>>(
-					changeList,
-					(change) => change.section
-				)
-				Object.entries(groupBySection).forEach((group) => {
-					const [section, items] = group
-					const groupByAction = groupBy<Change<Record<string, unknown>>>(
-						items,
-						(change) => change.action
-					)
-					Object.entries(groupByAction).forEach((group) => {
-						const [action, items] = group
-						const groupById = groupBy<Change<Record<string, unknown>>>(items, (change) =>
-							change.detail.id.toString()
-						)
-						Object.entries(groupById).forEach((group) => {
-							const [id, items] = group
-
-							const sendChange: Change<Record<string, unknown>> = {
-								section: section as ChangeSectionEnum,
-								action: action as ChangeActionEnum,
-								detail: {
-									id: Number(id)
-								}
-							}
-
-							items.forEach(
-								(item) => (sendChange.detail = { ...sendChange.detail, ...item.detail })
-							)
-							sendChanges.push(sendChange)
-						})
-					})
-				})
-
-				await trpcF.projects.receiveChanges.mutate({
-					projectId: 1,
-					changes: sendChanges
-				})
-			} catch (error) {
-				changes.revert(changeList)
-				Toast.error('Se presento un error al guardar', true)
-				throw error
+		let isChanges = false
+		const change: Change<ChangeMain> = {
+			section: ChangeSectionEnum.BUDGET_MAIN,
+			action: ChangeActionEnum.UPDATE,
+			detail: {
+				id: data.id
 			}
+		}
+
+		if (!errorData?.month) {
+			const monthParts = newData.month.split('-')
+			const year = Number(monthParts[0])
+			const month = Number(monthParts[1])
+			isChanges = changeUtil.setChangeDirect(year, data, change, 'year', isChanges)
+			isChanges = changeUtil.setChangeDirect(month, data, change, 'month', isChanges)
+		}
+
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'name', isChanges)
+		isChanges = changeUtil.setChange(errorData, newData, data, change, 'fixedIncome', isChanges)
+		isChanges = changeUtil.setChange(
+			errorData,
+			newData,
+			data,
+			change,
+			'additionalIncome',
+			isChanges
+		)
+		if (isChanges) {
+			changes.add(change)
 		}
 	}
 
-	function handleExit() {
-		confirmPopupInfo.show = true
-		confirmPopupInfo.actionOk = async () => {
-			loading = true
-			try {
-				await goto('/budget')
-			} finally {
-				loading = false
-			}
-		}
-	}
-
-	$: {
-		const url = $page.url.toString()
-		if (url.endsWith('#register')) tab = 2
-		else if (url.endsWith('#statistics')) tab = 3
-		else tab = 1
-	}
-	$: data.estimatedBalance = data.fixedIncome + data.additionalIncome - data.total
-	$: data.totalBalance = totalAvailable - totalPending
+	$: estimatedBalance = data.fixedIncome + data.additionalIncome - $totalsBills.total
+	$: totalBalance = $totalAvailable - $totalsBills.totalPending
+	$: if ($touched) compareData()
+	$: month.set($dataForm.month)
 </script>
 
 <svelte:head>
 	<title>Presupuesto | Tus Cuentas</title>
 </svelte:head>
 
-<main class="w-full">
-	<section class="flex justify-between">
-		<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
-			<i class="bx bxs-save" />
-		</ButtonLink>
-		<ButtonLink value="Salir" on:click={handleExit}>
-			<i class="bx bx-arrow-back" />
-		</ButtonLink>
-	</section>
+<section class="flex flex-col w-full">
+	<form
+		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 px-4 pt-4"
+		use:form
+	>
+		<Input id="name" name="name" label="Nombre" errors={$errors.name} />
+		<Input id="month" name="month" label="Mes" alt="aaaa-MM" type="month" errors={$errors.month} />
+		<Input
+			id="fixedIncome"
+			name="fixedIncome"
+			label="Ingreso fijo"
+			alt="$"
+			type="number"
+			errors={$errors.fixedIncome}
+		/>
+		<Input
+			id="additionalIncome"
+			name="additionalIncome"
+			label="Ingreso adicional"
+			alt="$"
+			type="number"
+			errors={$errors.additionalIncome}
+		/>
+	</form>
 
-	<section class="p-2">
-		<Navbar {tab} />
+	<div class="divider" />
 
-		<section class="mt-1 bg-base-200 rounded-btn">
-			{#if tab == 1}
-				<Resume {data} {totalPayment} {totalMaxPayment} {totalSavings} />
-			{:else if tab == 2}
-				<h1>Registro de Datos</h1>
-			{:else if tab == 3}
-				<Statistics id={data.id} />
-			{/if}
+	<section class="grid grid-cols-1 sm:grid-cols-2 justify-center items-center gap-5 px-4">
+		<ResumeProgress name="Pago" estimated={$totalsBills.total} total={$totalsBills.totalPayment} />
+		<ResumeProgress name="Saldo" estimated={estimatedBalance} total={totalBalance} />
+		<section class="flex justify-center items-center">
+			<article class="stats stats-vertical sm:stats-horizontal sm:grid-cols-2 shadow w-[500px]">
+				<Stat title="Disponible" value={$totalAvailable} className="text-lg">
+					<i class="bx bxs-wallet-alt" />
+				</Stat>
+				<Stat
+					title="Pendiente"
+					value={$totalsBills.totalPending}
+					desc={`${$totalsBills.pendingBills} Pagos pendientes`}
+					className="text-lg"
+				>
+					<i class="bx bxs-timer" />
+				</Stat>
+			</article>
+		</section>
+		<section class="flex justify-center items-center">
+			<article class="stats stats-vertical sm:stats-horizontal sm:grid-cols-2 shadow w-[500px]">
+				<Stat title="Descuadre" value={totalBalance - estimatedBalance} className="text-lg">
+					<i class="bx bxs-objects-vertical-center" />
+				</Stat>
+				<Stat
+					title="Pendiente Registrar"
+					value={totalBalance -
+						(data.fixedIncome + data.additionalIncome - $totalsBills.totalMaxPayment) -
+						$totalsBills.totalSavings}
+					className="text-xl font-bold"
+				>
+					<i class="bx bxs-shield-minus" />
+				</Stat>
+			</article>
 		</section>
 	</section>
-</main>
+
+	<div class="divider" />
+
+	<Logs projectId={data.projectId} />
+</section>
 
 <!-- <article class="px-2 py-3 flex flex-col gap-[10px] mb-[5.2rem] md:mb-[7.6rem]">
 	<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
-		<CardBudgetAvailable
-			bind:isValidForm={isValidAvailable}
-			bind:loading
-			bind:total={totalAvailable}
-			budgetId={data.id}
-			list={data.availableBalances}
-		/>
 		<CardBudgetBills
 			bind:isValidForm={isValidBills}
 			bind:loading
@@ -182,9 +194,3 @@
 		/>
 	</section>
 </article> -->
-
-{#if loading}
-	<ScreenLoading />
-{/if}
-
-<ConfirmPopup data={confirmPopupInfo} />

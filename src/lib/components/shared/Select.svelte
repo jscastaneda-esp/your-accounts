@@ -6,7 +6,8 @@
 	export let name: string
 	export let label: string | null = null
 	export let alt: string | null = null
-	export let type: 'text' | 'number' | 'email' | 'password' | 'month' = 'text'
+	export let classNameLabel = ''
+	export let classNameSelect = ''
 	export let disabled = false
 	export let errors: FelteError = null
 
@@ -22,21 +23,20 @@
 <fieldset class="form-control w-full" {disabled}>
 	{#if label}
 		<label class="label" for={id}>
-			<span class="label-text">{label}</span>
+			<span class={`label-text ${classNameLabel}`}>{label}</span>
 			{#if alt}
-				<span class="label-text-alt">{alt}</span>
+				<span class={`label-text-alt ${classNameLabel}`}>{alt}</span>
 			{/if}
 		</label>
 	{/if}
-	<input
+	<select
 		{id}
 		{name}
-		{type}
-		placeholder={label}
-		class="input input-bordered w-full"
-		class:input-error={errors}
-		step={type === 'number' ? '0.01' : undefined}
-	/>
+		class={`select select-bordered w-full ${classNameSelect}`}
+		class:select-error={errors}
+	>
+		<slot />
+	</select>
 	{#if errors}
 		<span class="label justify-start gap-1 text-error">
 			<i class="bx bxs-error-alt" />

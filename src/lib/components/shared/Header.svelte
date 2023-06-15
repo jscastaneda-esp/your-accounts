@@ -7,7 +7,7 @@
 	import type { FirebaseError } from 'firebase/app'
 	import firebase from '$lib/configs/firebase.client'
 	import Toast from '$utils/toast.utils'
-	import { session } from '$lib/stores'
+	import { session } from '$lib/stores/shared'
 
 	async function signOut() {
 		try {
@@ -41,8 +41,8 @@
 					class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-primary-focus rounded-b-box rounded-tr-box w-52"
 				>
 					<li>
-						<a href="/budget" class:active={$page.route.id === '/(app)/budget'}>
-							<i class="bx bxs-spreadsheet" />
+						<a href="/budget" class:active={$page.route.id?.includes('/(app)/budget') || false}>
+							<i class="bx bxs-detail" />
 							<span>Presupuestos</span>
 						</a>
 					</li>
@@ -56,8 +56,8 @@
 		<div class="navbar-center hidden lg:flex">
 			<ul class="menu menu-horizontal px-1">
 				<li>
-					<a href="/budget" class:active={$page.route.id === '/(app)/budget'}>
-						<i class="bx bxs-spreadsheet" />
+					<a href="/budget" class:active={$page.route.id?.includes('/(app)/budget') || false}>
+						<i class="bx bxs-detail" />
 						<span>Presupuestos</span>
 					</a>
 				</li>

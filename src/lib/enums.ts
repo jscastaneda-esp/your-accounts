@@ -27,5 +27,8 @@ export enum ChangeSectionEnum {
 }
 
 export enum ContextNameEnum {
-	CHANGES = 'changes'
+	CHANGES = 'changes',
+	BUDGET_RESUME = 'resume',
+	BUDGET_AVAILABLES = 'availables',
+	BUDGET_BILLS = "bills"
 }

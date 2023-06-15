@@ -4,10 +4,11 @@
 	import dayjs from '$utils/dayjs.utils'
 	import { trpc } from '$lib/trpc/client'
 	import Table from './Table.svelte'
+	import { page } from '$app/stores'
 	export let projectId: number
 
 	const awaitLoad = [1, 2, 3, 4]
-	const trpcF = trpc()
+	const trpcF = trpc($page)
 	let loading = false
 	let logs: ProjectLog[] = []
 

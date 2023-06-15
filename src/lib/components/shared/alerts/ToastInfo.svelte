@@ -1,9 +1,9 @@
 <script lang="ts">
-	import BaseToast from './BaseToast.svelte'
+	import Toast from './Toast.svelte'
 
 	export let message: string
 </script>
 
-<BaseToast {message}>
+<Toast {message}>
 	<i class="bx bxs-info-circle" />
-</BaseToast>
+</Toast>

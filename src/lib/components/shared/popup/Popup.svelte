@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import BaseButton from '../buttons/BaseButton.svelte'
+	import Button from '../buttons/Button.svelte'
 
 	export let open: boolean
 	export let showCloseButton = false
@@ -25,7 +25,7 @@
 <dialog bind:this={element} class="modal modal-bottom sm:modal-middle text-base-content">
 	<form method="dialog" class="modal-box">
 		{#if !showCloseButton}
-			<BaseButton
+			<Button
 				type="submit"
 				value="✕"
 				className="btn-sm btn-circle btn-ghost absolute right-2 top-2"

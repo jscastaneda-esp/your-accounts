@@ -172,9 +172,6 @@ export const budgets = t.router({
 			month: new Date().getMonth() + 1,
 			fixedIncome: 6370000,
 			additionalIncome: 0,
-			totalBalance: 6370000,
-			total: 0,
-			estimatedBalance: 6370000,
 			availableBalances: [
 				{
 					id: 1,

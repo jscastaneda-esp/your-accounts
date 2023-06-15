@@ -2,22 +2,22 @@
 	import { createEventDispatcher } from 'svelte'
 	import { goto } from '$app/navigation'
 	import { zeroPad } from '$utils/number.utils'
-	import BaseCard from '../shared/BaseCard.svelte'
+	import Card from '../shared/Card.svelte'
 	import Stat from '../shared/Stat.svelte'
 	import type { BudgetMinimal } from '$lib/types'
 	import ButtonGroup from '../shared/buttons/ButtonGroup.svelte'
-	import BaseButton from '../shared/buttons/BaseButton.svelte'
+	import Button from '../shared/buttons/Button.svelte'
+	import { screenLoading } from '$lib/stores/shared'
 
-	export let loading: boolean
 	export let project: BudgetMinimal
 
 	let additionalName = `${zeroPad(project.month, 2)}/${project.year}`
 	const dispatch = createEventDispatcher()
 
 	async function handleEdit() {
-		loading = true
+		screenLoading.show()
 		await goto(`/budget/${project.id}`)
-		loading = false
+		screenLoading.hide()
 	}
 
 	function handleAction(action: 'delete' | 'clone') {
@@ -25,12 +25,12 @@
 	}
 </script>
 
-<BaseCard className="bg-gray-700">
+<Card className="bg-gray-700">
 	<header class="card-actions justify-end">
 		<div class="tooltip tooltip-left" data-tip="Editar">
-			<BaseButton value="" className="btn-square btn-sm bg-base-100" on:click={handleEdit}>
+			<Button value="" className="btn-square btn-sm bg-base-100" on:click={handleEdit}>
 				<i class="bx bxs-edit-alt" />
-			</BaseButton>
+			</Button>
 		</div>
 	</header>
 
@@ -39,7 +39,7 @@
 		<div class="badge badge-xs badge-secondary">{additionalName}</div>
 	</h2>
 
-	<div class="stats shadow grid-col-3">
+	<article class="stats shadow grid-col-3">
 		<Stat title="Disponible" value={project.totalAvailableBalance}>
 			<i class="bx bxs-wallet" />
 		</Stat>
@@ -49,31 +49,23 @@
 		<Stat title="Saldo" value={project.totalBalance}>
 			<i class="bx bxs-dollar-circle" />
 		</Stat>
-	</div>
+	</article>
 
-	<div class="indicator">
+	<section class="indicator">
 		<span class="indicator-item indicator-bottom badge badge-secondary">
 			{project.pendingBills}
 		</span>
 		<span class="px-2 py-1 rounded bg-base-100">Pagos pendientes</span>
-	</div>
+	</section>
 
 	<footer class="card-actions justify-end mt-3">
-		<div class="join">
-			<ButtonGroup
-				value="Borrar"
-				className="btn-error rounded-l-full"
-				on:click={() => handleAction('delete')}
-			>
+		<section class="join">
+			<ButtonGroup value="Eliminar" className="btn-error" on:click={() => handleAction('delete')}>
 				<i class="bx bxs-trash-alt" />
 			</ButtonGroup>
-			<ButtonGroup
-				value="Duplicar"
-				className="btn-ghost rounded-r-full"
-				on:click={() => handleAction('clone')}
-			>
+			<ButtonGroup value="Duplicar" className="btn-ghost" on:click={() => handleAction('clone')}>
 				<i class="bx bx-duplicate" />
 			</ButtonGroup>
-		</div>
+		</section>
 	</footer>
-</BaseCard>
+</Card>

@@ -10,24 +10,24 @@
 
 	// Components
 	import ButtonBlock from '$components/shared/buttons/ButtonBlock.svelte'
-	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 
 	// Utilities
 	import firebase from '$lib/configs/firebase.client'
 	import Toast from '$utils/toast.utils'
-	import { session } from '$lib/stores'
+	import { screenLoading, session } from '$lib/stores/shared'
 	import type { UserCredential } from 'firebase/auth'
 
 	let loading = false
-	let screenLoading = true
+
+	screenLoading.show()
+	Toast.clear()
 
 	onMount(() =>
-		setTimeout(() => {
+		setTimeout(async () => {
 			if ($session) {
-				goto('/budget')
-			} else {
-				screenLoading = false
+				await goto('/budget')
 			}
+			screenLoading.hide()
 		}, 1000)
 	)
 
@@ -84,9 +84,7 @@
 	<title>Iniciar Sesión</title>
 </svelte:head>
 
-{#if screenLoading}
-	<ScreenLoading />
-{:else}
+{#if !$screenLoading}
 	<main
 		class="fixed inset-0 flex justify-center bg-neutral bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
 	>

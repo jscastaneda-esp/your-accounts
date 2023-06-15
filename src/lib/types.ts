@@ -24,9 +24,6 @@ export type Budget = {
 	month: number
 	fixedIncome: number
 	additionalIncome: number
-	totalBalance: number
-	total: number
-	estimatedBalance: number
 	availableBalances: BudgetAvailable[]
 	bills: BudgetBill[]
 	projectId: number
@@ -83,4 +80,19 @@ export type Change<T> = {
 	readonly section: ChangeSectionEnum
 	readonly action: ChangeActionEnum
 	detail: { id: number } & T
+}
+
+export type ChangeStore<T> = {
+	add: (newChange: Change<T>) => void
+	revert: (newChanges: Change<T>[]) => void
+	delete: (delChanges: Change<T>[]) => void
+}
+
+export type TotalsBills = {
+	totalPending: number,
+	pendingBills: number,
+	totalPayment: number,
+	total: number,
+	totalMaxPayment: number,
+	totalSavings: number
 }

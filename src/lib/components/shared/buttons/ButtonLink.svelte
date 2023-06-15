@@ -1,11 +1,11 @@
 <script lang="ts">
-	import BaseButton from './BaseButton.svelte'
+	import Button from './Button.svelte'
 
 	export let value: string
 	export let className = ''
 	export let disabled = false
 </script>
 
-<BaseButton {value} className={`btn-link ${className}`} {disabled} on:click>
+<Button {value} className={`btn-link ${className}`} {disabled} on:click>
 	<slot />
-</BaseButton>
+</Button>

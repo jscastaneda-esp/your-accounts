@@ -18,8 +18,10 @@
 	import { Bar, Pie } from 'svelte-chartjs'
 	import Table from '$components/shared/Table.svelte'
 	import { money } from '$utils/number.utils'
+	import type { Budget } from '$lib/types'
+	import { page } from '$app/stores'
 
-	export let id: number
+	export let data: Budget
 
 	ChartJS.register(Title, Tooltip, Legend, ArcElement, BarElement, CategoryScale, LinearScale)
 
@@ -30,7 +32,8 @@
 		green: 'rgb(75, 192, 192)',
 		blue: 'rgb(54, 162, 235)',
 		purple: 'rgb(153, 102, 255)',
-		grey: 'rgb(201, 203, 207)'
+		grey: 'rgb(201, 203, 207)',
+		white: 'rgb(255, 255, 255)'
 	}
 	const options: ChartOptions = {
 		maintainAspectRatio: false,
@@ -96,7 +99,7 @@
 			}
 		}
 	}
-	const trpcF = trpc()
+	const trpcF = trpc($page)
 	let dataPie: ChartData<'pie', number[], unknown> | null
 	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null
 	let balanceData: {
@@ -116,13 +119,14 @@
 				categories,
 				amount: { data: amountData },
 				payment: { data: paymentData }
-			} = await trpcF.budgets.getStatisticsById.query(id)
+			} = await trpcF.budgets.getStatisticsById.query(data.id)
 			dataPie = {
 				labels: categories,
 				datasets: [
 					{
 						data: amountData,
-						backgroundColor: Object.values(CHART_COLORS)
+						backgroundColor: Object.values(CHART_COLORS),
+						borderColor: Object.values(CHART_COLORS)
 					}
 				]
 			}

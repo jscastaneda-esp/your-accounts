@@ -1,9 +1,9 @@
-import type { PageServerLoad } from './$types'
+import type { LayoutServerLoad } from './$types'
 import { router } from '$lib/trpc/router'
 import { createContext } from '$lib/trpc/context'
 import { redirect } from '@sveltejs/kit'
 
-export const load: PageServerLoad = async (event) => {
+export const load: LayoutServerLoad = async (event) => {
 	try {
 		const response = await router
 			.createCaller(await createContext(event))
