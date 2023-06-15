@@ -2,7 +2,7 @@
 	// Enums, Types, Utilities
 	import { createForm } from 'felte'
 	import { validator } from '@felte/validator-yup'
-	import type { Budget, BudgetBill, Change, ChangeStore, TotalsBills } from '$lib/types'
+	import type { Budget, Change, ChangeStore, TotalsBills } from '$lib/types'
 	import { zeroPad } from '$utils/number.utils'
 	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
 	import ChangeUtil from '$lib/classes/ChangeUtil'
@@ -15,7 +15,6 @@
 	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable, Readable } from 'svelte/store'
-	// import CardBudgetBills from '$components/cards/budget/CardBudgetBills.svelte'
 
 	export let data: Budget
 
@@ -178,19 +177,3 @@
 
 	<Logs projectId={data.projectId} />
 </section>
-
-<!-- <article class="px-2 py-3 flex flex-col gap-[10px] mb-[5.2rem] md:mb-[7.6rem]">
-	<section class="grid grid-cols-[repeat(auto-fit,_minmax(294px,_1fr))] gap-[10px]">
-		<CardBudgetBills
-			bind:isValidForm={isValidBills}
-			bind:loading
-			bind:total={data.total}
-			bind:totalPending={totalBillPending}
-			bind:totalMaxPayment={totalBillMaxPayment}
-			bind:totalSavings={totalBillSavings}
-			budgetId={data.id}
-			budgetMonth={$dataForm.month}
-			list={data.bills}
-		/>
-	</section>
-</article> -->

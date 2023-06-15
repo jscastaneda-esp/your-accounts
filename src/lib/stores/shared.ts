@@ -19,7 +19,7 @@ function confirmPopupStore() {
 	return {
 		subscribe,
 		show: (question: string, description?: string, cbOk?: Action, cbCancel?: Action) => {
-			return update(value => {
+			return update((value) => {
 				value.show = true
 				value.question = question
 				value.description = description

@@ -89,10 +89,10 @@ export type ChangeStore<T> = {
 }
 
 export type TotalsBills = {
-	totalPending: number,
-	pendingBills: number,
-	totalPayment: number,
-	total: number,
-	totalMaxPayment: number,
+	totalPending: number
+	pendingBills: number
+	totalPayment: number
+	total: number
+	totalMaxPayment: number
 	totalSavings: number
 }

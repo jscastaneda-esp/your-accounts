@@ -30,5 +30,5 @@ export enum ContextNameEnum {
 	CHANGES = 'changes',
 	BUDGET_RESUME = 'resume',
 	BUDGET_AVAILABLES = 'availables',
-	BUDGET_BILLS = "bills"
+	BUDGET_BILLS = 'bills'
 }
