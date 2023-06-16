@@ -3,8 +3,8 @@
 	import { page } from '$app/stores'
 
 	// Components
-	import Navbar from '$components/shared/Navbar.svelte'
-	import NavbarItem from '$components/shared/NavbarItem.svelte'
+	import Navbar from '$components/shared/navbar/Navbar.svelte'
+	import NavbarItem from '$components/shared/navbar/NavbarItem.svelte'
 	import type { Budget } from '$lib/types'
 
 	export let data: Budget

@@ -20,6 +20,6 @@
 		{#if label}
 			<span class="label-text">{label}</span>
 		{/if}
-		<input type="checkbox" {id} {name} class="toggle toggle-primary" />
+		<input type="checkbox" {id} {name} class="toggle toggle-primary" on:change />
 	</label>
 </fieldset>

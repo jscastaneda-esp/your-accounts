@@ -11,7 +11,7 @@
 	// Components
 	import Input from '$components/shared/Input.svelte'
 	import Stat from '$components/shared/Stat.svelte'
-	import Logs from '$components/shared/Logs.svelte'
+	import ProjectLogs from '$components/shared/logs/ProjectLogs.svelte'
 	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable, Readable } from 'svelte/store'
@@ -116,12 +116,19 @@
 		use:form
 	>
 		<Input id="name" name="name" label="Nombre" errors={$errors.name} />
-		<Input id="month" name="month" label="Mes" alt="aaaa-MM" type="month" errors={$errors.month} />
+		<Input
+			id="month"
+			name="month"
+			label="Mes"
+			alt="(aaaa-MM)"
+			type="month"
+			errors={$errors.month}
+		/>
 		<Input
 			id="fixedIncome"
 			name="fixedIncome"
 			label="Ingreso fijo"
-			alt="$"
+			alt="($)"
 			type="number"
 			errors={$errors.fixedIncome}
 		/>
@@ -129,7 +136,7 @@
 			id="additionalIncome"
 			name="additionalIncome"
 			label="Ingreso adicional"
-			alt="$"
+			alt="($)"
 			type="number"
 			errors={$errors.additionalIncome}
 		/>
@@ -175,5 +182,5 @@
 
 	<div class="divider" />
 
-	<Logs projectId={data.projectId} />
+	<ProjectLogs projectId={data.projectId} />
 </section>

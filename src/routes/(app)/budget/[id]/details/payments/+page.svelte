@@ -31,7 +31,7 @@
 		shared?: boolean
 		dueDate?: string | number
 		complete?: boolean
-		category?: string | number
+		category?: string
 	}
 
 	const trpcF = trpc($page)
@@ -91,7 +91,7 @@
 
 		try {
 			const request = {
-				description: `Gasto ${countName++}`,
+				description: `Pago ${countName++}`,
 				budgetId: data.id
 			}
 			const newBill = await trpcF.budgets.bills.create.mutate(request)
@@ -109,16 +109,20 @@
 			addField('bills', newField)
 			list.push(newField)
 		} catch (error) {
-			Toast.error('Se presento un error al crear el gasto', true)
+			Toast.error('Se presento un error al crear el pago', true)
 			throw error
 		} finally {
 			screenLoading.hide()
 		}
 	}
 
+	function handlePay(bill: BudgetBill, index: number, payment: number) {
+		setFields(`bills.${index}.payment`, bill.payment + payment, true)
+	}
+
 	function handleDelete(bill: BudgetBill, index: number) {
 		confirmPopup.show(
-			`¿Está seguro que desea eliminar el gasto ${bill.description}?`,
+			`¿Está seguro que desea eliminar el pago ${bill.description}?`,
 			undefined,
 			() => unsetField(`bills.${index}`)
 		)
@@ -210,14 +214,9 @@
 							{index}
 							{monthBudget}
 							{daysMonth}
+							projectId={data.projectId}
 							errors={$errors.bills?.[index]}
-							on:pay={() =>
-								setFields(
-									`bills.${index}.payment`,
-									bill.payment + Number(prompt('Ingresa el valor')),
-									true
-								)}
-							on:share={() => alert('TODO')}
+							on:pay={({ detail }) => handlePay(bill, index, detail)}
 							on:delete={() => handleDelete(bill, index)}
 						/>
 					</td>
@@ -237,3 +236,9 @@
 		</tr>
 	</Table>
 </form>
+
+<style lang="postcss">
+	td {
+		@apply text-base;
+	}
+</style>

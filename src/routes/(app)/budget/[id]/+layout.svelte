@@ -14,8 +14,8 @@
 	import { zeroPad } from '$utils/number.utils'
 
 	// Components
-	import Navbar from '$components/shared/Navbar.svelte'
-	import NavbarItem from '$components/shared/NavbarItem.svelte'
+	import Navbar from '$components/shared/navbar/Navbar.svelte'
+	import NavbarItem from '$components/shared/navbar/NavbarItem.svelte'
 	import ButtonLink from '$components/shared/buttons/ButtonLink.svelte'
 
 	export let data: Budget
@@ -59,10 +59,10 @@
 
 	async function handleSave() {
 		const changeList = [...$changes]
-		if ($changes.length > 0) {
+		if (changeList.length > 0) {
 			try {
 				changes.delete(changeList)
-				const sendChanges: Change<Record<string, unknown>>[] = []
+				const sendChanges: Change<unknown>[] = []
 
 				const groupBySection = groupBy<Change<unknown>>(changeList, (change) => change.section)
 				Object.entries(groupBySection).forEach((group) => {
@@ -76,7 +76,7 @@
 						Object.entries(groupById).forEach((group) => {
 							const [id, items] = group
 
-							const sendChange: Change<Record<string, unknown>> = {
+							const sendChange: Change<unknown> = {
 								section: section as ChangeSectionEnum,
 								action: action as ChangeActionEnum,
 								detail: {
@@ -93,7 +93,7 @@
 				})
 
 				await trpcF.projects.receiveChanges.mutate({
-					projectId: 1,
+					projectId: data.projectId,
 					changes: sendChanges
 				})
 			} catch (error) {

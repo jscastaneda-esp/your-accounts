@@ -8,11 +8,15 @@
 	import Select from '$components/shared/Select.svelte'
 	import { BudgetBillCategory } from '$lib/enums'
 	import dayjs from '$utils/dayjs.utils'
+	import DetailsItemPay from './DetailsItemPay.svelte'
+	import DetailsLogs from './DetailsLogs.svelte'
+	import DetailsItemShared from './DetailsItemShared.svelte'
 
 	export let data: BudgetBill
 	export let index: number
 	export let monthBudget: dayjs.Dayjs
 	export let daysMonth: number[]
+	export let projectId: number
 	export let errors: {
 		description: FelteError
 		amount: FelteError
@@ -20,21 +24,28 @@
 		complete: FelteError
 	}
 
-	const dispatch = createEventDispatcher()
+	const dispatch = createEventDispatcher<{ pay: number; delete: void }>()
 	const prefixFieldName = `bills.${index}`
 
 	let shared = 0
 	let expired = false
+	let showPay = false
+	let showShare = false
+
+	function handlePay({ detail }: { detail: number }) {
+		dispatch('pay', detail)
+	}
 
 	$: pending = data.complete ? 0 : data.amount - data.payment
-	$: {
-		if (isNaN(pending)) {
-			shared = data.totalShared
-		} else if (pending != 0) {
-			shared = pending + data.totalShared
-		} else {
-			shared = 0
-		}
+	$: if (isNaN(pending)) {
+		shared = data.totalShared
+	} else if (pending != 0) {
+		shared = pending + data.totalShared
+	} else {
+		shared = data.totalShared
+	}
+	$: if (!data.shared) {
+		data.totalShared = 0
 	}
 	$: {
 		const now = dayjs()
@@ -43,7 +54,7 @@
 	}
 </script>
 
-<section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+<section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-2">
 	<Input
 		id={`${prefixFieldName}.description`}
 		name={`${prefixFieldName}.description`}
@@ -54,7 +65,7 @@
 		id={`${prefixFieldName}.amount`}
 		name={`${prefixFieldName}.amount`}
 		label="Monto"
-		alt="$"
+		alt="($)"
 		errors={errors.amount}
 		type="number"
 	/>
@@ -97,14 +108,14 @@
 			<option value={day.toString()}>{day}</option>
 		{/each}
 	</Select>
-	<section class="flex items-end pl-2">
+	<section class="lg:pt-10 pl-2">
 		<Toggle
 			id={`${prefixFieldName}.shared`}
 			name={`${prefixFieldName}.shared`}
 			label="Compartido"
 		/>
 	</section>
-	<section class="flex items-end pl-2">
+	<section class="lg:pt-10 pl-2">
 		<Toggle
 			id={`${prefixFieldName}.complete`}
 			name={`${prefixFieldName}.complete`}
@@ -112,17 +123,46 @@
 		/>
 	</section>
 
-	<section class="join md:col-span-2 lg:col-span-4 justify-center mt-1">
-		<ButtonGroup value="Pagar" className="btn-primary" on:click={() => dispatch('pay')}>
-			<i class="bx bxs-add-to-queue" />
-		</ButtonGroup>
-		{#if data.shared}
-			<ButtonGroup value="Compartir" className="btn-secondary" on:click={() => dispatch('share')}>
+	<DetailsLogs billId={data.id} />
+
+	<section class="md:col-span-2 lg:col-span-4 flex flex-col items-center mt-2">
+		<section class="join">
+			<ButtonGroup value="Pagar" className="btn-primary" on:click={() => (showPay = !showPay)}>
+				<i class="bx bxs-add-to-queue" />
+			</ButtonGroup>
+			<ButtonGroup
+				value="Compartir"
+				className="btn-secondary"
+				disabled={!data.shared}
+				on:click={() => (showShare = true)}
+			>
 				<i class="bx bxs-share-alt" />
 			</ButtonGroup>
-		{/if}
-		<ButtonGroup value="Eliminar" className="btn-error" on:click={() => dispatch('delete')}>
-			<i class="bx bxs-trash-alt" />
-		</ButtonGroup>
+			<ButtonGroup value="Eliminar" className="btn-error" on:click={() => dispatch('delete')}>
+				<i class="bx bxs-trash-alt" />
+			</ButtonGroup>
+		</section>
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<article
+			tabindex="0"
+			class="collapse border rounded-btn border-base-content bg-base-200 w-fit mt-1"
+			class:collapse-open={showPay}
+			class:!invisible={!showPay}
+		>
+			<main class="collapse-content">
+				{#if showPay}
+					<DetailsItemPay {pending} billId={data.id} on:pay={handlePay} />
+				{/if}
+			</main>
+		</article>
 	</section>
 </section>
+
+{#if showShare}
+	<DetailsItemShared
+		billId={data.id}
+		{projectId}
+		bind:total={data.totalShared}
+		on:close={() => (showShare = false)}
+	/>
+{/if}

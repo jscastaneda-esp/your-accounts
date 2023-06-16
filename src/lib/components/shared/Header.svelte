@@ -31,9 +31,9 @@
 <!-- svelte-ignore a11y-label-has-associated-control -->
 <header class="sticky top-0 z-50">
 	<nav class="navbar bg-primary-focus text-primary-content">
-		<div class="navbar-start">
-			<div class="dropdown">
-				<label tabindex="0" class="btn btn-ghost lg:hidden text-xl">
+		<section class="navbar-start">
+			<article class="dropdown lg:hidden">
+				<label tabindex="0" class="btn btn-ghost text-xl">
 					<i class="bx bx-menu" />
 				</label>
 				<ul
@@ -47,13 +47,13 @@
 						</a>
 					</li>
 				</ul>
-			</div>
+			</article>
 			<a class="btn btn-ghost normal-case text-xl align-middle" href="/">
 				<i class="bx bxs-wallet" />
 				Tus Cuentas
 			</a>
-		</div>
-		<div class="navbar-center hidden lg:flex">
+		</section>
+		<section class="navbar-center hidden lg:flex">
 			<ul class="menu menu-horizontal px-1">
 				<li>
 					<a href="/budget" class:active={$page.route.id?.includes('/(app)/budget') || false}>
@@ -62,9 +62,9 @@
 					</a>
 				</li>
 			</ul>
-		</div>
-		<div class="navbar-end">
-			<div class="dropdown dropdown-end">
+		</section>
+		<section class="navbar-end">
+			<article class="dropdown dropdown-end">
 				<label tabindex="0" class="btn btn-ghost btn-circle avatar">
 					<div class="w-10 rounded-full">
 						<!-- svelte-ignore a11y-img-redundant-alt -->
@@ -84,7 +84,7 @@
 					</li>
 					<li><button on:click={signOut}>Cerrar sesión</button></li>
 				</ul>
-			</div>
-		</div>
+			</article>
+		</section>
 	</nav>
 </header>

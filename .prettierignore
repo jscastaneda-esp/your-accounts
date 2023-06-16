@@ -4,6 +4,7 @@ node_modules
 /build
 /.svelte-kit
 /coverage
+test-results.json
 /package
 
 # Ignore files for PNPM, NPM and YARN
