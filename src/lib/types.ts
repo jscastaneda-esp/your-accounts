@@ -1,33 +1,20 @@
-import type {
-	BudgetBillCategory,
-	ChangeActionEnum,
-	ChangeSectionEnum,
-	TypeProjectEnum,
-	UserManagementActionsEnum
-} from './enums'
-
-export type PageDataUserManagementAction = {
-	mode: UserManagementActionsEnum
-	actionCode: string
-}
-
-export type Project = {
-	id: number
-	name: string
-	type: TypeProjectEnum
-	month?: number
-	year?: number
-	totalAvailableBalance?: number
-	totalPendingPayment?: number
-	totalBalance?: number
-	pendingBills?: number
-	userId: string
-}
+import type { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from './enums'
 
 export type ProjectLog = {
+	id: number
 	description: string
 	createdAt: Date
-	projectId: number
+}
+
+export type BudgetMinimal = {
+	id: number
+	name: string
+	year: number
+	month: number
+	totalAvailableBalance: number
+	totalPendingPayment: number
+	totalBalance: number
+	pendingBills: number
 }
 
 export type Budget = {
@@ -37,9 +24,6 @@ export type Budget = {
 	month: number
 	fixedIncome: number
 	additionalIncome: number
-	totalBalance: number
-	total: number
-	estimatedBalance: number
 	availableBalances: BudgetAvailable[]
 	bills: BudgetBill[]
 	projectId: number
@@ -80,31 +64,35 @@ export type BudgetBillShared = {
 }
 
 export type BudgetStatistics = {
-	labels: string[]
-	pie: {
+	categories: string[]
+	amount: {
 		data: number[]
 	}
-	bar: {
-		amount: {
-			data: number[]
-		}
-		payment: {
-			data: number[]
-		}
+	payment: {
+		data: number[]
 	}
 }
 
 export type FelteError = string[] | null
-
-export type EventDispatchProject = {
-	readonly id: number
-	readonly name: string
-	readonly type: TypeProjectEnum
-}
 
 export type Change<T> = {
 	index?: number
 	readonly section: ChangeSectionEnum
 	readonly action: ChangeActionEnum
 	detail: { id: number } & T
+}
+
+export type ChangeStore<T> = {
+	add: (newChange: Change<T>) => void
+	revert: (newChanges: Change<T>[]) => void
+	delete: (delChanges: Change<T>[]) => void
+}
+
+export type TotalsBills = {
+	totalPending: number
+	pendingBills: number
+	totalPayment: number
+	total: number
+	totalMaxPayment: number
+	totalSavings: number
 }

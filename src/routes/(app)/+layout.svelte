@@ -4,30 +4,24 @@
 	import { goto } from '$app/navigation'
 
 	// Components
-	import HeaderPage from '$lib/components/HeaderPage.svelte'
-	import ScreenLoading from '$lib/components/ScreenLoading.svelte'
+	import Header from '$components/shared/Header.svelte'
 
 	// Utilities
-	import { session } from '$lib/stores'
+	import { screenLoading, session } from '$lib/stores/shared'
+	import Toast from '$utils/toast.utils'
 
-	let screenLoading = true
+	screenLoading.show()
+	Toast.clear()
 
 	onMount(() =>
 		setTimeout(() => {
 			if (!$session) {
 				goto('/login')
-			} else {
-				screenLoading = false
 			}
+			screenLoading.hide()
 		}, 1000)
 	)
 </script>
 
-{#if screenLoading}
-	<ScreenLoading />
-{:else}
-	<HeaderPage />
-	<main class="min-h-full">
-		<slot />
-	</main>
-{/if}
+<Header />
+<slot />

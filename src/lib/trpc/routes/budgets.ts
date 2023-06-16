@@ -1,9 +1,16 @@
-import { BudgetBillCategory } from '../../enums'
+import { BudgetBillCategory } from '$lib/enums'
 import { t } from '../t'
-import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetStatistics } from '../../types'
-import z, { defaultNumber, defaultString } from '../../utils/zod.utils'
+import type {
+	Budget,
+	BudgetBillShared,
+	BudgetBillTransaction,
+	BudgetMinimal,
+	BudgetStatistics
+} from '$lib/types'
+import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
+import { categoryTranslate } from '$utils/i18n'
 
 const availables = t.router({
 	create: procedure
@@ -55,11 +62,23 @@ const bills = t.router({
 	getTransactionsById: procedure.input(defaultNumber).query(async ({ input }) => {
 		await delay(1000)
 		const transactions: BudgetBillTransaction[] = []
-		for (let index = 1; index <= 4; index++) {
+		for (let index = 1; index <= 10; index++) {
+			const createdAt = new Date()
+			if (index > 8) {
+				createdAt.setMonth(createdAt.getMonth() - index)
+			} else if (index > 5) {
+				createdAt.setDate(createdAt.getDate() - index)
+			} else if (index > 3) {
+				createdAt.setHours(createdAt.getHours() - index)
+			} else {
+				createdAt.setSeconds(createdAt.getSeconds() - 10)
+				createdAt.setMinutes(createdAt.getMinutes() - index + 1)
+			}
+
 			transactions.push({
 				description: `Compra ${index}`,
 				amount: (index % 2 == 0 ? index * -1 : index) * 1000,
-				createdAt: new Date(),
+				createdAt: createdAt,
 				budgetBillId: input
 			})
 		}
@@ -96,6 +115,66 @@ const bills = t.router({
 })
 
 export const budgets = t.router({
+	create: procedure
+		.input(
+			z.object({
+				name: defaultString,
+				cloneId: defaultNumber.optional()
+			})
+		)
+		.mutation(async () => {
+			await delay(1000)
+			const project = {
+				id: new Date().getTime()
+			}
+			return project
+		}),
+	getByUserId: procedure.query(async () => {
+		await delay(1000)
+		const budgets: BudgetMinimal[] = [
+			{
+				id: 1,
+				name: 'Test',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 3,
+				totalAvailableBalance: 100000,
+				totalPendingPayment: 10000,
+				totalBalance: 90000,
+				pendingBills: 1
+			},
+			{
+				id: 2,
+				name: 'Test 2',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 2,
+				totalAvailableBalance: 7000000,
+				totalPendingPayment: 6000000,
+				totalBalance: 1000000,
+				pendingBills: 10
+			},
+			{
+				id: 3,
+				name: 'Test 3',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth() + 1,
+				totalAvailableBalance: 10000,
+				totalPendingPayment: 60000,
+				totalBalance: -50000,
+				pendingBills: 2
+			},
+			{
+				id: 4,
+				name: 'Test 4',
+				year: new Date().getFullYear(),
+				month: new Date().getMonth(),
+				totalAvailableBalance: -10500,
+				totalPendingPayment: 40000,
+				totalBalance: -50500,
+				pendingBills: 1
+			}
+		]
+		return budgets
+	}),
 	getById: procedure.input(defaultNumber).query(async ({ input }) => {
 		await delay(500)
 		const budget: Budget = {
@@ -105,9 +184,6 @@ export const budgets = t.router({
 			month: new Date().getMonth() + 1,
 			fixedIncome: 6370000,
 			additionalIncome: 0,
-			totalBalance: 6370000,
-			total: 0,
-			estimatedBalance: 6370000,
 			availableBalances: [
 				{
 					id: 1,
@@ -142,28 +218,30 @@ export const budgets = t.router({
 					totalShared: 0
 				}
 			],
-			projectId: 1
+			projectId: 2
 		}
 		return budget
 	}),
-	getStatisticsById: procedure.input(defaultNumber).query(async ({ input }) => {
-		console.log(`Statistics to ${input}`)
+	getStatisticsById: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
+
+		const categories = Object.values(BudgetBillCategory).map((category) =>
+			categoryTranslate(category)
+		) as string[]
 		const statistics: BudgetStatistics = {
-			labels: ['PERSONAL', 'CASA', 'AHORRO', 'FINANCIERO', 'IMPUESTOS', 'OTROS'],
-			pie: {
-				data: [10, 20.5, 5, 50, 6.5, 80]
+			categories,
+			amount: {
+				data: [100000, 1350000, 55000, 2000000, 87420, 100000, 1800000, 80000]
 			},
-			bar: {
-				amount: {
-					data: [12, 19, 3, 5, 2, 3]
-				},
-				payment: {
-					data: [0, -19, 1, 4, 0, 4]
-				}
+			payment: {
+				data: [0, 0, 60000, 400000, 0, 100000, 0, 10000]
 			}
 		}
 		return statistics
+	}),
+	delete: procedure.input(defaultNumber).mutation(async () => {
+		await delay(1000)
+		return
 	}),
 	availables,
 	bills

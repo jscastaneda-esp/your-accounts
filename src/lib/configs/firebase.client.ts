@@ -16,7 +16,7 @@ import {
 	type PopupRedirectResolver,
 	AuthErrorCodes
 } from 'firebase/auth'
-import { FirebaseProviderEnum } from '../enums'
+import { FirebaseProviderEnum } from '$lib/enums'
 
 class FirebaseAuth {
 	private readonly ERROR_MESSAGES: Record<string, [string, boolean]> = {

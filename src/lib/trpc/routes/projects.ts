@@ -1,57 +1,11 @@
-import { ChangeActionEnum, ChangeSectionEnum, TypeProjectEnum } from '../../enums'
+import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
-import type { Project, ProjectLog } from '../../types'
-import z, { defaultNumber, defaultString } from '../../utils/zod.utils'
+import type { ProjectLog } from '$lib/types'
+import z, { defaultNumber } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
 
 export const projects = t.router({
-	create: procedure
-		.input(
-			z.object({
-				userId: defaultString,
-				type: z.nativeEnum(TypeProjectEnum),
-				baseId: defaultNumber.optional()
-			})
-		)
-		.mutation(async ({ input }) => {
-			await delay(1000)
-			const project = {
-				id: new Date().getTime(),
-				userId: input.userId
-			}
-			return project
-		}),
-	getByUserId: procedure.input(defaultString).query(async ({ input }) => {
-		await delay(1000)
-		const projects: Project[] = [
-			{
-				id: 1,
-				name: 'Test',
-				type: TypeProjectEnum.BUDGET,
-				month: new Date().getMonth() + 1,
-				year: new Date().getFullYear(),
-				totalAvailableBalance: 100000,
-				totalPendingPayment: 10000,
-				totalBalance: 50000,
-				pendingBills: 3,
-				userId: input
-			},
-			{
-				id: 2,
-				name: 'Test 2',
-				type: TypeProjectEnum.BUDGET,
-				month: new Date().getMonth() + 1,
-				year: new Date().getFullYear(),
-				totalAvailableBalance: 7000000,
-				totalPendingPayment: 100000,
-				totalBalance: 500000,
-				pendingBills: 10,
-				userId: input
-			}
-		]
-		return projects
-	}),
 	receiveChanges: procedure
 		.input(
 			z.object({
@@ -75,21 +29,28 @@ export const projects = t.router({
 			await delay(1000)
 			return true
 		}),
-	getLogsByProjectId: procedure.input(defaultNumber).query(async ({ input }) => {
+	getLogsByProjectId: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
 		const logs: ProjectLog[] = []
-		for (let index = 1; index <= 5; index++) {
+		for (let index = 1; index <= 10; index++) {
+			const createdAt = new Date()
+			if (index > 8) {
+				createdAt.setMonth(createdAt.getMonth() - index)
+			} else if (index > 5) {
+				createdAt.setDate(createdAt.getDate() - index)
+			} else if (index > 3) {
+				createdAt.setHours(createdAt.getHours() - index)
+			} else {
+				createdAt.setSeconds(createdAt.getSeconds() - 10)
+				createdAt.setMinutes(createdAt.getMinutes() - index + 1)
+			}
+
 			logs.push({
+				id: index,
 				description: `Cambio ${index}`,
-				createdAt: new Date(),
-				projectId: input
+				createdAt: createdAt
 			})
 		}
 		return logs
-	}),
-	delete: procedure.input(defaultNumber).mutation(async ({ input }) => {
-		console.log('Delete ID', input)
-		await delay(1000)
-		return true
 	})
 })

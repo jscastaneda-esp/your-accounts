@@ -1,4 +1,4 @@
-import type { Change, FelteError } from '../types'
+import type { Change, FelteError } from '$lib/types'
 
 export default class ChangeUtil<P extends string> {
 	setChange(
@@ -9,10 +9,8 @@ export default class ChangeUtil<P extends string> {
 		property: P,
 		isChanges: boolean
 	) {
-		if (!errorData?.[property] && newData[property] != oldData[property]) {
-			oldData[property] = newData[property]
-			change.detail[property] = newData[property]
-			isChanges = true
+		if (!errorData?.[property]) {
+			isChanges = this.setChangeDirect(newData[property], oldData, change, property, isChanges)
 		}
 
 		return isChanges

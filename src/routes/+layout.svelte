@@ -1,13 +1,15 @@
 <script lang="ts">
-	import '@fortawesome/fontawesome-free/css/all.min.css'
 	import '../app.css'
+	import 'boxicons/css/boxicons.min.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import firebase from '$lib/configs/firebase.client'
-	import { session } from '$lib/stores'
+	import { session } from '$lib/stores/shared'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast/stores'
+	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
+	import ConfirmPopup from '$components/shared/popup/ConfirmPopup.svelte'
 
 	firebase.authFunctions.onAuthStateChanged((user) => {
-		$session = user
+		session.set(user)
 	})
 
 	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } }
@@ -15,22 +17,6 @@
 
 <slot />
 
+<ScreenLoading />
+<ConfirmPopup />
 <SvelteToast options={toastOptions} />
-
-<style>
-	:root {
-		--toastContainerTop: 5rem;
-		--toastPadding: 0;
-		--toastMsgPadding: 0;
-		--toastMinHeight: auto;
-		--toastColor: #4b5563;
-	}
-
-	@media (max-width: 768px) {
-		:root {
-			--toastContainerTop: auto;
-			--toastContainerBottom: 2.5rem;
-			--toastContainerLeft: calc(50vw - 8rem);
-		}
-	}
-</style>
