@@ -65,11 +65,9 @@ export type BudgetBillShared = {
 
 export type BudgetStatistics = {
 	categories: string[]
-	amount: {
-		data: number[]
-	}
-	payment: {
-		data: number[]
+	data: {
+		amount: number[]
+		payment: number[]
 	}
 }
 

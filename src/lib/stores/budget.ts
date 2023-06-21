@@ -1,4 +1,6 @@
-import type { BudgetBill, TotalsBills } from '$lib/types'
+import type { BudgetBillCategory } from '$lib/enums'
+import type { BudgetBill, BudgetStatistics, TotalsBills } from '$lib/types'
+import { categoryTranslate } from '$utils/i18n'
 import { writable } from 'svelte/store'
 
 export function resumeStore(initialValue: string) {
@@ -25,6 +27,14 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 		totalSavings: 0
 	})
 
+	const statistics = writable<BudgetStatistics>({
+		categories: [],
+		data: {
+			amount: [],
+			payment: []
+		}
+	})
+
 	bills.subscribe((value) => {
 		const currentTotals = {
 			totalPending: 0,
@@ -35,9 +45,27 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 			totalSavings: 0
 		}
 
+		const categoriesEnum = new Set<BudgetBillCategory>()
+		const amounts: Record<string, number> = {}
+		const payments: Record<string, number> = {}
+
 		value.forEach((bill) => {
 			currentTotals.total += bill.amount
 			currentTotals.totalPayment += bill.payment
+
+			if (!categoriesEnum.has(bill.category)) {
+				categoriesEnum.add(bill.category)
+			}
+
+			if (!amounts[bill.category]) {
+				amounts[bill.category] = 0
+			}
+			amounts[bill.category] += bill.amount
+
+			if (!payments[bill.category]) {
+				payments[bill.category] = 0
+			}
+			payments[bill.category] += bill.payment
 
 			const pending = bill.amount - bill.payment
 			if (!bill.complete) {
@@ -66,8 +94,16 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 				currentTotals.totalMaxPayment += bill.amount
 			}
 		})
-
 		totals.set(currentTotals)
+
+		const categories = [...categoriesEnum].map(categoryTranslate) as string[]
+		statistics.set({
+			categories,
+			data: {
+				amount: Object.values(amounts),
+				payment: Object.values(payments)
+			}
+		})
 	})
 
 	return {
@@ -76,6 +112,9 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 		},
 		totals: {
 			subscribe: totals.subscribe
+		},
+		statistics: {
+			subscribe: statistics.subscribe
 		}
 	}
 }

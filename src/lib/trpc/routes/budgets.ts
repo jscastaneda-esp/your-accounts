@@ -1,16 +1,9 @@
 import { BudgetBillCategory } from '$lib/enums'
 import { t } from '../t'
-import type {
-	Budget,
-	BudgetBillShared,
-	BudgetBillTransaction,
-	BudgetMinimal,
-	BudgetStatistics
-} from '$lib/types'
+import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetMinimal } from '$lib/types'
 import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
-import { categoryTranslate } from '$utils/i18n'
 
 const availables = t.router({
 	create: procedure
@@ -221,23 +214,6 @@ export const budgets = t.router({
 			projectId: 2
 		}
 		return budget
-	}),
-	getStatisticsById: procedure.input(defaultNumber).query(async () => {
-		await delay(1000)
-
-		const categories = Object.values(BudgetBillCategory).map((category) =>
-			categoryTranslate(category)
-		) as string[]
-		const statistics: BudgetStatistics = {
-			categories,
-			amount: {
-				data: [100000, 1350000, 55000, 2000000, 87420, 100000, 1800000, 80000]
-			},
-			payment: {
-				data: [0, 0, 60000, 400000, 0, 100000, 0, 10000]
-			}
-		}
-		return statistics
 	}),
 	delete: procedure.input(defaultNumber).mutation(async () => {
 		await delay(1000)

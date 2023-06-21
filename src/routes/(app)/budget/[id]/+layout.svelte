@@ -51,10 +51,11 @@
 		totalAvailable
 	})
 
-	const { bills, totals } = billsDataStore(data.bills)
+	const { bills, totals, statistics } = billsDataStore(data.bills)
 	setContext(ContextNameEnum.BUDGET_BILLS, {
 		bills,
-		totals
+		totals,
+		statistics
 	})
 
 	async function handleSave() {
@@ -64,15 +65,13 @@
 				changes.delete(changeList)
 				const sendChanges: Change<unknown>[] = []
 
-				const groupBySection = groupBy<Change<unknown>>(changeList, (change) => change.section)
+				const groupBySection = groupBy(changeList, (change) => change.section)
 				Object.entries(groupBySection).forEach((group) => {
 					const [section, items] = group
-					const groupByAction = groupBy<Change<unknown>>(items, (change) => change.action)
+					const groupByAction = groupBy(items, (change) => change.action)
 					Object.entries(groupByAction).forEach((group) => {
 						const [action, items] = group
-						const groupById = groupBy<Change<unknown>>(items, (change) =>
-							change.detail.id.toString()
-						)
+						const groupById = groupBy(items, (change) => change.detail.id.toString())
 						Object.entries(groupById).forEach((group) => {
 							const [id, items] = group
 

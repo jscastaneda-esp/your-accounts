@@ -85,7 +85,7 @@
 	</section>
 
 	<Select id={`${prefixFieldName}.category`} name={`${prefixFieldName}.category`} label="Categoría">
-		<option value="" disabled selected>Seleccione</option>
+		<option value={null} disabled selected>Seleccione</option>
 		<option value={BudgetBillCategory.HOUSE}>Hogar</option>
 		<option value={BudgetBillCategory.ENTERTAINMENT}>Entretenimiento</option>
 		<option value={BudgetBillCategory.PERSONAL}>Personal</option>

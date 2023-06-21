@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Preview
-      url: https://your-accounts-preview.vercel.app/
+      url: ${{ steps.vercel-deploy.outputs.PREVIEW_URL }}
     if: "${{ (!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.ref_name, 'main')) }}"
     steps:
       - name: Checkout
@@ -36,8 +36,6 @@ jobs:
             PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
             PUBLIC_ENV=preview
             JWT_SECRET=${{ vars.JWT_SECRET }}
-          ALIAS_DOMAINS: |
-            {REPO}-preview.vercel.app
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
         if: ${{ steps.vercel-deploy.outputs.DEPLOYMENT_CREATED }}

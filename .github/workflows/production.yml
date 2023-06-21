@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Production
-      url: http://your-accounts.vercel.app/
+      url: https://your-accounts.vercel.app/
     if: "${{ !contains(github.event.head_commit.message, '[skip ci]') }}"
     steps:
       - name: Checkout
