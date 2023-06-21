@@ -69,7 +69,7 @@
 					<div class="w-10 rounded-full">
 						<!-- svelte-ignore a11y-img-redundant-alt -->
 						<img
-							src={$session?.photoURL || 'http://www.gravatar.com/avatar/?d=mp'}
+							src={$session?.photoURL || 'https://www.gravatar.com/avatar/?d=mp'}
 							alt="Profile Photo"
 						/>
 					</div>

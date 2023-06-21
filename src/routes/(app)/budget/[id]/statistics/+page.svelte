@@ -12,16 +12,13 @@
 		type TooltipItem,
 		type ChartData
 	} from 'chart.js'
-	import { onMount } from 'svelte'
-	import { trpc } from '$lib/trpc/client'
-	import Toast from '$utils/toast.utils'
+	import { getContext } from 'svelte'
 	import { Bar, Pie } from 'svelte-chartjs'
 	import Table from '$components/shared/Table.svelte'
 	import { money } from '$utils/number.utils'
-	import type { Budget } from '$lib/types'
-	import { page } from '$app/stores'
-
-	export let data: Budget
+	import type { BudgetStatistics } from '$lib/types'
+	import { ContextNameEnum } from '$lib/enums'
+	import type { Readable } from 'svelte/store'
 
 	ChartJS.register(Title, Tooltip, Legend, ArcElement, BarElement, CategoryScale, LinearScale)
 
@@ -99,7 +96,11 @@
 			}
 		}
 	}
-	const trpcF = trpc($page)
+
+	const { statistics: statisticsBills } = getContext<{
+		statistics: Readable<BudgetStatistics>
+	}>(ContextNameEnum.BUDGET_BILLS)
+
 	let dataPie: ChartData<'pie', number[], unknown> | null
 	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null
 	let balanceData: {
@@ -110,72 +111,61 @@
 		difference: number
 	}[] = []
 
-	onMount(async () => {
-		dataPie = null
-		dataBar = null
+	$: {
+		const { categories, data } = $statisticsBills
 
-		try {
-			const {
-				categories,
-				amount: { data: amountData },
-				payment: { data: paymentData }
-			} = await trpcF.budgets.getStatisticsById.query(data.id)
-			dataPie = {
-				labels: categories,
-				datasets: [
-					{
-						data: amountData,
-						backgroundColor: Object.values(CHART_COLORS),
-						borderColor: Object.values(CHART_COLORS)
-					}
-				]
-			}
-
-			dataBar = {
-				labels: categories,
-				datasets: [
-					{
-						label: 'ESTIMADO',
-						data: amountData,
-						borderWidth: 2,
-						backgroundColor: ['#f28c18'],
-						borderColor: ['#f28c18']
-					},
-					{
-						label: 'PAGO',
-						data: paymentData,
-						backgroundColor: ['#e2e063'],
-						borderColor: ['#e2e063']
-					}
-				]
-			}
-
-			for (let index = 0; index < categories.length; index++) {
-				const estimated = amountData[index]
-				const payment = paymentData[index]
-				const difference = amountData[index] - paymentData[index]
-
-				let differenceIcon = ''
-				if (difference > 0) {
-					differenceIcon = '↗︎'
-				} else if (difference < 0) {
-					differenceIcon = '↘︎'
+		dataPie = {
+			labels: categories,
+			datasets: [
+				{
+					data: data.amount,
+					backgroundColor: Object.values(CHART_COLORS),
+					borderColor: Object.values(CHART_COLORS)
 				}
-
-				balanceData.push({
-					category: categories[index],
-					estimated,
-					payment,
-					differenceIcon,
-					difference
-				})
-			}
-			balanceData = balanceData
-		} catch (error) {
-			Toast.error('Se presento un error al consultar las transacciones', true)
-			throw error
+			]
 		}
-	})
+
+		dataBar = {
+			labels: categories,
+			datasets: [
+				{
+					label: 'ESTIMADO',
+					data: data.amount,
+					borderWidth: 2,
+					backgroundColor: ['#f28c18'],
+					borderColor: ['#f28c18']
+				},
+				{
+					label: 'PAGO',
+					data: data.payment,
+					backgroundColor: ['#e2e063'],
+					borderColor: ['#e2e063']
+				}
+			]
+		}
+
+		for (let index = 0; index < categories.length; index++) {
+			const estimated = data.amount[index]
+			const payment = data.payment[index]
+			const difference = data.amount[index] - data.payment[index]
+
+			let differenceIcon = ''
+			if (difference > 0) {
+				differenceIcon = '↗︎'
+			} else if (difference < 0) {
+				differenceIcon = '↘︎'
+			}
+
+			balanceData.push({
+				category: categories[index],
+				estimated,
+				payment,
+				differenceIcon,
+				difference
+			})
+		}
+		balanceData = balanceData
+	}
 </script>
 
 <section class="p-4">
