@@ -4,18 +4,15 @@
 	import { goto } from '$app/navigation'
 	import { PUBLIC_ENV } from '$env/static/public'
 
-	// Enums, Classes, Types
-	import { FirebaseProviderEnum } from '$lib/enums'
-	import type { FirebaseError } from 'firebase/app'
-
 	// Components
 	import ButtonBlock from '$components/shared/buttons/ButtonBlock.svelte'
 
 	// Utilities
-	import firebase from '$lib/configs/firebase.client'
 	import Toast from '$utils/toast.utils'
 	import { screenLoading, session } from '$lib/stores/shared'
-	import type { UserCredential } from 'firebase/auth'
+	import LoginService from '$services/login.service'
+
+	const service = new LoginService()
 
 	let loading = false
 
@@ -31,51 +28,29 @@
 		}, 1000)
 	)
 
-	async function signInGoogle() {
-		signIn(() => firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE), {
-			PROVIDER: FirebaseProviderEnum.GOOGLE
-		})
-	}
-
-	async function signInTest() {
-		signIn(() =>
-			firebase.authFunctions.signInWithEmailAndPassword('test@jsc-developer.com', '12345678')
-		)
-	}
-
-	async function signIn(cb: () => Promise<UserCredential>, tagsError?: Record<string, string>) {
+	async function signIn(type: 'google' | 'test') {
 		loading = true
 
 		try {
-			const userCredential = await cb()
-			if (userCredential.user.email) {
-				const response = await fetch('/login', {
-					method: 'POST',
-					body: JSON.stringify({
-						uuid: userCredential.user.uid,
-						email: userCredential.user.email
-					})
-				})
-				if (response.status != 200) {
-					firebase.authFunctions.signOut()
-					Toast.error('Error inesperado. Por favor vuelva a intentarlo', true)
-					return
-				}
-			}
-
-			await goto('/budget')
-		} catch (error: unknown) {
-			const [msg, isError] = firebase.authFunctions.getError(
-				(error as FirebaseError).code,
-				tagsError
-			)
-			if (isError) {
-				Toast.error(msg, true)
+			if (type === 'google') {
+				await service.signInGoogle(successCB, errCb)
 			} else {
-				Toast.warn(msg, true)
+				await service.signInTest(successCB, errCb)
 			}
 		} finally {
 			loading = false
+		}
+	}
+
+	async function successCB() {
+		await goto('/budget')
+	}
+
+	function errCb(msg: string, isError: boolean) {
+		if (isError) {
+			Toast.error(msg, true)
+		} else {
+			Toast.warn(msg, true)
 		}
 	}
 </script>
@@ -95,12 +70,12 @@
 			</section>
 
 			<section class="flex flex-col gap-3">
-				<ButtonBlock value="Google" on:click={signInGoogle} {loading}>
+				<ButtonBlock value="Google" on:click={() => signIn('google')} {loading}>
 					<i class="bx bxl-google" />
 				</ButtonBlock>
 
 				{#if PUBLIC_ENV != 'production'}
-					<ButtonBlock value="Pruebas" on:click={signInTest} {loading}>
+					<ButtonBlock value="Pruebas" on:click={() => signIn('test')} {loading}>
 						<i class="fas fa-code" />
 					</ButtonBlock>
 				{/if}

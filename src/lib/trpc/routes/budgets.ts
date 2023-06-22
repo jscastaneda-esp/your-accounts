@@ -13,11 +13,10 @@ const availables = t.router({
 				budgetId: defaultNumber
 			})
 		)
-		.mutation(async ({ input }) => {
+		.mutation(async () => {
 			await delay(1000)
 			const available = {
-				id: new Date().getTime(),
-				budgetId: input.budgetId
+				id: new Date().getTime()
 			}
 			return available
 		})
@@ -31,11 +30,10 @@ const bills = t.router({
 				budgetId: defaultNumber
 			})
 		)
-		.mutation(async ({ input }) => {
+		.mutation(async () => {
 			await delay(1000)
 			const bill = {
-				id: new Date().getTime(),
-				budgetId: input.budgetId
+				id: new Date().getTime()
 			}
 			return bill
 		}),
@@ -44,13 +42,11 @@ const bills = t.router({
 			z.object({
 				description: defaultString,
 				amount: z.number(),
-				budgetBillId: defaultNumber
+				billId: defaultNumber
 			})
 		)
-		.mutation(async ({ input }) => {
-			console.log('Register transaction bill', input)
+		.mutation(async () => {
 			await delay(1000)
-			return true
 		}),
 	getTransactionsById: procedure.input(defaultNumber).query(async ({ input }) => {
 		await delay(1000)
@@ -72,7 +68,7 @@ const bills = t.router({
 				description: `Compra ${index}`,
 				amount: (index % 2 == 0 ? index * -1 : index) * 1000,
 				createdAt: createdAt,
-				budgetBillId: input
+				billId: input
 			})
 		}
 		return transactions
@@ -81,14 +77,13 @@ const bills = t.router({
 		.input(
 			z.object({
 				description: defaultString,
-				budgetBillId: defaultNumber
+				billId: defaultNumber
 			})
 		)
-		.mutation(async ({ input }) => {
+		.mutation(async () => {
 			await delay(1000)
 			const shared = {
-				id: new Date().getTime(),
-				budgetId: input.budgetBillId
+				id: new Date().getTime()
 			}
 			return shared
 		}),
@@ -100,7 +95,7 @@ const bills = t.router({
 				id: 1,
 				description: 'Lau',
 				amount: 100000,
-				budgetBillId: input
+				billId: input
 			})
 		}
 		return shared
@@ -217,7 +212,6 @@ export const budgets = t.router({
 	}),
 	delete: procedure.input(defaultNumber).mutation(async () => {
 		await delay(1000)
-		return
 	}),
 	availables,
 	bills

@@ -6,101 +6,42 @@
 	import { confirmPopup } from '$lib/stores/shared'
 	import { changesStore } from '$lib/stores/changes'
 	import { availablesStore, billsDataStore, resumeStore } from '$lib/stores/budget'
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums'
-	import type { Budget, Change } from '$lib/types'
-	import { trpc } from '$lib/trpc/client'
-	import { groupBy } from '$utils/array.utils'
+	import { ContextNameEnum } from '$lib/enums'
+	import type { Budget } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import { zeroPad } from '$utils/number.utils'
+	import BudgetService from '$services/budget/budget.service'
 
 	// Components
-	import Navbar from '$components/shared/navbar/Navbar.svelte'
-	import NavbarItem from '$components/shared/navbar/NavbarItem.svelte'
+	import Tabs from '$components/shared/tabs/Tabs.svelte'
+	import TabItem from '$components/shared/tabs/TabItem.svelte'
 	import ButtonLink from '$components/shared/buttons/ButtonLink.svelte'
 
 	export let data: Budget
 
-	const trpcF = trpc($page)
-
-	let interval: ReturnType<typeof setInterval>
-
-	onMount(() => {
-		interval = setInterval(() => {
-			handleSave()
-		}, 30000)
-	})
-
-	onDestroy(() => {
-		clearInterval(interval)
-	})
-
 	const changes = changesStore()
-	setContext(ContextNameEnum.CHANGES, {
-		changes
-	})
-
 	const { month } = resumeStore(`${data.year}-${zeroPad(data.month, 2)}`)
-	setContext(ContextNameEnum.BUDGET_RESUME, {
-		month
-	})
-
 	const { totalAvailable } = availablesStore(
 		data.availableBalances.reduce((previous, current) => previous + current.amount, 0)
 	)
-	setContext(ContextNameEnum.BUDGET_AVAILABLES, {
-		totalAvailable
-	})
-
 	const { bills, totals, statistics } = billsDataStore(data.bills)
-	setContext(ContextNameEnum.BUDGET_BILLS, {
-		bills,
-		totals,
-		statistics
-	})
+	const service = new BudgetService($page, changes)
+
+	let interval: ReturnType<typeof setInterval>
+
+	onMount(() => (interval = setInterval(() => handleSave(), 15000)))
+
+	onDestroy(() => clearInterval(interval))
+
+	setContext(ContextNameEnum.CHANGES, { changes })
+	setContext(ContextNameEnum.BUDGET_RESUME, { month })
+	setContext(ContextNameEnum.BUDGET_AVAILABLES, { totalAvailable })
+	setContext(ContextNameEnum.BUDGET_BILLS, { bills, totals, statistics })
 
 	async function handleSave() {
-		const changeList = [...$changes]
-		if (changeList.length > 0) {
-			try {
-				changes.delete(changeList)
-				const sendChanges: Change<unknown>[] = []
-
-				const groupBySection = groupBy(changeList, (change) => change.section)
-				Object.entries(groupBySection).forEach((group) => {
-					const [section, items] = group
-					const groupByAction = groupBy(items, (change) => change.action)
-					Object.entries(groupByAction).forEach((group) => {
-						const [action, items] = group
-						const groupById = groupBy(items, (change) => change.detail.id.toString())
-						Object.entries(groupById).forEach((group) => {
-							const [id, items] = group
-
-							const sendChange: Change<unknown> = {
-								section: section as ChangeSectionEnum,
-								action: action as ChangeActionEnum,
-								detail: {
-									id: Number(id)
-								}
-							}
-
-							items.forEach(
-								(item) => (sendChange.detail = { ...sendChange.detail, ...item.detail })
-							)
-							sendChanges.push(sendChange)
-						})
-					})
-				})
-
-				await trpcF.projects.receiveChanges.mutate({
-					projectId: data.projectId,
-					changes: sendChanges
-				})
-			} catch (error) {
-				changes.revert(changeList)
-				Toast.error('Se presento un error al guardar', true)
-				throw error
-			}
-		}
+		service.save(data.projectId, [...$changes], () =>
+			Toast.error('Se presento un error al guardar', true)
+		)
 	}
 
 	function handleExit() {
@@ -111,6 +52,10 @@
 		)
 	}
 </script>
+
+<svelte:head>
+	<title>Presupuesto | Tus Cuentas</title>
+</svelte:head>
 
 <main class="w-full">
 	<section class="flex justify-between">
@@ -123,29 +68,29 @@
 	</section>
 
 	<section class="p-2 bg-base-200">
-		<Navbar>
-			<NavbarItem
+		<Tabs>
+			<TabItem
 				href={`/budget/${data.id}`}
 				active={$page.route.id === '/(app)/budget/[id]'}
 				text="Resumen"
 			>
 				<i class="bx bxs-detail" />
-			</NavbarItem>
-			<NavbarItem
+			</TabItem>
+			<TabItem
 				href={`/budget/${data.id}/details`}
 				active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
 				text="Detalle"
 			>
 				<i class="bx bxs-dollar-circle" />
-			</NavbarItem>
-			<NavbarItem
+			</TabItem>
+			<TabItem
 				href={`/budget/${data.id}/statistics`}
 				active={$page.route.id === '/(app)/budget/[id]/statistics'}
 				text="Estadísticas"
 			>
 				<i class="bx bxs-bar-chart-alt-2" />
-			</NavbarItem>
-		</Navbar>
+			</TabItem>
+		</Tabs>
 
 		<div class="divider -mt-1 -mb-1" />
 

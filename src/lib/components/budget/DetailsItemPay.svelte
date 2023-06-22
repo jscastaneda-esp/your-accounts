@@ -5,16 +5,16 @@
 	import { page } from '$app/stores'
 	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
 	import Toast from '$utils/toast.utils'
-	import { trpc } from '$lib/trpc/client'
 	import Input from '$components/shared/Input.svelte'
 	import Toggle from '$components/shared/Toggle.svelte'
 	import ButtonGroup from '$components/shared/buttons/ButtonGroup.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let billId: number
 	export let pending: number
 
-	const trpcF = trpc($page)
+	const service = new BudgetBillService($page)
 	const dispatch = createEventDispatcher<{ pay: number }>()
 
 	let loading = false
@@ -48,20 +48,19 @@
 		loading = true
 
 		try {
-			let value: number = $data.amount
-			if (operation == '-') value *= -1
-
-			await trpcF.budgets.bills.createTransaction.mutate({
-				description: $data.description,
-				amount: value,
-				budgetBillId: billId
-			})
-			if (dispatch('pay', value)) {
-				reset()
-			}
+			await service.createTransaction(
+				$data.description,
+				$data.amount,
+				operation,
+				billId,
+				(value) => {
+					if (dispatch('pay', value)) {
+						reset()
+					}
+				}
+			)
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los movimientos', true)
-			throw error
 		} finally {
 			loading = false
 		}

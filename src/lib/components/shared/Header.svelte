@@ -5,19 +5,19 @@
 
 	// Utilities
 	import type { FirebaseError } from 'firebase/app'
-	import firebase from '$lib/configs/firebase.client'
+	import firebaseService from '$services/firebase.service'
 	import Toast from '$utils/toast.utils'
 	import { session } from '$lib/stores/shared'
 
 	async function signOut() {
 		try {
-			await firebase.authFunctions.signOut()
+			await firebaseService.authFunctions.signOut()
 			await fetch('/login', {
 				method: 'DELETE'
 			})
 			goto('/login')
 		} catch (error) {
-			const [msg, isError] = firebase.authFunctions.getError((error as FirebaseError).code)
+			const [msg, isError] = firebaseService.authFunctions.getError((error as FirebaseError).code)
 			if (isError) {
 				Toast.error(msg)
 			} else {

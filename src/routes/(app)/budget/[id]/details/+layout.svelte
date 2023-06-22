@@ -3,30 +3,30 @@
 	import { page } from '$app/stores'
 
 	// Components
-	import Navbar from '$components/shared/navbar/Navbar.svelte'
-	import NavbarItem from '$components/shared/navbar/NavbarItem.svelte'
+	import Tabs from '$components/shared/tabs/Tabs.svelte'
+	import TabItem from '$components/shared/tabs/TabItem.svelte'
 	import type { Budget } from '$lib/types'
 
 	export let data: Budget
 </script>
 
 <section class="py-2">
-	<Navbar>
-		<NavbarItem
+	<Tabs>
+		<TabItem
 			href={`/budget/${data.id}/details`}
 			active={$page.route.id === '/(app)/budget/[id]/details'}
 			text="Disponible"
 		>
 			<i class="bx bxs-wallet-alt" />
-		</NavbarItem>
-		<NavbarItem
+		</TabItem>
+		<TabItem
 			href={`/budget/${data.id}/details/payments`}
 			active={$page.route.id === '/(app)/budget/[id]/details/payments'}
 			text="Pagos"
 		>
 			<i class="bx bxs-file" />
-		</NavbarItem>
-	</Navbar>
+		</TabItem>
+	</Tabs>
 
 	<div class="divider -mt-1 -mb-1" />
 

@@ -88,7 +88,7 @@ class FirebaseAuth {
 	}
 }
 
-class Firebase {
+class FirebaseService {
 	private readonly _app: FirebaseApp
 	private readonly _auth: Auth
 	private readonly _authFunctions: FirebaseAuth
@@ -121,4 +121,4 @@ class Firebase {
 }
 
 // Initialize Firebase
-export default new Firebase()
+export default new FirebaseService()

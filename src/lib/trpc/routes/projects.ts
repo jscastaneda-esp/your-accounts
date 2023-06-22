@@ -24,10 +24,8 @@ export const projects = t.router({
 				)
 			})
 		)
-		.mutation(async ({ input }) => {
-			console.log('Receive changes', input)
+		.mutation(async () => {
 			await delay(1000)
-			return true
 		}),
 	getLogsByProjectId: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)

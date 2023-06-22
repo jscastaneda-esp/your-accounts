@@ -2,15 +2,16 @@
 	import type { BudgetBillTransaction } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import dayjs from '$utils/dayjs.utils'
-	import { trpc } from '$lib/trpc/client'
 	import { page } from '$app/stores'
 	import { money } from '$utils/number.utils'
 	import Logs from '$components/shared/logs/Logs.svelte'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let billId: number
 
 	const awaitLoad = [1, 2, 3, 4]
-	const trpcF = trpc($page)
+	const service = new BudgetBillService($page)
+
 	let loading = false
 	let transactions: BudgetBillTransaction[] = []
 
@@ -19,10 +20,9 @@
 		if (checked) {
 			loading = true
 			try {
-				transactions = await trpcF.budgets.bills.getTransactionsById.query(billId)
+				transactions = await service.getTransactionsById(billId)
 			} catch (error) {
 				Toast.error('Se presento un error al consultar las transacciones', true)
-				throw error
 			} finally {
 				loading = false
 			}

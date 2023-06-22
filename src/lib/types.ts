@@ -53,14 +53,14 @@ export type BudgetBillTransaction = {
 	description: string
 	amount: number
 	createdAt: Date
-	budgetBillId: number
+	billId: number
 }
 
 export type BudgetBillShared = {
 	id: number
 	description: string
 	amount: number
-	budgetBillId: number
+	billId: number
 }
 
 export type BudgetStatistics = {

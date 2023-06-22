@@ -4,8 +4,6 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import Toast from '$utils/toast.utils'
-	import { trpc } from '$lib/trpc/client'
-	import dayjs from '$utils/dayjs.utils'
 
 	// Components
 	import CardBudget from '$components/budget/CardBudget.svelte'
@@ -14,41 +12,39 @@
 
 	// Types, Enums
 	import type { BudgetMinimal } from '$lib/types'
-	import { zeroPad } from '$utils/number.utils'
 	import { screenLoading, confirmPopup } from '$lib/stores/shared'
+	import BudgetService from '$services/budget/budget.service'
 
 	const awaitLoad = [1, 2, 3, 4]
-	const trpcF = trpc($page)
+	const service = new BudgetService($page)
 	let budgets: BudgetMinimal[]
 
 	onMount(() => {
-		getBudgets()
+		service
+			.getByUserId()
+			.then((response) => (budgets = response))
+			.catch(() => Toast.error('Se presento un error al consultar los proyectos', true))
 	})
 
-	async function getBudgets() {
-		try {
-			budgets = await trpcF.budgets.getByUserId.query()
-		} catch (error) {
-			Toast.error('Se presento un error al consultar los proyectos', true)
-			throw error
-		}
-	}
-
-	async function handleNew() {
+	async function handleNew(cloneId?: number) {
 		screenLoading.show()
 
 		try {
-			const now = dayjs()
-			const newProject = await trpcF.budgets.create.mutate({
-				name: `Presupuesto ${zeroPad(now.month(), 2)}/${now.year()}`
-			})
-			await goto(`/budget/${newProject.id}`)
+			const { id } = await service.create(cloneId)
+			await goto(`/budget/${id}`)
 		} catch (error) {
-			Toast.error('Se presento un error al crear el proyecto', true)
-			throw error
+			Toast.error(`Se presento un error al ${cloneId ? 'duplicar' : 'crear'} el proyecto`, true)
 		} finally {
 			screenLoading.hide()
 		}
+	}
+
+	async function handleClone(budget: BudgetMinimal) {
+		confirmPopup.show(
+			`¿Realmente desea duplicar el presupuesto ${budget.name}?`,
+			'Se duplicará la información principal. Las transacciones no serán duplicadas',
+			() => handleNew(budget.id)
+		)
 	}
 
 	async function handleDelete(budget: BudgetMinimal) {
@@ -59,36 +55,11 @@
 				screenLoading.show()
 
 				try {
-					await trpcF.budgets.delete.mutate(budget.id)
+					await service.delete(budget.id)
 					Toast.success('Se elimino exitosamente el proyecto', true)
 					budgets = budgets.filter((project) => project.id != budget.id)
 				} catch (error) {
 					Toast.error('Se presento un error al eliminar el proyecto', true)
-					throw error
-				} finally {
-					screenLoading.hide()
-				}
-			}
-		)
-	}
-
-	async function handleClone(budget: BudgetMinimal) {
-		confirmPopup.show(
-			`¿Realmente desea duplicar el presupuesto ${budget.name}?`,
-			'Se duplicará la información principal. Las transacciones no serán duplicadas',
-			async () => {
-				screenLoading.show()
-
-				try {
-					const now = dayjs()
-					const newProject = await trpcF.budgets.create.mutate({
-						name: `Presupuesto ${now.month()}/${now.year()}`,
-						cloneId: budget.id
-					})
-					await goto(`/budget/${newProject.id}`)
-				} catch (error) {
-					Toast.error('Se presento un error al duplicar el proyecto', true)
-					throw error
 				} finally {
 					screenLoading.hide()
 				}

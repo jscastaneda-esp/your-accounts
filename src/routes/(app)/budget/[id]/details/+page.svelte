@@ -4,34 +4,27 @@
 	import { validator } from '@felte/validator-yup'
 	import { page } from '$app/stores'
 	import type { Budget, BudgetAvailable, Change, ChangeStore } from '$lib/types'
-	import { trpc } from '$lib/trpc/client'
 	import Toast from '$utils/toast.utils'
 	import { screenLoading, confirmPopup } from '$lib/stores/shared'
 	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums'
-	import ChangeUtil from '$lib/classes/ChangeUtil'
+	import { ContextNameEnum } from '$lib/enums'
 	import type { Readable, Writable } from 'svelte/store'
 
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import Input from '$components/shared/Input.svelte'
+	import BudgetAvailableService from '$services/budget/budget-available.service'
 
 	export let data: Budget
 
-	type ChangeAvailable = {
-		name?: string
-		amount?: number
-	}
-
-	const trpcF = trpc($page)
 	const prefixFieldName = `availables`
-	const changeUtil = new ChangeUtil<keyof ChangeAvailable>()
-	const { changes } = getContext<{
-		changes: Readable<Change<ChangeAvailable>[]> & ChangeStore<ChangeAvailable>
-	}>(ContextNameEnum.CHANGES)
+	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+		ContextNameEnum.CHANGES
+	)
 	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(
 		ContextNameEnum.BUDGET_AVAILABLES
 	)
+	const service = new BudgetAvailableService($page, changes)
 
 	let list = data.availableBalances
 	let countName = list.length + 1
@@ -65,17 +58,11 @@
 		screenLoading.show()
 
 		try {
-			const request = {
-				name: `Disponible ${countName++}`,
-				budgetId: data.id
-			}
-			const newAvailable = await trpcF.budgets.availables.create.mutate(request)
-			const newField = { id: newAvailable.id, amount: 0, ...request }
+			const newField = await service.create(`Disponible ${countName++}`, data.id)
 			addField('availables', newField)
 			list.push(newField)
 		} catch (error) {
 			Toast.error('Se presento un error al crear el disponible', true)
-			throw error
 		} finally {
 			screenLoading.hide()
 		}
@@ -90,49 +77,7 @@
 	}
 
 	function compareData() {
-		const changeBase = {
-			section: ChangeSectionEnum.BUDGET_AVAILABLE,
-			action: ChangeActionEnum.UPDATE
-		}
-		const newDatas = $dataForm.availables
-		const dataErrors = $errors.availables || []
-
-		if (newDatas.length != list.length) {
-			const deletes = list.filter((available) => !newDatas.some((item) => item.id == available.id))
-			const newList = list.filter((available) => newDatas.some((item) => item.id == available.id))
-			list.length = 0
-			list.push(...newList)
-
-			deletes.forEach((del) => {
-				changes.add({
-					...changeBase,
-					action: ChangeActionEnum.DELETE,
-					detail: {
-						id: del.id
-					}
-				})
-			})
-		} else {
-			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index]
-				const oldData = list[index]
-				const errorData = dataErrors[index]
-
-				let isChanges = false
-				const change: Change<ChangeAvailable> = {
-					...changeBase,
-					detail: {
-						id: newData.id
-					}
-				}
-
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'name', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges)
-				if (isChanges) {
-					changes.add(change)
-				}
-			}
-		}
+		service.compareData($dataForm.availables, $errors.availables, list)
 	}
 
 	$: if ($touched) compareData()

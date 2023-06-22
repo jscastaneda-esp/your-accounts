@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { generateUniqueId } from '$utils/string.utils'
 	import { onMount } from 'svelte'
 
 	export let id: string
@@ -7,11 +8,7 @@
 	export let disabled = false
 
 	onMount(() => {
-		if (crypto.randomUUID) {
-			id = `${id}_${crypto.randomUUID()}`
-		} else {
-			id = `${id}_${new Date().getTime()}`
-		}
+		id = generateUniqueId(id)
 	})
 </script>
 
