@@ -17,12 +17,11 @@
 
 	export let billId: number
 	export let projectId: number
-	export let total: number
 
 	const changes = changesStore()
 	const awaitLoad = [1, 2, 3, 4]
 	const service = new BudgetBillSharedService($page)
-	const dispatch = createEventDispatcher<{ close: void }>()
+	const dispatch = createEventDispatcher<{ shared: number; close: void }>()
 
 	let loading = false
 	let screenLoading = false
@@ -117,6 +116,7 @@
 
 	$: if ($touched) compareData()
 	$: total = $data.shared.reduce((previous, current) => previous + current.amount, 0)
+	$: dispatch('shared', total)
 </script>
 
 <Popup open preventDefaultClose on:click={handleClose}>

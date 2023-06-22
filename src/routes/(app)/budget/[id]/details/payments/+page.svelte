@@ -83,6 +83,10 @@
 		setFields(`bills.${index}.payment`, bill.payment + payment, true)
 	}
 
+	function handleShared(index: number, totalShared: number) {
+		setFields(`bills.${index}.totalShared`, totalShared, true)
+	}
+
 	function handleDelete(bill: BudgetBill, index: number) {
 		confirmPopup.show(
 			`¿Está seguro que desea eliminar el pago ${bill.description}?`,
@@ -126,6 +130,7 @@
 							projectId={data.projectId}
 							errors={$errors.bills?.[index]}
 							on:pay={({ detail }) => handlePay(bill, index, detail)}
+							on:shared={({ detail }) => handleShared(index, detail)}
 							on:delete={() => handleDelete(bill, index)}
 						/>
 					</td>

@@ -159,10 +159,5 @@
 </section>
 
 {#if showShare}
-	<DetailsItemShared
-		billId={data.id}
-		{projectId}
-		bind:total={data.totalShared}
-		on:close={() => (showShare = false)}
-	/>
+	<DetailsItemShared billId={data.id} {projectId} on:shared on:close={() => (showShare = false)} />
 {/if}
