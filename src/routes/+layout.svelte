@@ -2,13 +2,13 @@
 	import '../app.css'
 	import 'boxicons/css/boxicons.min.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import firebase from '$lib/configs/firebase.client'
+	import firebaseService from '$lib/services/firebase.service'
 	import { session } from '$lib/stores/shared'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast/stores'
 	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 	import ConfirmPopup from '$components/shared/popup/ConfirmPopup.svelte'
 
-	firebase.authFunctions.onAuthStateChanged((user) => {
+	firebaseService.authFunctions.onAuthStateChanged((user) => {
 		session.set(user)
 	})
 

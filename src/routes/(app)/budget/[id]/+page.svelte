@@ -106,10 +106,6 @@
 	$: month.set($dataForm.month)
 </script>
 
-<svelte:head>
-	<title>Presupuesto | Tus Cuentas</title>
-</svelte:head>
-
 <section class="flex flex-col w-full">
 	<form
 		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 px-4 pt-4"

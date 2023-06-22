@@ -30,7 +30,6 @@
 			budgets = await trpcF.budgets.getByUserId.query()
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los proyectos', true)
-			throw error
 		}
 	}
 
@@ -45,7 +44,6 @@
 			await goto(`/budget/${newProject.id}`)
 		} catch (error) {
 			Toast.error('Se presento un error al crear el proyecto', true)
-			throw error
 		} finally {
 			screenLoading.hide()
 		}
@@ -64,7 +62,6 @@
 					budgets = budgets.filter((project) => project.id != budget.id)
 				} catch (error) {
 					Toast.error('Se presento un error al eliminar el proyecto', true)
-					throw error
 				} finally {
 					screenLoading.hide()
 				}
@@ -88,7 +85,6 @@
 					await goto(`/budget/${newProject.id}`)
 				} catch (error) {
 					Toast.error('Se presento un error al duplicar el proyecto', true)
-					throw error
 				} finally {
 					screenLoading.hide()
 				}

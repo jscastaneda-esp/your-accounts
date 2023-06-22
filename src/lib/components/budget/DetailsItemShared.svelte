@@ -7,31 +7,24 @@
 	import Toast from '$utils/toast.utils'
 	import { confirmPopup } from '$lib/stores/shared'
 	import type { BudgetBillShared, Change } from '$lib/types'
-	import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
-	import ChangeUtil from '$lib/classes/ChangeUtil'
-	import { trpc } from '$lib/trpc/client'
 	import Table from '$components/shared/Table.svelte'
 	import Popup from '$components/shared/popup/Popup.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import Input from '$components/shared/Input.svelte'
 	import Stat from '$components/shared/Stat.svelte'
-	import { groupBy } from '$utils/array.utils'
+	import BudgetBillService, {
+		type ChangeBillShared
+	} from '$lib/services/budget/budget-bill.service'
 
 	export let billId: number
 	export let projectId: number
 	export let total: number
 
-	type ChangeBillShared = {
-		description?: string
-		amount?: number
-	}
-
 	const awaitLoad = [1, 2, 3, 4]
-	const trpcF = trpc($page)
+	const service = new BudgetBillService($page)
 	const dispatch = createEventDispatcher<{ close: void }>()
-	const changeUtil = new ChangeUtil<keyof ChangeBillShared>()
-	let changes: Change<ChangeBillShared>[] = []
 
+	let changes: Change<ChangeBillShared>[] = []
 	let loading = false
 	let screenLoading = false
 	let countName = 0
@@ -66,12 +59,11 @@
 		loading = true
 
 		try {
-			list = await trpcF.budgets.bills.getSharedById.query(billId)
+			list = await service.getSharedById(billId)
 			countName = list.length + 1
 			setFields('shared', list, true)
 		} catch (error) {
 			Toast.error('Se presento un error al consultar los gastos compartidos', true)
-			throw error
 		} finally {
 			loading = false
 		}
@@ -82,40 +74,9 @@
 	})
 
 	async function handleSave() {
-		const changeList = [...changes]
-		if (changeList.length > 0) {
-			try {
-				changes = changes.filter((change) => !changeList.some((del) => change.index == del.index))
-
-				const sendChanges: Change<ChangeBillShared>[] = []
-				const groupById = groupBy<Change<ChangeBillShared>>(changeList, (change) =>
-					change.detail.id.toString()
-				)
-				Object.entries(groupById).forEach((group) => {
-					const [id, items] = group
-
-					const sendChange: Change<ChangeBillShared> = {
-						section: ChangeSectionEnum.BUDGET_BILL_SHARED,
-						action: ChangeActionEnum.UPDATE,
-						detail: {
-							id: Number(id)
-						}
-					}
-
-					items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
-					sendChanges.push(sendChange)
-				})
-
-				await trpcF.projects.receiveChanges.mutate({
-					projectId,
-					changes: sendChanges
-				})
-			} catch (error) {
-				changes = [...changeList, ...changes]
-				Toast.error('Se presento un error al guardar', true)
-				throw error
-			}
-		}
+		await service.saveShared(projectId, changes, () =>
+			Toast.error('Se presento un error al guardar', true)
+		)
 	}
 
 	async function handleClose() {
@@ -133,21 +94,11 @@
 		screenLoading = true
 
 		try {
-			const request = {
-				description: `Gasto Compartido ${countName++}`,
-				budgetBillId: billId
-			}
-			const newShared = await trpcF.budgets.bills.createShared.mutate(request)
-			const newField = {
-				id: newShared.id,
-				amount: 0,
-				...request
-			}
+			const newField = await service.addShared(`Gasto Compartido ${countName++}`, billId)
 			addField('shared', newField)
 			list.push(newField)
 		} catch (error) {
 			Toast.error('Se presento un error al crear el gasto compartido', true)
-			throw error
 		} finally {
 			screenLoading = false
 		}
@@ -162,54 +113,7 @@
 	}
 
 	function compareData() {
-		const changeBase = {
-			section: ChangeSectionEnum.BUDGET_BILL_SHARED,
-			action: ChangeActionEnum.UPDATE
-		}
-		const newDatas = $data.shared
-		const dataErrors = $errors.shared || []
-
-		if (newDatas.length != list.length) {
-			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
-			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
-
-			deletes.forEach((del) => {
-				changes.push({
-					...changeBase,
-					action: ChangeActionEnum.DELETE,
-					detail: {
-						id: del.id
-					}
-				})
-			})
-		} else {
-			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index]
-				const oldData = list[index]
-				const errorData = dataErrors[index]
-
-				let isChanges = false
-				const change: Change<ChangeBillShared> = {
-					...changeBase,
-					detail: {
-						id: newData.id
-					}
-				}
-
-				isChanges = changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'description',
-					isChanges
-				)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges)
-				if (isChanges) {
-					changes.push(change)
-				}
-			}
-		}
+		changes.push(...service.compareDataShared($data.shared, $errors.shared, list))
 	}
 
 	$: if ($touched) compareData()

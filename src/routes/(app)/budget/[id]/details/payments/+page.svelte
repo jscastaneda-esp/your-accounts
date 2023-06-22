@@ -110,7 +110,6 @@
 			list.push(newField)
 		} catch (error) {
 			Toast.error('Se presento un error al crear el pago', true)
-			throw error
 		} finally {
 			screenLoading.hide()
 		}

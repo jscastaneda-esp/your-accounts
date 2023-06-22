@@ -2,14 +2,14 @@
 	import type { ProjectLog } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import dayjs from '$utils/dayjs.utils'
-	import { trpc } from '$lib/trpc/client'
 	import { page } from '$app/stores'
 	import Logs from './Logs.svelte'
+	import ProjectService from '$lib/services/project.service'
 
 	export let projectId: number
 
 	const awaitLoad = [1, 2, 3, 4]
-	const trpcF = trpc($page)
+	const service = new ProjectService($page)
 
 	let loading = false
 	let logs: ProjectLog[] = []
@@ -19,10 +19,9 @@
 		if (checked) {
 			loading = true
 			try {
-				logs = await trpcF.projects.getLogsByProjectId.query(projectId)
+				logs = await service.getLogsByProjectId(projectId)
 			} catch (error) {
 				Toast.error('Se presento un error al consultar las transacciones', true)
-				throw error
 			} finally {
 				loading = false
 			}

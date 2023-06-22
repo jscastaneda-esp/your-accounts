@@ -14,8 +14,8 @@
 	import { zeroPad } from '$utils/number.utils'
 
 	// Components
-	import Navbar from '$components/shared/navbar/Navbar.svelte'
-	import NavbarItem from '$components/shared/navbar/NavbarItem.svelte'
+	import Tabs from '$components/shared/tabs/Tabs.svelte'
+	import TabItem from '$components/shared/tabs/TabItem.svelte'
 	import ButtonLink from '$components/shared/buttons/ButtonLink.svelte'
 
 	export let data: Budget
@@ -98,7 +98,6 @@
 			} catch (error) {
 				changes.revert(changeList)
 				Toast.error('Se presento un error al guardar', true)
-				throw error
 			}
 		}
 	}
@@ -112,6 +111,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Presupuesto | Tus Cuentas</title>
+</svelte:head>
+
 <main class="w-full">
 	<section class="flex justify-between">
 		<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
@@ -123,29 +126,29 @@
 	</section>
 
 	<section class="p-2 bg-base-200">
-		<Navbar>
-			<NavbarItem
+		<Tabs>
+			<TabItem
 				href={`/budget/${data.id}`}
 				active={$page.route.id === '/(app)/budget/[id]'}
 				text="Resumen"
 			>
 				<i class="bx bxs-detail" />
-			</NavbarItem>
-			<NavbarItem
+			</TabItem>
+			<TabItem
 				href={`/budget/${data.id}/details`}
 				active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
 				text="Detalle"
 			>
 				<i class="bx bxs-dollar-circle" />
-			</NavbarItem>
-			<NavbarItem
+			</TabItem>
+			<TabItem
 				href={`/budget/${data.id}/statistics`}
 				active={$page.route.id === '/(app)/budget/[id]/statistics'}
 				text="Estadísticas"
 			>
 				<i class="bx bxs-bar-chart-alt-2" />
-			</NavbarItem>
-		</Navbar>
+			</TabItem>
+		</Tabs>
 
 		<div class="divider -mt-1 -mb-1" />
 

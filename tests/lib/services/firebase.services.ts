@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach, vi } from 'vitest'
 import { AuthErrorCodes } from 'firebase/auth'
-import firebase from '$lib/configs/firebase.client'
+import firebaseService from '$lib/services/firebase.service'
 import { FirebaseProviderEnum } from '$lib/enums'
 
 vi.mock('$env/static/public', () => ({
@@ -43,24 +43,27 @@ describe('firebase.client', () => {
 	})
 
 	it('verify variables', () => {
-		expect(firebase.app).toBeTruthy()
-		expect(firebase.app.name).toEqual('Test')
-		expect(firebase.auth).toBeTruthy()
-		expect(firebase.auth.currentUser).toBeTruthy()
-		expect(firebase.auth.currentUser?.displayName).toEqual('Test')
-		expect(firebase.auth.currentUser?.email).toEqual('test@test.test')
-		expect(firebase.authFunctions).toBeTruthy()
+		expect(firebaseService.app).toBeTruthy()
+		expect(firebaseService.app.name).toEqual('Test')
+		expect(firebaseService.auth).toBeTruthy()
+		expect(firebaseService.auth.currentUser).toBeTruthy()
+		expect(firebaseService.auth.currentUser?.displayName).toEqual('Test')
+		expect(firebaseService.auth.currentUser?.email).toEqual('test@test.test')
+		expect(firebaseService.authFunctions).toBeTruthy()
 	})
 
 	it('auth functions signInWithPopup GOOGLE', async () => {
-		const promise = firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.GOOGLE, vi.fn())
+		const promise = firebaseService.authFunctions.signInWithPopup(
+			FirebaseProviderEnum.GOOGLE,
+			vi.fn()
+		)
 		expect(promise).toBeTruthy()
 		expect(await promise).toBeTypeOf('object')
 	})
 
 	it('auth functions signInWithPopup FACEBOOK', () => {
 		expect(() =>
-			firebase.authFunctions.signInWithPopup(FirebaseProviderEnum.FACEBOOK, vi.fn())
+			firebaseService.authFunctions.signInWithPopup(FirebaseProviderEnum.FACEBOOK, vi.fn())
 		).toThrowError(/^Provider no implemented$/)
 	})
 
@@ -68,7 +71,10 @@ describe('firebase.client', () => {
 		const tags = {
 			PROVIDER: FirebaseProviderEnum.GOOGLE
 		}
-		const [msg, isError] = firebase.authFunctions.getError(AuthErrorCodes.POPUP_BLOCKED, tags)
+		const [msg, isError] = firebaseService.authFunctions.getError(
+			AuthErrorCodes.POPUP_BLOCKED,
+			tags
+		)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual(`Se presento un error al autenticar con ${tags.PROVIDER}`)
@@ -78,7 +84,7 @@ describe('firebase.client', () => {
 	})
 
 	it('auth functions getError without code', () => {
-		const [msg, isError] = firebase.authFunctions.getError(null)
+		const [msg, isError] = firebaseService.authFunctions.getError(null)
 
 		expect(msg).toBeTruthy()
 		expect(msg).toEqual('Error inesperado. Por favor vuelva a intentarlo')
