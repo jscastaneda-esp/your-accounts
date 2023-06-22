@@ -14,6 +14,7 @@ type ChangeBill = {
 	dueDate?: string | number
 	complete?: boolean
 	category?: string
+	totalShared?: number
 }
 
 class BudgetBillService {
@@ -176,6 +177,14 @@ class BudgetBillService {
 						oldData,
 						change,
 						'category',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'totalShared',
 						isChanges
 					)
 					if (isChanges) {
