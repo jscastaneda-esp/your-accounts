@@ -4,15 +4,8 @@
 	import { createForm } from 'felte'
 	import { validator } from '@felte/validator-yup'
 	import { page } from '$app/stores'
-	import ChangeUtil from '$lib/classes/ChangeUtil'
-	import {
-		BudgetBillCategory,
-		ChangeActionEnum,
-		ChangeSectionEnum,
-		ContextNameEnum
-	} from '$lib/enums'
+	import { BudgetBillCategory, ContextNameEnum } from '$lib/enums'
 	import { confirmPopup, screenLoading } from '$lib/stores/shared'
-	import { trpc } from '$lib/trpc/client'
 	import type { Budget, BudgetBill, Change, ChangeStore } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
@@ -21,32 +14,18 @@
 	import DetailsItem from '$components/budget/DetailsItem.svelte'
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let data: Budget
 
-	type ChangeBill = {
-		description?: string
-		amount?: number
-		payment?: number
-		shared?: boolean
-		dueDate?: string | number
-		complete?: boolean
-		category?: string
-	}
-
-	const trpcF = trpc($page)
-	const changeUtil = new ChangeUtil<keyof ChangeBill>()
-	const { changes } = getContext<{
-		changes: Readable<Change<ChangeBill>[]> & ChangeStore<ChangeBill>
-	}>(ContextNameEnum.CHANGES)
-	const { month } = getContext<{
-		month: Writable<string>
-	}>(ContextNameEnum.BUDGET_RESUME)
-	const { bills } = getContext<{
-		bills: {
-			set: (this: void, value: BudgetBill[]) => void
-		}
-	}>(ContextNameEnum.BUDGET_BILLS)
+	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+		ContextNameEnum.CHANGES
+	)
+	const { month } = getContext<{ month: Writable<string> }>(ContextNameEnum.BUDGET_RESUME)
+	const { bills } = getContext<{ bills: { set: (this: void, value: BudgetBill[]) => void } }>(
+		ContextNameEnum.BUDGET_BILLS
+	)
+	const service = new BudgetBillService($page, changes)
 
 	let daysMonth: number[] = []
 	let list = data.bills
@@ -90,22 +69,7 @@
 		screenLoading.show()
 
 		try {
-			const request = {
-				description: `Pago ${countName++}`,
-				budgetId: data.id
-			}
-			const newBill = await trpcF.budgets.bills.create.mutate(request)
-			const newField = {
-				id: newBill.id,
-				amount: 0,
-				payment: 0,
-				shared: false,
-				dueDate: '',
-				complete: false,
-				category: null as unknown as BudgetBillCategory,
-				totalShared: 0,
-				...request
-			}
+			const newField = await service.create(`Pago ${countName++}`, data.id)
 			addField('bills', newField)
 			list.push(newField)
 		} catch (error) {
@@ -128,61 +92,7 @@
 	}
 
 	function compareData() {
-		const changeBase = {
-			section: ChangeSectionEnum.BUDGET_BILL,
-			action: ChangeActionEnum.UPDATE
-		}
-		const newDatas = $dataForm.bills
-		const dataErrors = $errors.bills || []
-
-		if (newDatas.length != list.length) {
-			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
-			const newList = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
-			list.length = 0
-			list.push(...newList)
-
-			deletes.forEach((del) => {
-				changes.add({
-					...changeBase,
-					action: ChangeActionEnum.DELETE,
-					detail: {
-						id: del.id
-					}
-				})
-			})
-		} else {
-			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index]
-				const oldData = list[index]
-				const errorData = dataErrors[index]
-
-				let isChanges = false
-				const change: Change<ChangeBill> = {
-					...changeBase,
-					detail: {
-						id: newData.id
-					}
-				}
-
-				isChanges = changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'description',
-					isChanges
-				)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'amount', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'payment', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'shared', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'dueDate', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'complete', isChanges)
-				isChanges = changeUtil.setChange(errorData, newData, oldData, change, 'category', isChanges)
-				if (isChanges) {
-					changes.add(change)
-				}
-			}
-		}
+		service.compareData($dataForm.bills, $errors.bills, list)
 	}
 
 	$: if ($touched) compareData()

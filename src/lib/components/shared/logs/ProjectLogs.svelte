@@ -4,7 +4,7 @@
 	import dayjs from '$utils/dayjs.utils'
 	import { page } from '$app/stores'
 	import Logs from './Logs.svelte'
-	import ProjectService from '$lib/services/project.service'
+	import ProjectService from '$services/project.service'
 
 	export let projectId: number
 

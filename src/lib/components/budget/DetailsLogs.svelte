@@ -5,7 +5,7 @@
 	import { page } from '$app/stores'
 	import { money } from '$utils/number.utils'
 	import Logs from '$components/shared/logs/Logs.svelte'
-	import BudgetBillService from '$lib/services/budget/budget-bill.service'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let billId: number
 

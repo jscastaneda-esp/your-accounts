@@ -9,7 +9,7 @@
 	import Toggle from '$components/shared/Toggle.svelte'
 	import ButtonGroup from '$components/shared/buttons/ButtonGroup.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
-	import BudgetBillService from '$lib/services/budget/budget-bill.service'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let billId: number
 	export let pending: number

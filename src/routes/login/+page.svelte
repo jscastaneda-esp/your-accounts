@@ -10,7 +10,7 @@
 	// Utilities
 	import Toast from '$utils/toast.utils'
 	import { screenLoading, session } from '$lib/stores/shared'
-	import LoginService from '$lib/services/login.service'
+	import LoginService from '$services/login.service'
 
 	const service = new LoginService()
 

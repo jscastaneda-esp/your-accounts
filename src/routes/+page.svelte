@@ -6,7 +6,7 @@
 	screenLoading.show()
 
 	onMount(() =>
-		setTimeout(async () => {
+		setTimeout(() => {
 			if ($session) {
 				goto('/budget')
 			} else {

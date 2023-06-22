@@ -97,9 +97,9 @@
 		}
 	}
 
-	const { statistics: statisticsBills } = getContext<{
-		statistics: Readable<BudgetStatistics>
-	}>(ContextNameEnum.BUDGET_BILLS)
+	const { statistics: statisticsBills } = getContext<{ statistics: Readable<BudgetStatistics> }>(
+		ContextNameEnum.BUDGET_BILLS
+	)
 
 	let dataPie: ChartData<'pie', number[], unknown> | null
 	let dataBar: ChartData<'bar', (number | [number, number])[], unknown> | null

@@ -1,6 +1,6 @@
 import { describe, expect, it, afterEach, vi } from 'vitest'
 import { AuthErrorCodes } from 'firebase/auth'
-import firebaseService from '$lib/services/firebase.service'
+import firebaseService from '$services/firebase.service'
 import { FirebaseProviderEnum } from '$lib/enums'
 
 vi.mock('$env/static/public', () => ({

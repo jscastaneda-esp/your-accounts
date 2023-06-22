@@ -212,7 +212,6 @@ export const budgets = t.router({
 	}),
 	delete: procedure.input(defaultNumber).mutation(async () => {
 		await delay(1000)
-		return
 	}),
 	availables,
 	bills

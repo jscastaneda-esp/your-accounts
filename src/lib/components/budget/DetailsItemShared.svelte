@@ -6,25 +6,24 @@
 	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
 	import Toast from '$utils/toast.utils'
 	import { confirmPopup } from '$lib/stores/shared'
-	import type { BudgetBillShared, Change } from '$lib/types'
+	import type { BudgetBillShared } from '$lib/types'
 	import Table from '$components/shared/Table.svelte'
 	import Popup from '$components/shared/popup/Popup.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import Input from '$components/shared/Input.svelte'
 	import Stat from '$components/shared/Stat.svelte'
-	import BudgetBillService, {
-		type ChangeBillShared
-	} from '$lib/services/budget/budget-bill.service'
+	import { changesStore } from '$lib/stores/changes'
+	import BudgetBillSharedService from '$services/budget/budget-bill-shared.service'
 
 	export let billId: number
 	export let projectId: number
 	export let total: number
 
+	const changes = changesStore()
 	const awaitLoad = [1, 2, 3, 4]
-	const service = new BudgetBillService($page)
+	const service = new BudgetBillSharedService($page)
 	const dispatch = createEventDispatcher<{ close: void }>()
 
-	let changes: Change<ChangeBillShared>[] = []
 	let loading = false
 	let screenLoading = false
 	let countName = 0
@@ -51,22 +50,22 @@
 		extend: [validator({ schema: validationSchema })]
 	})
 
-	onMount(async () => {
+	onMount(() => {
 		interval = setInterval(() => {
 			handleSave()
 		}, 10000)
 
 		loading = true
 
-		try {
-			list = await service.getSharedById(billId)
-			countName = list.length + 1
-			setFields('shared', list, true)
-		} catch (error) {
-			Toast.error('Se presento un error al consultar los gastos compartidos', true)
-		} finally {
-			loading = false
-		}
+		service
+			.getByBudgetId(billId)
+			.then((response) => {
+				list = response
+				countName = list.length + 1
+				setFields('shared', list, true)
+			})
+			.catch(() => Toast.error('Se presento un error al consultar los gastos compartidos', true))
+			.finally(() => (loading = false))
 	})
 
 	onDestroy(() => {
@@ -74,7 +73,7 @@
 	})
 
 	async function handleSave() {
-		await service.saveShared(projectId, changes, () =>
+		await service.save(projectId, [...$changes], changes, () =>
 			Toast.error('Se presento un error al guardar', true)
 		)
 	}
@@ -94,7 +93,7 @@
 		screenLoading = true
 
 		try {
-			const newField = await service.addShared(`Gasto Compartido ${countName++}`, billId)
+			const newField = await service.create(`Gasto Compartido ${countName++}`, billId)
 			addField('shared', newField)
 			list.push(newField)
 		} catch (error) {
@@ -113,7 +112,7 @@
 	}
 
 	function compareData() {
-		changes.push(...service.compareDataShared($data.shared, $errors.shared, list))
+		service.compareData($data.shared, $errors.shared, list, changes)
 	}
 
 	$: if ($touched) compareData()

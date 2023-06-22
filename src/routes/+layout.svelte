@@ -2,7 +2,7 @@
 	import '../app.css'
 	import 'boxicons/css/boxicons.min.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import firebaseService from '$lib/services/firebase.service'
+	import firebaseService from '$services/firebase.service'
 	import { session } from '$lib/stores/shared'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast/stores'
 	import ScreenLoading from '$components/shared/ScreenLoading.svelte'

@@ -1,26 +1,50 @@
+import ChangeUtil from '$lib/classes/ChangeUtil'
+import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { trpc } from '$lib/trpc/client'
 import type { Router } from '$lib/trpc/router'
+import type { BudgetBill, Change, ChangeStore, FelteError } from '$lib/types'
+import type { Readable } from 'svelte/store'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
-import ProjectService from '../project.service'
-import type { BudgetBillShared, Change, FelteError } from '$lib/types'
-import { groupBy } from '$utils/array.utils'
-import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
-import ChangeUtil from '$lib/classes/ChangeUtil'
 
-export type ChangeBillShared = {
+type ChangeBill = {
 	description?: string
 	amount?: number
+	payment?: number
+	shared?: boolean
+	dueDate?: string | number
+	complete?: boolean
+	category?: string
 }
 
 class BudgetBillService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private projectService: ProjectService
-	private changeUtil: ChangeUtil<keyof ChangeBillShared>
+	private changeUtil: ChangeUtil<keyof ChangeBill>
 
-	constructor(init: TRPCClientInit) {
+	constructor(
+		init: TRPCClientInit,
+		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
+	) {
 		this.trpcF = trpc(init)
-		this.projectService = new ProjectService(init)
-		this.changeUtil = new ChangeUtil<keyof ChangeBillShared>()
+		this.changeUtil = new ChangeUtil<keyof ChangeBill>()
+	}
+
+	async create(description: string, budgetId: number) {
+		const request = {
+			description,
+			budgetId
+		}
+		const { id } = await this.trpcF.budgets.bills.create.mutate(request)
+		return {
+			id,
+			amount: 0,
+			payment: 0,
+			shared: false,
+			dueDate: '',
+			complete: false,
+			category: null as unknown as BudgetBillCategory,
+			totalShared: 0,
+			...request
+		}
 	}
 
 	async createTransaction(
@@ -46,129 +70,120 @@ class BudgetBillService {
 		return this.trpcF.budgets.bills.getTransactionsById.query(id)
 	}
 
-	async addShared(description: string, billId: number) {
-		const request = {
-			description,
-			billId
-		}
-		const { id } = await this.trpcF.budgets.bills.createShared.mutate({
-			description,
-			billId
-		})
-
-		return {
-			id,
-			amount: 0,
-			...request
-		}
-	}
-
-	getSharedById(id: number) {
-		return this.trpcF.budgets.bills.getSharedById.query(id)
-	}
-
-	saveShared(
-		projectId: number,
-		changes: Change<ChangeBillShared>[],
-		errCb: (error: unknown) => void
-	) {
-		const changeList = [...changes]
-		if (changeList.length > 0) {
-			try {
-				changes = changes.filter((change) => !changeList.some((del) => change.index == del.index))
-
-				const sendChanges: Change<ChangeBillShared>[] = []
-				const groupById = groupBy(changeList, (change) => change.detail.id.toString())
-				Object.entries(groupById).forEach((group) => {
-					const [id, items] = group
-
-					const sendChange: Change<ChangeBillShared> = {
-						section: ChangeSectionEnum.BUDGET_BILL_SHARED,
-						action: ChangeActionEnum.UPDATE,
-						detail: {
-							id: Number(id)
-						}
-					}
-
-					items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
-					sendChanges.push(sendChange)
-				})
-
-				return this.projectService.receiveChanges(projectId, sendChanges)
-			} catch (error) {
-				changes = [...changeList, ...changes]
-				errCb(error)
-			}
-		}
-	}
-
-	compareDataShared(
-		newDatas: BudgetBillShared[],
+	compareData(
+		newDatas: BudgetBill[],
 		dataErrors: {
 			id: FelteError
 			description: FelteError
 			amount: FelteError
-			billId: FelteError
+			payment: FelteError
+			shared: FelteError
+			dueDate: FelteError
+			complete: FelteError
+			budgetId: FelteError
+			category: FelteError
+			totalShared: FelteError
 		}[],
-		list: BudgetBillShared[]
+		list: BudgetBill[]
 	) {
-		const changeBase = {
-			section: ChangeSectionEnum.BUDGET_BILL_SHARED,
-			action: ChangeActionEnum.UPDATE
-		}
-		dataErrors = dataErrors || []
-		const changes: Change<ChangeBillShared>[] = []
+		if (this.changes) {
+			const changeBase = {
+				section: ChangeSectionEnum.BUDGET_BILL,
+				action: ChangeActionEnum.UPDATE
+			}
+			dataErrors = dataErrors || []
 
-		if (newDatas.length != list.length) {
-			const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
-			list = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
+			if (newDatas.length != list.length) {
+				const deletes = list.filter((bill) => !newDatas.some((item) => item.id == bill.id))
+				const newList = list.filter((bill) => newDatas.some((item) => item.id == bill.id))
+				list.length = 0
+				list.push(...newList)
 
-			deletes.forEach((del) => {
-				changes.push({
-					...changeBase,
-					action: ChangeActionEnum.DELETE,
-					detail: {
-						id: del.id
-					}
+				deletes.forEach((del) => {
+					this.changes?.add({
+						...changeBase,
+						action: ChangeActionEnum.DELETE,
+						detail: {
+							id: del.id
+						}
+					})
 				})
-			})
-		} else {
-			for (let index = 0; index < newDatas.length; index++) {
-				const newData = newDatas[index]
-				const oldData = list[index]
-				const errorData = dataErrors[index]
+			} else {
+				for (let index = 0; index < newDatas.length; index++) {
+					const newData = newDatas[index]
+					const oldData = list[index]
+					const errorData = dataErrors[index]
 
-				let isChanges = false
-				const change: Change<ChangeBillShared> = {
-					...changeBase,
-					detail: {
-						id: newData.id
+					let isChanges = false
+					const change: Change<ChangeBill> = {
+						...changeBase,
+						detail: {
+							id: newData.id
+						}
 					}
-				}
 
-				isChanges = this.changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'description',
-					isChanges
-				)
-				isChanges = this.changeUtil.setChange(
-					errorData,
-					newData,
-					oldData,
-					change,
-					'amount',
-					isChanges
-				)
-				if (isChanges) {
-					changes.push(change)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'description',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'amount',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'payment',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'shared',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'dueDate',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'complete',
+						isChanges
+					)
+					isChanges = this.changeUtil.setChange(
+						errorData,
+						newData,
+						oldData,
+						change,
+						'category',
+						isChanges
+					)
+					if (isChanges) {
+						this.changes.add(change)
+					}
 				}
 			}
 		}
-
-		return changes
 	}
 }
 

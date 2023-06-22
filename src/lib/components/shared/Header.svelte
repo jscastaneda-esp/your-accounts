@@ -5,7 +5,7 @@
 
 	// Utilities
 	import type { FirebaseError } from 'firebase/app'
-	import firebaseService from '$lib/services/firebase.service'
+	import firebaseService from '$services/firebase.service'
 	import Toast from '$utils/toast.utils'
 	import { session } from '$lib/stores/shared'
 

@@ -5,8 +5,7 @@
 	import type { Budget, Change, ChangeStore, TotalsBills } from '$lib/types'
 	import { zeroPad } from '$utils/number.utils'
 	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
-	import ChangeUtil from '$lib/classes/ChangeUtil'
-	import { ChangeActionEnum, ChangeSectionEnum, ContextNameEnum } from '$lib/enums'
+	import { ContextNameEnum } from '$lib/enums'
 
 	// Components
 	import Input from '$components/shared/Input.svelte'
@@ -15,30 +14,22 @@
 	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable, Readable } from 'svelte/store'
+	import BudgetService from '$services/budget/budget.service'
+	import { page } from '$app/stores'
 
 	export let data: Budget
 
-	type ChangeMain = {
-		name?: string
-		year?: number
-		month?: number
-		fixedIncome?: number
-		additionalIncome?: number
-	}
-
-	const changeUtil = new ChangeUtil<keyof ChangeMain>()
-	const { changes } = getContext<{
-		changes: Readable<Change<ChangeMain>[]> & ChangeStore<ChangeMain>
-	}>(ContextNameEnum.CHANGES)
+	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+		ContextNameEnum.CHANGES
+	)
 	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(
 		ContextNameEnum.BUDGET_AVAILABLES
 	)
-	const { month } = getContext<{
-		month: Writable<string>
-	}>(ContextNameEnum.BUDGET_RESUME)
-	const { totals: totalsBills } = getContext<{
-		totals: Readable<TotalsBills>
-	}>(ContextNameEnum.BUDGET_BILLS)
+	const { month } = getContext<{ month: Writable<string> }>(ContextNameEnum.BUDGET_RESUME)
+	const { totals: totalsBills } = getContext<{ totals: Readable<TotalsBills> }>(
+		ContextNameEnum.BUDGET_BILLS
+	)
+	const service = new BudgetService($page, changes)
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -65,39 +56,7 @@
 	})
 
 	function compareData() {
-		const newData = $dataForm
-		const errorData = $errors
-
-		let isChanges = false
-		const change: Change<ChangeMain> = {
-			section: ChangeSectionEnum.BUDGET_MAIN,
-			action: ChangeActionEnum.UPDATE,
-			detail: {
-				id: data.id
-			}
-		}
-
-		if (!errorData?.month) {
-			const monthParts = newData.month.split('-')
-			const year = Number(monthParts[0])
-			const month = Number(monthParts[1])
-			isChanges = changeUtil.setChangeDirect(year, data, change, 'year', isChanges)
-			isChanges = changeUtil.setChangeDirect(month, data, change, 'month', isChanges)
-		}
-
-		isChanges = changeUtil.setChange(errorData, newData, data, change, 'name', isChanges)
-		isChanges = changeUtil.setChange(errorData, newData, data, change, 'fixedIncome', isChanges)
-		isChanges = changeUtil.setChange(
-			errorData,
-			newData,
-			data,
-			change,
-			'additionalIncome',
-			isChanges
-		)
-		if (isChanges) {
-			changes.add(change)
-		}
+		service.compareData($dataForm, $errors, data)
 	}
 
 	$: estimatedBalance = data.fixedIncome + data.additionalIncome - $totalsBills.total
