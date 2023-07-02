@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 	import Toast from '$utils/toast.utils'
+	import { trytm } from '@bdsqqq/try'
 
 	// Components
 	import CardBudget from '$components/budget/CardBudget.svelte'
@@ -29,14 +30,14 @@
 	async function handleNew(cloneId?: number) {
 		screenLoading.show()
 
-		try {
-			const { id } = await service.create(cloneId)
-			await goto(`/budget/${id}`)
-		} catch (error) {
+		const [response, error] = await trytm(service.create(cloneId))
+		if (error) {
 			Toast.error(`Se presento un error al ${cloneId ? 'duplicar' : 'crear'} el proyecto`, true)
-		} finally {
-			screenLoading.hide()
+		} else {
+			await trytm(goto(`/budget/${response.id}`))
 		}
+
+		screenLoading.hide()
 	}
 
 	async function handleClone(budget: BudgetMinimal) {
@@ -54,15 +55,15 @@
 			async () => {
 				screenLoading.show()
 
-				try {
-					await service.delete(budget.id)
+				const [_, error] = await trytm(service.delete(budget.id))
+				if (error) {
+					Toast.error('Se presento un error al eliminar el proyecto', true)
+				} else {
 					Toast.success('Se elimino exitosamente el proyecto', true)
 					budgets = budgets.filter((project) => project.id != budget.id)
-				} catch (error) {
-					Toast.error('Se presento un error al eliminar el proyecto', true)
-				} finally {
-					screenLoading.hide()
 				}
+
+				screenLoading.hide()
 			}
 		)
 	}

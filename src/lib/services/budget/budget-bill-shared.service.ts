@@ -7,6 +7,7 @@ import { groupBy } from '$utils/array.utils'
 import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import ChangeUtil from '$lib/classes/ChangeUtil'
 import type { Readable } from 'svelte/store'
+import { trytm } from '@bdsqqq/try'
 
 type ChangeBillShared = {
 	description?: string
@@ -52,32 +53,31 @@ class BudgetBillSharedService {
 		errCb: (error: unknown) => void
 	) {
 		if (changeList.length > 0) {
-			try {
-				changes.delete(changeList)
+			changes.delete(changeList)
 
-				const sendChanges: Change<ChangeBillShared>[] = []
-				const groupByAction = groupBy(changeList, (change) => change.action)
-				Object.entries(groupByAction).forEach((group) => {
-					const [action, items] = group
-					const groupById = groupBy(items, (change) => change.detail.id.toString())
-					Object.entries(groupById).forEach((group) => {
-						const [id, items] = group
+			const sendChanges: Change<ChangeBillShared>[] = []
+			const groupByAction = groupBy(changeList, (change) => change.action)
+			Object.entries(groupByAction).forEach((group) => {
+				const [action, items] = group
+				const groupById = groupBy(items, (change) => change.detail.id.toString())
+				Object.entries(groupById).forEach((group) => {
+					const [id, items] = group
 
-						const sendChange: Change<ChangeBillShared> = {
-							section: ChangeSectionEnum.BUDGET_BILL_SHARED,
-							action: action as ChangeActionEnum,
-							detail: {
-								id: Number(id)
-							}
+					const sendChange: Change<ChangeBillShared> = {
+						section: ChangeSectionEnum.BUDGET_BILL_SHARED,
+						action: action as ChangeActionEnum,
+						detail: {
+							id: Number(id)
 						}
+					}
 
-						items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
-						sendChanges.push(sendChange)
-					})
+					items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
+					sendChanges.push(sendChange)
 				})
+			})
 
-				await this.projectService.receiveChanges(projectId, sendChanges)
-			} catch (error) {
+			const [_, error] = await trytm(this.projectService.receiveChanges(projectId, sendChanges))
+			if (error) {
 				changes.revert(changeList)
 				errCb(error)
 			}

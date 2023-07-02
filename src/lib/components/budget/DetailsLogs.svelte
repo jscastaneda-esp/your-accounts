@@ -6,6 +6,7 @@
 	import { money } from '$utils/number.utils'
 	import Logs from '$components/shared/logs/Logs.svelte'
 	import BudgetBillService from '$services/budget/budget-bill.service'
+	import { trytm } from '@bdsqqq/try'
 
 	export let billId: number
 
@@ -19,13 +20,13 @@
 		const { checked } = currentTarget as HTMLInputElement
 		if (checked) {
 			loading = true
-			try {
-				transactions = await service.getTransactionsById(billId)
-			} catch (error) {
+			const [result, error] = await trytm(service.getTransactionsById(billId))
+			if (error) {
 				Toast.error('Se presento un error al consultar las transacciones', true)
-			} finally {
-				loading = false
+			} else {
+				transactions = result
 			}
+			loading = false
 		}
 	}
 </script>

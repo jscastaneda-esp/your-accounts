@@ -15,6 +15,7 @@
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import BudgetBillService from '$services/budget/budget-bill.service'
+	import { trytm } from '@bdsqqq/try'
 
 	export let data: Budget
 
@@ -68,15 +69,15 @@
 	async function handleAdd() {
 		screenLoading.show()
 
-		try {
-			const newField = await service.create(`Pago ${countName++}`, data.id)
+		const [newField, error] = await trytm(service.create(`Pago ${countName++}`, data.id))
+		if (error) {
+			Toast.error('Se presento un error al crear el pago', true)
+		} else {
 			addField('bills', newField)
 			list.push(newField)
-		} catch (error) {
-			Toast.error('Se presento un error al crear el pago', true)
-		} finally {
-			screenLoading.hide()
 		}
+
+		screenLoading.hide()
 	}
 
 	function handlePay(bill: BudgetBill, index: number, payment: number) {
