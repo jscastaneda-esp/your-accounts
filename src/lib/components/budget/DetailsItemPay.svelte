@@ -5,11 +5,12 @@
 	import { page } from '$app/stores'
 	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
 	import Toast from '$utils/toast.utils'
+	import BudgetBillService from '$services/budget/budget-bill.service'
+	import { trytm } from '@bdsqqq/try'
 	import Input from '$components/shared/Input.svelte'
 	import Toggle from '$components/shared/Toggle.svelte'
 	import ButtonGroup from '$components/shared/buttons/ButtonGroup.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
-	import BudgetBillService from '$services/budget/budget-bill.service'
 
 	export let billId: number
 	export let pending: number
@@ -47,23 +48,15 @@
 	async function handlePay(operation: '+' | '-') {
 		loading = true
 
-		try {
-			await service.createTransaction(
-				$data.description,
-				$data.amount,
-				operation,
-				billId,
-				(value) => {
-					if (dispatch('pay', value)) {
-						reset()
-					}
+		const [_, error] = await trytm(
+			service.createTransaction($data.description, $data.amount, operation, billId, (value) => {
+				if (dispatch('pay', value)) {
+					reset()
 				}
-			)
-		} catch (error) {
-			Toast.error('Se presento un error al consultar los movimientos', true)
-		} finally {
-			loading = false
-		}
+			})
+		)
+		if (error) Toast.error('Se presento un error al consultar los movimientos', true)
+		loading = false
 	}
 </script>
 

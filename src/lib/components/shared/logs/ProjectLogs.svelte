@@ -5,6 +5,7 @@
 	import { page } from '$app/stores'
 	import Logs from './Logs.svelte'
 	import ProjectService from '$services/project.service'
+	import { trytm } from '@bdsqqq/try'
 
 	export let projectId: number
 
@@ -18,13 +19,15 @@
 		const { checked } = currentTarget as HTMLInputElement
 		if (checked) {
 			loading = true
-			try {
-				logs = await service.getLogsByProjectId(projectId)
-			} catch (error) {
+
+			const [result, error] = await trytm(service.getLogsByProjectId(projectId))
+			if (error) {
 				Toast.error('Se presento un error al consultar las transacciones', true)
-			} finally {
-				loading = false
+			} else {
+				logs = result
 			}
+
+			loading = false
 		}
 	}
 </script>

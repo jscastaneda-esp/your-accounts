@@ -9,6 +9,7 @@ import { groupBy } from '$utils/array.utils'
 import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
 import ProjectService from '$services/project.service'
 import ChangeUtil from '$lib/classes/ChangeUtil'
+import { trytm } from '@bdsqqq/try'
 
 type ChangeMain = {
 	name?: string
@@ -50,38 +51,35 @@ class BudgetService {
 
 	async save(projectId: number, changeList: Change<unknown>[], errCb: (error: unknown) => void) {
 		if (this.changes && changeList.length > 0) {
-			try {
-				this.changes.delete(changeList)
+			this.changes.delete(changeList)
 
-				const sendChanges: Change<unknown>[] = []
-				const groupBySection = groupBy(changeList, (change) => change.section)
-				Object.entries(groupBySection).forEach((group) => {
-					const [section, items] = group
-					const groupByAction = groupBy(items, (change) => change.action)
-					Object.entries(groupByAction).forEach((group) => {
-						const [action, items] = group
-						const groupById = groupBy(items, (change) => change.detail.id.toString())
-						Object.entries(groupById).forEach((group) => {
-							const [id, items] = group
+			const sendChanges: Change<unknown>[] = []
+			const groupBySection = groupBy(changeList, (change) => change.section)
+			Object.entries(groupBySection).forEach((group) => {
+				const [section, items] = group
+				const groupByAction = groupBy(items, (change) => change.action)
+				Object.entries(groupByAction).forEach((group) => {
+					const [action, items] = group
+					const groupById = groupBy(items, (change) => change.detail.id.toString())
+					Object.entries(groupById).forEach((group) => {
+						const [id, items] = group
 
-							const sendChange: Change<unknown> = {
-								section: section as ChangeSectionEnum,
-								action: action as ChangeActionEnum,
-								detail: {
-									id: Number(id)
-								}
+						const sendChange: Change<unknown> = {
+							section: section as ChangeSectionEnum,
+							action: action as ChangeActionEnum,
+							detail: {
+								id: Number(id)
 							}
+						}
 
-							items.forEach(
-								(item) => (sendChange.detail = { ...sendChange.detail, ...item.detail })
-							)
-							sendChanges.push(sendChange)
-						})
+						items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
+						sendChanges.push(sendChange)
 					})
 				})
+			})
 
-				await this.projectService.receiveChanges(projectId, sendChanges)
-			} catch (error) {
+			const [_, error] = await trytm(this.projectService.receiveChanges(projectId, sendChanges))
+			if (error) {
 				this.changes.revert(changeList)
 				errCb(error)
 			}

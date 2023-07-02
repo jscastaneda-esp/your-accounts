@@ -11,6 +11,7 @@
 	import Toast from '$utils/toast.utils'
 	import { screenLoading, session } from '$lib/stores/shared'
 	import LoginService from '$services/login.service'
+	import { trytm } from '@bdsqqq/try'
 
 	const service = new LoginService()
 
@@ -31,15 +32,13 @@
 	async function signIn(type: 'google' | 'test') {
 		loading = true
 
-		try {
-			if (type === 'google') {
-				await service.signInGoogle(successCB, errCb)
-			} else {
-				await service.signInTest(successCB, errCb)
-			}
-		} finally {
-			loading = false
+		if (type === 'google') {
+			await trytm(service.signInGoogle(successCB, errCb))
+		} else {
+			await trytm(service.signInTest(successCB, errCb))
 		}
+
+		loading = false
 	}
 
 	async function successCB() {

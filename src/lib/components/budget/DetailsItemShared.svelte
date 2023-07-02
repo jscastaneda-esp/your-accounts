@@ -14,6 +14,7 @@
 	import Stat from '$components/shared/Stat.svelte'
 	import { changesStore } from '$lib/stores/changes'
 	import BudgetBillSharedService from '$services/budget/budget-bill-shared.service'
+	import { trytm } from '@bdsqqq/try'
 
 	export let billId: number
 	export let projectId: number
@@ -80,26 +81,22 @@
 	async function handleClose() {
 		screenLoading = true
 
-		try {
-			await handleSave()
-			dispatch('close')
-		} finally {
-			screenLoading = false
-		}
+		const [_, error] = await trytm(handleSave())
+		if (!error) dispatch('close')
+		screenLoading = false
 	}
 
 	async function handleAdd() {
 		screenLoading = true
 
-		try {
-			const newField = await service.create(`Gasto Compartido ${countName++}`, billId)
+		const [newField, error] = await trytm(service.create(`Gasto Compartido ${countName++}`, billId))
+		if (error) {
+			Toast.error('Se presento un error al crear el gasto compartido', true)
+		} else {
 			addField('shared', newField)
 			list.push(newField)
-		} catch (error) {
-			Toast.error('Se presento un error al crear el gasto compartido', true)
-		} finally {
-			screenLoading = false
 		}
+		screenLoading = false
 	}
 
 	function handleDelete({ description }: BudgetBillShared, index: number) {

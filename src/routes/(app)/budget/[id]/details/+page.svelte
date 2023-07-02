@@ -14,6 +14,7 @@
 	import Button from '$components/shared/buttons/Button.svelte'
 	import Input from '$components/shared/Input.svelte'
 	import BudgetAvailableService from '$services/budget/budget-available.service'
+	import { trytm } from '@bdsqqq/try'
 
 	export let data: Budget
 
@@ -57,15 +58,15 @@
 	async function handleAdd() {
 		screenLoading.show()
 
-		try {
-			const newField = await service.create(`Disponible ${countName++}`, data.id)
+		const [newField, error] = await trytm(service.create(`Disponible ${countName++}`, data.id))
+		if (error) {
+			Toast.error('Se presento un error al crear el disponible', true)
+		} else {
 			addField('availables', newField)
 			list.push(newField)
-		} catch (error) {
-			Toast.error('Se presento un error al crear el disponible', true)
-		} finally {
-			screenLoading.hide()
 		}
+
+		screenLoading.hide()
 	}
 
 	function handleDelete(available: BudgetAvailable, index: number) {
