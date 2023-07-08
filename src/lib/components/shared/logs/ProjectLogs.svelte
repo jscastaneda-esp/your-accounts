@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { ProjectLog } from '$lib/types'
 	import Toast from '$utils/toast.utils'
-	import dayjs from '$utils/dayjs.utils'
 	import { page } from '$app/stores'
 	import Logs from './Logs.svelte'
 	import ProjectService from '$services/project.service'
 	import { trytm } from '@bdsqqq/try'
+	import type { Dayjs } from 'dayjs'
+	import { now, showLogDate } from '$utils/date.utils'
 
 	export let projectId: number
 
@@ -14,6 +15,7 @@
 
 	let loading = false
 	let logs: ProjectLog[] = []
+	let yesterday: Dayjs
 
 	async function handleChange({ currentTarget }: Event) {
 		const { checked } = currentTarget as HTMLInputElement
@@ -22,8 +24,9 @@
 
 			const [result, error] = await trytm(service.getLogsByProjectId(projectId))
 			if (error) {
-				Toast.error('Se presento un error al consultar las transacciones', true)
+				Toast.error('Se presento un error al consultar las registros', true)
 			} else {
+				yesterday = now().subtract(1, 'day')
 				logs = result
 			}
 
@@ -34,10 +37,6 @@
 
 <section class="px-4 pb-4">
 	<Logs background="bg-base-100" on:change={handleChange}>
-		<tr slot="head">
-			<th class="px-4">Fecha</th>
-			<th class="px-4">Descripción</th>
-		</tr>
 		<svelte:fragment slot="body">
 			{#if loading}
 				{#each awaitLoad as _}
@@ -49,7 +48,7 @@
 			{:else}
 				{#each logs as log}
 					<tr class="hover">
-						<td>{dayjs(log.createdAt).fromNow()}</td>
+						<td>{showLogDate(yesterday, log.createdAt)}</td>
 						<td class="max-h-[26px] text-clip overflow-hidden">{log.description}</td>
 					</tr>
 				{:else}

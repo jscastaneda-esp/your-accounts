@@ -40,7 +40,7 @@
 
 	async function handleSave() {
 		service.save(data.projectId, [...$changes], () =>
-			Toast.error('Se presento un error al guardar', true)
+			Toast.error('Se presento un error al guardar la información del presupuesto', true)
 		)
 	}
 

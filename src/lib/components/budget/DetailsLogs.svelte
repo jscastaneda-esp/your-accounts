@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { BudgetBillTransaction } from '$lib/types'
 	import Toast from '$utils/toast.utils'
-	import dayjs from '$utils/dayjs.utils'
 	import { page } from '$app/stores'
 	import { money } from '$utils/number.utils'
 	import Logs from '$components/shared/logs/Logs.svelte'
 	import BudgetBillService from '$services/budget/budget-bill.service'
 	import { trytm } from '@bdsqqq/try'
+	import { now, showLogDate } from '$utils/date.utils'
+	import type { Dayjs } from 'dayjs'
 
 	export let billId: number
 
@@ -15,6 +16,7 @@
 
 	let loading = false
 	let transactions: BudgetBillTransaction[] = []
+	let yesterday: Dayjs
 
 	async function handleChange({ currentTarget }: Event) {
 		const { checked } = currentTarget as HTMLInputElement
@@ -24,6 +26,7 @@
 			if (error) {
 				Toast.error('Se presento un error al consultar las transacciones', true)
 			} else {
+				yesterday = now().subtract(1, 'day')
 				transactions = result
 			}
 			loading = false
@@ -32,12 +35,10 @@
 </script>
 
 <section class="md:col-span-2 lg:col-span-4 my-3">
-	<Logs className="!max-h-44" on:change={handleChange}>
-		<tr slot="head">
-			<th class="px-4">Fecha</th>
-			<th class="px-4">Descripción</th>
+	<Logs title="Movimientos" className="!max-h-44" on:change={handleChange}>
+		<svelte:fragment slot="columns">
 			<th class="px-4">Monto ($)</th>
-		</tr>
+		</svelte:fragment>
 		<svelte:fragment slot="body">
 			{#if loading}
 				{#each awaitLoad as _}
@@ -50,7 +51,7 @@
 			{:else}
 				{#each transactions as transaction}
 					<tr class="hover">
-						<td>{dayjs(transaction.createdAt).fromNow()}</td>
+						<td>{showLogDate(yesterday, transaction.createdAt)}</td>
 						<td class="max-h-[26px] text-clip overflow-hidden">{transaction.description}</td>
 						<td>
 							<div

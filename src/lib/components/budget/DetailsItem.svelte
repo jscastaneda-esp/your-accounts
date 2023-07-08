@@ -7,14 +7,15 @@
 	import Toggle from '$components/shared/Toggle.svelte'
 	import Select from '$components/shared/Select.svelte'
 	import { BudgetBillCategory } from '$lib/enums'
-	import dayjs from '$utils/dayjs.utils'
 	import DetailsItemPay from './DetailsItemPay.svelte'
 	import DetailsLogs from './DetailsLogs.svelte'
 	import DetailsItemShared from './DetailsItemShared.svelte'
+	import type { Dayjs } from 'dayjs'
+	import { now } from '$utils/date.utils'
 
 	export let data: BudgetBill
 	export let index: number
-	export let monthBudget: dayjs.Dayjs
+	export let monthBudget: Dayjs
 	export let daysMonth: number[]
 	export let projectId: number
 	export let errors: {
@@ -48,9 +49,11 @@
 		data.totalShared = 0
 	}
 	$: {
-		const now = dayjs()
+		const nowDate = now()
 		expired =
-			data.dueDate != 0 && now.month() === monthBudget.month() && now.date() > Number(data.dueDate)
+			data.dueDate != 0 &&
+			nowDate.month() === monthBudget.month() &&
+			nowDate.date() > Number(data.dueDate)
 	}
 </script>
 

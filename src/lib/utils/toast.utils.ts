@@ -24,13 +24,25 @@ class Toast {
 		})
 	}
 
+	static success(msg: string, clear = false) {
+		if (clear) {
+			this.clear()
+		}
+
+		Toast.add(ToastSuccess, msg, {
+			'--toastBackground': 'hsl(var(--su))',
+			'--toastBarBackground': 'hsl(var(--suc))'
+		})
+	}
+
 	static info(msg: string, clear = false) {
 		if (clear) {
 			this.clear()
 		}
 
 		Toast.add(ToastInfo, msg, {
-			'--toastBackground': '#2563eb'
+			'--toastBackground': 'hsl(var(--in))',
+			'--toastBarBackground': 'hsl(var(--inc))'
 		})
 	}
 
@@ -43,7 +55,7 @@ class Toast {
 			ToastError,
 			msg,
 			{
-				'--toastBackground': '#dc2626'
+				'--toastBackground': 'hsl(var(--er))'
 			},
 			false
 		)
@@ -58,20 +70,10 @@ class Toast {
 			ToastWarn,
 			msg,
 			{
-				'--toastBackground': '#d97706'
+				'--toastBackground': 'hsl(var(--wa))'
 			},
 			false
 		)
-	}
-
-	static success(msg: string, clear = false) {
-		if (clear) {
-			this.clear()
-		}
-
-		Toast.add(ToastSuccess, msg, {
-			'--toastBackground': '#16a34a'
-		})
 	}
 
 	static clear() {

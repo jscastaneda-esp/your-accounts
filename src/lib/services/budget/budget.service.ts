@@ -1,7 +1,6 @@
 import { trpc } from '$lib/trpc/client'
 import type { Router } from '$lib/trpc/router'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
-import dayjs from '$utils/dayjs.utils'
 import { zeroPad } from '$utils/number.utils'
 import type { Readable } from 'svelte/store'
 import type { Budget, Change, ChangeStore, FelteError } from '$lib/types'
@@ -10,6 +9,7 @@ import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
 import ProjectService from '$services/project.service'
 import ChangeUtil from '$lib/classes/ChangeUtil'
 import { trytm } from '@bdsqqq/try'
+import { now } from '$utils/date.utils'
 
 type ChangeMain = {
 	name?: string
@@ -34,9 +34,9 @@ class BudgetService {
 	}
 
 	create(cloneId?: number) {
-		const now = dayjs()
+		const nowDate = now()
 		return this.trpcF.budgets.create.mutate({
-			name: `Presupuesto ${zeroPad(now.month(), 2)}/${now.year()}`,
+			name: `Presupuesto ${zeroPad(nowDate.month(), 2)}/${nowDate.year()}`,
 			cloneId
 		})
 	}

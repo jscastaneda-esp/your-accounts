@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Table from '../Table.svelte'
 
+	export let title = 'Registros'
 	export let background = ''
 	export let className = ''
 </script>
@@ -11,13 +12,15 @@
 		class="collapse-title bg-primary text-primary-content [input:checked~&]:bg-secondary [input:checked~&]:text-secondary-content"
 	>
 		<i class="bx bx-list-ul" />
-		Registros
+		{title}
 	</header>
 	<main class={`collapse-content p-0 ${background}`}>
 		<Table {className}>
-			<svelte:fragment slot="head">
-				<slot name="head" />
-			</svelte:fragment>
+			<tr slot="head">
+				<th class="px-4">Fecha</th>
+				<th class="px-4">Descripción</th>
+				<slot name="columns" />
+			</tr>
 			<svelte:fragment slot="body">
 				<slot name="body" />
 			</svelte:fragment>
