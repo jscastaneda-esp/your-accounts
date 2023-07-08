@@ -9,13 +9,13 @@
 	import type { Budget, BudgetBill, Change, ChangeStore } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
-	import dayjs from '$utils/dayjs.utils'
 
 	import DetailsItem from '$components/budget/DetailsItem.svelte'
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import BudgetBillService from '$services/budget/budget-bill.service'
 	import { trytm } from '@bdsqqq/try'
+	import { toDate } from '$utils/date.utils'
 
 	export let data: Budget
 
@@ -101,7 +101,7 @@
 	}
 
 	$: if ($touched) compareData()
-	$: monthBudget = dayjs($month, 'YYYY-MM')
+	$: monthBudget = toDate($month, 'YYYY-MM')
 	$: {
 		daysMonth = []
 		const daysInMonth = monthBudget.daysInMonth()

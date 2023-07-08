@@ -13,10 +13,8 @@
 	--toastPadding: 0;
 	--toastMsgPadding: 0;
 	--toastMinHeight: auto;
-	--toastColor: #4b5563;
+	--toastColor: hsl(var(--nc));
 	--toastBorderRadius: 1rem;
-	--toastColor: hsl(239 85% 93% / 1);
-	--toastBarBackground: hsl(239 85% 93% / 1);
 }
 
 @media (max-width: 768px) {

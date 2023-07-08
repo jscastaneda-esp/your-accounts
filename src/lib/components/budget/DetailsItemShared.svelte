@@ -74,7 +74,7 @@
 
 	async function handleSave() {
 		await service.save(projectId, [...$changes], changes, () =>
-			Toast.error('Se presento un error al guardar', true)
+			Toast.error('Se presento un error al guardar la información de los pagos compartidos', true)
 		)
 	}
 
