@@ -31,6 +31,7 @@
 	let daysMonth: number[] = []
 	let list = data.bills
 	let countName = list.length + 1
+	let search = ''
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
@@ -120,8 +121,29 @@
 			<th class="text-center text-base">Pagos</th>
 		</tr>
 		<svelte:fragment slot="body">
+			<tr>
+				<td>
+					<div class="join w-full lg:w-1/2">
+						<span class="kbd join-item">
+							<i class="bx bx-search-alt-2" />
+						</span>
+						<input
+							id="search_bill"
+							name="search_bill"
+							type="search"
+							placeholder="Buscar pago"
+							bind:value={search}
+							class="input input-bordered w-full join-item"
+						/>
+					</div>
+				</td>
+			</tr>
 			{#each $dataForm.bills as bill, index (`bill_${index}`)}
-				<tr>
+				<tr
+					class:hidden={search
+						? !bill.description.toLowerCase().match(`${search.toLowerCase()}.*`)
+						: false}
+				>
 					<td>
 						<DetailsItem
 							data={bill}
@@ -135,6 +157,10 @@
 							on:delete={() => handleDelete(bill, index)}
 						/>
 					</td>
+				</tr>
+			{:else}
+				<tr>
+					<th class="align-middle text-center"> Registra tu primer pago </th>
 				</tr>
 			{/each}
 		</svelte:fragment>

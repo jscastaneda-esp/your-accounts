@@ -101,6 +101,7 @@
 						<Input
 							id={`${prefixFieldName}.${index}.name`}
 							name={`${prefixFieldName}.${index}.name`}
+							placeholder="Nombre"
 							errors={$errors.availables?.[index].name}
 						/>
 					</td>
@@ -108,6 +109,7 @@
 						<Input
 							id={`${prefixFieldName}.${index}.amount`}
 							name={`${prefixFieldName}.${index}.amount`}
+							placeholder="Monto"
 							type="number"
 							errors={$errors.availables?.[index].amount}
 						/>
@@ -121,6 +123,10 @@
 							<i class="bx bxs-trash-alt" />
 						</Button>
 					</td>
+				</tr>
+			{:else}
+				<tr>
+					<th class="align-middle text-center"> Registra tu primer disponible </th>
 				</tr>
 			{/each}
 		</svelte:fragment>

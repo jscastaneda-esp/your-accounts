@@ -6,8 +6,9 @@
 	export let id: string
 	export let name: string
 	export let label: string | null = null
+	export let placeholder: string | null = null
 	export let alt: string | null = null
-	export let type: 'text' | 'number' | 'email' | 'password' | 'month' = 'text'
+	export let type: 'text' | 'number' | 'email' | 'password' | 'month' | 'search' = 'text'
 	export let disabled = false
 	export let errors: FelteError = null
 
@@ -29,7 +30,7 @@
 		{id}
 		{name}
 		{type}
-		placeholder={label}
+		placeholder={placeholder ?? label}
 		class="input input-bordered w-full"
 		class:input-error={errors}
 		step={type === 'number' ? '0.01' : undefined}

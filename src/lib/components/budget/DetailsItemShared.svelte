@@ -153,6 +153,7 @@
 									<Input
 										id={`shared.${index}.description`}
 										name={`shared.${index}.description`}
+										placeholder="Descripción"
 										errors={$errors.shared?.[index].description}
 									/>
 								</td>
@@ -160,6 +161,7 @@
 									<Input
 										id={`shared.${index}.amount`}
 										name={`shared.${index}.amount`}
+										placeholder="Monto"
 										type="number"
 										errors={$errors.shared?.[index].amount}
 									/>
