@@ -44,7 +44,6 @@
 				shared: defaultBoolean,
 				dueDate: yup.string().max(2),
 				complete: defaultBoolean,
-				budgetId: defaultNumber.min(1),
 				category: yup
 					.mixed<BudgetBillCategory>()
 					.oneOf(Object.values(BudgetBillCategory))
@@ -147,10 +146,10 @@
 					<td>
 						<DetailsItem
 							data={bill}
+							budgetId={data.id}
 							{index}
 							{monthBudget}
 							{daysMonth}
-							projectId={data.projectId}
 							errors={$errors.bills?.[index]}
 							on:pay={({ detail }) => handlePay(bill, index, detail)}
 							on:shared={({ detail }) => handleShared(index, detail)}

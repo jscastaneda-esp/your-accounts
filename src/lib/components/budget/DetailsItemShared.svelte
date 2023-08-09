@@ -17,7 +17,7 @@
 	import { trytm } from '@bdsqqq/try'
 
 	export let billId: number
-	export let projectId: number
+	export let budgetId: number
 
 	const changes = changesStore()
 	const awaitLoad = [1, 2, 3, 4]
@@ -36,8 +36,7 @@
 			yup.object().shape({
 				id: defaultNumber.min(1),
 				description: defaultString.max(200),
-				amount: defaultNumber.min(1).max(9999999999.99),
-				budgetBillId: defaultNumber.min(1)
+				amount: defaultNumber.min(1).max(9999999999.99)
 			})
 		)
 	})
@@ -73,7 +72,7 @@
 	})
 
 	async function handleSave() {
-		await service.save(projectId, [...$changes], changes, () =>
+		await service.save(budgetId, [...$changes], changes, () =>
 			Toast.error('Se presento un error al guardar la información de los pagos compartidos', true)
 		)
 	}

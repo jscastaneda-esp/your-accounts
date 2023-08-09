@@ -3,23 +3,23 @@ import type { Router } from '$lib/trpc/router'
 import type { Change } from '$lib/types'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
 
-class ProjectService {
+class LogService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
 
 	constructor(init: TRPCClientInit) {
 		this.trpcF = trpc(init)
 	}
 
-	getLogsByProjectId(projectId: number) {
-		return this.trpcF.projects.getLogsByProjectId.query(projectId)
+	getLogsByResourceId(projectId: number) {
+		return this.trpcF.logs.getLogsByResourceId.query(projectId)
 	}
 
-	receiveChanges(projectId: number, changes: Change<unknown>[]) {
-		return this.trpcF.projects.receiveChanges.mutate({
-			projectId,
+	receiveChanges(resourceId: number, changes: Change<unknown>[]) {
+		return this.trpcF.logs.receiveChanges.mutate({
+			resourceId,
 			changes
 		})
 	}
 }
 
-export default ProjectService
+export default LogService

@@ -10,7 +10,7 @@
 	// Components
 	import Input from '$components/shared/Input.svelte'
 	import Stat from '$components/shared/Stat.svelte'
-	import ProjectLogs from '$components/shared/logs/ProjectLogs.svelte'
+	import ResourceLogs from '$components/shared/logs/ResourceLogs.svelte'
 	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable, Readable } from 'svelte/store'
@@ -137,5 +137,5 @@
 
 	<div class="divider" />
 
-	<ProjectLogs projectId={data.projectId} />
+	<ResourceLogs resourceId={data.id} />
 </section>

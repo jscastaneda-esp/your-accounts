@@ -1,6 +1,6 @@
 import type { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from './enums'
 
-export type ProjectLog = {
+export type Log = {
 	id: number
 	description: string
 	createdAt: Date
@@ -26,14 +26,12 @@ export type Budget = {
 	additionalIncome: number
 	availableBalances: BudgetAvailable[]
 	bills: BudgetBill[]
-	projectId: number
 }
 
 export type BudgetAvailable = {
 	id: number
 	name: string
 	amount: number
-	budgetId: number
 }
 
 export type BudgetBill = {
@@ -44,7 +42,6 @@ export type BudgetBill = {
 	shared: boolean
 	dueDate: string | number
 	complete: boolean
-	budgetId: number
 	category: BudgetBillCategory
 	totalShared: number
 }
@@ -53,14 +50,12 @@ export type BudgetBillTransaction = {
 	description: string
 	amount: number
 	createdAt: Date
-	billId: number
 }
 
 export type BudgetBillShared = {
 	id: number
 	description: string
 	amount: number
-	billId: number
 }
 
 export type BudgetStatistics = {

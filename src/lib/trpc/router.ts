@@ -1,9 +1,9 @@
-import { projects } from './routes/projects'
-import { budgets } from './routes/budgets'
 import { t } from './t'
+import { logs } from './routes/logs'
+import { budgets } from './routes/budgets'
 
 export const router = t.router({
-	projects,
+	logs,
 	budgets
 })
 
