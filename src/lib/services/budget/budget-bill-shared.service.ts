@@ -1,7 +1,6 @@
 import { trpc } from '$lib/trpc/client'
 import type { Router } from '$lib/trpc/router'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
-import LogService from '../log.service'
 import type { BudgetBillShared, Change, ChangeStore, FelteError } from '$lib/types'
 import { groupBy } from '$utils/array.utils'
 import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
@@ -16,12 +15,10 @@ type ChangeBillShared = {
 
 class BudgetBillSharedService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private logService: LogService
 	private changeUtil: ChangeUtil<keyof ChangeBillShared>
 
 	constructor(init: TRPCClientInit) {
 		this.trpcF = trpc(init)
-		this.logService = new LogService(init)
 		this.changeUtil = new ChangeUtil<keyof ChangeBillShared>()
 	}
 
@@ -76,7 +73,12 @@ class BudgetBillSharedService {
 				})
 			})
 
-			const [_, error] = await trytm(this.logService.receiveChanges(budgetId, sendChanges))
+			const [_, error] = await trytm(
+				this.trpcF.budgets.receiveChanges.mutate({
+					id: budgetId,
+					changes: sendChanges
+				})
+			)
 			if (error) {
 				changes.revert(changeList)
 				errCb(error)

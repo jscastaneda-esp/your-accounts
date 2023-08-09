@@ -1,32 +1,10 @@
-import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
 import type { Log } from '$lib/types'
-import z, { defaultNumber } from '$utils/zod.utils'
+import { defaultNumber } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
 
 export const logs = t.router({
-	receiveChanges: procedure
-		.input(
-			z.object({
-				resourceId: z.number(),
-				changes: z.array(
-					z.object({
-						index: z.number().optional(),
-						section: z.nativeEnum(ChangeSectionEnum),
-						action: z.nativeEnum(ChangeActionEnum),
-						detail: z
-							.object({
-								id: z.number()
-							})
-							.and(z.record(z.unknown()))
-					})
-				)
-			})
-		)
-		.mutation(async () => {
-			await delay(1000)
-		}),
 	getLogsByResourceId: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
 		const logs: Log[] = []
