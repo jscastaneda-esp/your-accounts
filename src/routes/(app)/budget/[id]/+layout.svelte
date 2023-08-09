@@ -39,7 +39,7 @@
 	setContext(ContextNameEnum.BUDGET_BILLS, { bills, totals, statistics })
 
 	async function handleSave() {
-		service.save(data.projectId, [...$changes], () =>
+		service.save(data.id, [...$changes], () =>
 			Toast.error('Se presento un error al guardar la información del presupuesto', true)
 		)
 	}

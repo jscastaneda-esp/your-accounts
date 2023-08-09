@@ -36,8 +36,7 @@
 			yup.object().shape({
 				id: defaultNumber.min(1),
 				name: defaultString.max(40),
-				amount: defaultNumber.min(0).max(9999999999.99),
-				budgetId: defaultNumber.min(1)
+				amount: defaultNumber.min(0).max(9999999999.99)
 			})
 		)
 	})

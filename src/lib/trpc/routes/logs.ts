@@ -1,15 +1,15 @@
 import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
-import type { ProjectLog } from '$lib/types'
+import type { Log } from '$lib/types'
 import z, { defaultNumber } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
 
-export const projects = t.router({
+export const logs = t.router({
 	receiveChanges: procedure
 		.input(
 			z.object({
-				projectId: z.number(),
+				resourceId: z.number(),
 				changes: z.array(
 					z.object({
 						index: z.number().optional(),
@@ -27,9 +27,9 @@ export const projects = t.router({
 		.mutation(async () => {
 			await delay(1000)
 		}),
-	getLogsByProjectId: procedure.input(defaultNumber).query(async () => {
+	getLogsByResourceId: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
-		const logs: ProjectLog[] = []
+		const logs: Log[] = []
 		for (let index = 1; index <= 10; index++) {
 			const createdAt = new Date()
 			if (index > 8) {

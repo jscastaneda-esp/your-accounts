@@ -1,7 +1,7 @@
 import { trpc } from '$lib/trpc/client'
 import type { Router } from '$lib/trpc/router'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
-import ProjectService from '../project.service'
+import LogService from '../log.service'
 import type { BudgetBillShared, Change, ChangeStore, FelteError } from '$lib/types'
 import { groupBy } from '$utils/array.utils'
 import { ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
@@ -16,12 +16,12 @@ type ChangeBillShared = {
 
 class BudgetBillSharedService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private projectService: ProjectService
+	private logService: LogService
 	private changeUtil: ChangeUtil<keyof ChangeBillShared>
 
 	constructor(init: TRPCClientInit) {
 		this.trpcF = trpc(init)
-		this.projectService = new ProjectService(init)
+		this.logService = new LogService(init)
 		this.changeUtil = new ChangeUtil<keyof ChangeBillShared>()
 	}
 
@@ -47,7 +47,7 @@ class BudgetBillSharedService {
 	}
 
 	async save(
-		projectId: number,
+		budgetId: number,
 		changeList: Change<unknown>[],
 		changes: Readable<Change<unknown>[]> & ChangeStore<unknown>,
 		errCb: (error: unknown) => void
@@ -76,7 +76,7 @@ class BudgetBillSharedService {
 				})
 			})
 
-			const [_, error] = await trytm(this.projectService.receiveChanges(projectId, sendChanges))
+			const [_, error] = await trytm(this.logService.receiveChanges(budgetId, sendChanges))
 			if (error) {
 				changes.revert(changeList)
 				errCb(error)
@@ -90,7 +90,6 @@ class BudgetBillSharedService {
 			id: FelteError
 			description: FelteError
 			amount: FelteError
-			billId: FelteError
 		}[],
 		list: BudgetBillShared[],
 		changes: Readable<Change<unknown>[]> & ChangeStore<unknown>

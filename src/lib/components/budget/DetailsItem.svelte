@@ -14,10 +14,10 @@
 	import { now } from '$utils/date.utils'
 
 	export let data: BudgetBill
+	export let budgetId: number
 	export let index: number
 	export let monthBudget: Dayjs
 	export let daysMonth: number[]
-	export let projectId: number
 	export let errors: {
 		description: FelteError
 		amount: FelteError
@@ -162,5 +162,5 @@
 </section>
 
 {#if showShare}
-	<DetailsItemShared billId={data.id} {projectId} on:shared on:close={() => (showShare = false)} />
+	<DetailsItemShared billId={data.id} {budgetId} on:shared on:close={() => (showShare = false)} />
 {/if}

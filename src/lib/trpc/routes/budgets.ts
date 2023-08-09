@@ -48,7 +48,7 @@ const bills = t.router({
 		.mutation(async () => {
 			await delay(1000)
 		}),
-	getTransactionsById: procedure.input(defaultNumber).query(async ({ input }) => {
+	getTransactionsById: procedure.input(defaultNumber).query(async () => {
 		await delay(1000)
 		const transactions: BudgetBillTransaction[] = []
 		for (let index = 1; index <= 10; index++) {
@@ -67,8 +67,7 @@ const bills = t.router({
 			transactions.push({
 				description: `Compra ${index}`,
 				amount: (index % 2 == 0 ? index * -1 : index) * 1000,
-				createdAt: createdAt,
-				billId: input
+				createdAt: createdAt
 			})
 		}
 		return transactions
@@ -94,8 +93,7 @@ const bills = t.router({
 			shared.push({
 				id: 1,
 				description: 'Lau',
-				amount: 100000,
-				billId: input
+				amount: 100000
 			})
 		}
 		return shared
@@ -112,10 +110,10 @@ export const budgets = t.router({
 		)
 		.mutation(async () => {
 			await delay(1000)
-			const project = {
+			const budget = {
 				id: new Date().getTime()
 			}
-			return project
+			return budget
 		}),
 	getByUserId: procedure.query(async () => {
 		await delay(1000)
@@ -176,8 +174,7 @@ export const budgets = t.router({
 				{
 					id: 1,
 					name: 'Cuenta Ahorros',
-					amount: 6370000,
-					budgetId: input
+					amount: 6370000
 				}
 			],
 			bills: [
@@ -189,7 +186,6 @@ export const budgets = t.router({
 					shared: true,
 					dueDate: '10',
 					complete: false,
-					budgetId: input,
 					category: BudgetBillCategory.SERVICES,
 					totalShared: 100000
 				},
@@ -201,12 +197,10 @@ export const budgets = t.router({
 					shared: false,
 					dueDate: '',
 					complete: false,
-					budgetId: input,
 					category: BudgetBillCategory.PERSONAL,
 					totalShared: 0
 				}
-			],
-			projectId: 2
+			]
 		}
 		return budget
 	}),

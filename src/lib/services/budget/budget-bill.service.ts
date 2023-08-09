@@ -81,7 +81,6 @@ class BudgetBillService {
 			shared: FelteError
 			dueDate: FelteError
 			complete: FelteError
-			budgetId: FelteError
 			category: FelteError
 			totalShared: FelteError
 		}[],

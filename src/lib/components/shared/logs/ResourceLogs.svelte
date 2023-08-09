@@ -1,20 +1,20 @@
 <script lang="ts">
-	import type { ProjectLog } from '$lib/types'
+	import type { Log } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import { page } from '$app/stores'
 	import Logs from './Logs.svelte'
-	import ProjectService from '$services/project.service'
+	import LogService from '$services/log.service'
 	import { trytm } from '@bdsqqq/try'
 	import type { Dayjs } from 'dayjs'
 	import { now, showLogDate } from '$utils/date.utils'
 
-	export let projectId: number
+	export let resourceId: number
 
 	const awaitLoad = [1, 2, 3, 4]
-	const service = new ProjectService($page)
+	const service = new LogService($page)
 
 	let loading = false
-	let logs: ProjectLog[] = []
+	let logs: Log[] = []
 	let yesterday: Dayjs
 
 	async function handleChange({ currentTarget }: Event) {
@@ -22,7 +22,7 @@
 		if (checked) {
 			loading = true
 
-			const [result, error] = await trytm(service.getLogsByProjectId(projectId))
+			const [result, error] = await trytm(service.getLogsByResourceId(resourceId))
 			if (error) {
 				Toast.error('Se presento un error al consultar las registros', true)
 			} else {

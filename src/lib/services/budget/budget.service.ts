@@ -6,7 +6,7 @@ import type { Readable } from 'svelte/store'
 import type { Budget, Change, ChangeStore, FelteError } from '$lib/types'
 import { groupBy } from '$utils/array.utils'
 import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
-import ProjectService from '$services/project.service'
+import LogService from '$services/log.service'
 import ChangeUtil from '$lib/classes/ChangeUtil'
 import { trytm } from '@bdsqqq/try'
 import { now } from '$utils/date.utils'
@@ -21,7 +21,7 @@ type ChangeMain = {
 
 class BudgetService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private projectService: ProjectService
+	private logService: LogService
 	private changeUtil: ChangeUtil<keyof ChangeMain>
 
 	constructor(
@@ -29,7 +29,7 @@ class BudgetService {
 		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
 	) {
 		this.trpcF = trpc(init)
-		this.projectService = new ProjectService(init)
+		this.logService = new LogService(init)
 		this.changeUtil = new ChangeUtil<keyof ChangeMain>()
 	}
 
@@ -49,7 +49,7 @@ class BudgetService {
 		return this.trpcF.budgets.delete.mutate(id)
 	}
 
-	async save(projectId: number, changeList: Change<unknown>[], errCb: (error: unknown) => void) {
+	async save(id: number, changeList: Change<unknown>[], errCb: (error: unknown) => void) {
 		if (this.changes && changeList.length > 0) {
 			this.changes.delete(changeList)
 
@@ -78,7 +78,7 @@ class BudgetService {
 				})
 			})
 
-			const [_, error] = await trytm(this.projectService.receiveChanges(projectId, sendChanges))
+			const [_, error] = await trytm(this.logService.receiveChanges(id, sendChanges))
 			if (error) {
 				this.changes.revert(changeList)
 				errCb(error)

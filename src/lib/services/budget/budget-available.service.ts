@@ -38,7 +38,6 @@ class BudgetAvailableService {
 			id: FelteError
 			name: FelteError
 			amount: FelteError
-			budgetId: FelteError
 		}[],
 		list: BudgetAvailable[]
 	) {
