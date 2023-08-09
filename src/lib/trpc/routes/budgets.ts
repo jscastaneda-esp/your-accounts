@@ -1,4 +1,4 @@
-import { BudgetBillCategory } from '$lib/enums'
+import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
 import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetMinimal } from '$lib/types'
 import z, { defaultNumber, defaultString } from '$utils/zod.utils'
@@ -207,6 +207,27 @@ export const budgets = t.router({
 	delete: procedure.input(defaultNumber).mutation(async () => {
 		await delay(1000)
 	}),
+	receiveChanges: procedure
+		.input(
+			z.object({
+				id: z.number(),
+				changes: z.array(
+					z.object({
+						index: z.number().optional(),
+						section: z.nativeEnum(ChangeSectionEnum),
+						action: z.nativeEnum(ChangeActionEnum),
+						detail: z
+							.object({
+								id: z.number()
+							})
+							.and(z.record(z.unknown()))
+					})
+				)
+			})
+		)
+		.mutation(async () => {
+			await delay(1000)
+		}),
 	availables,
 	bills
 })

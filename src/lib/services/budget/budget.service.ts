@@ -6,7 +6,6 @@ import type { Readable } from 'svelte/store'
 import type { Budget, Change, ChangeStore, FelteError } from '$lib/types'
 import { groupBy } from '$utils/array.utils'
 import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
-import LogService from '$services/log.service'
 import ChangeUtil from '$lib/classes/ChangeUtil'
 import { trytm } from '@bdsqqq/try'
 import { now } from '$utils/date.utils'
@@ -21,7 +20,6 @@ type ChangeMain = {
 
 class BudgetService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private logService: LogService
 	private changeUtil: ChangeUtil<keyof ChangeMain>
 
 	constructor(
@@ -29,7 +27,6 @@ class BudgetService {
 		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
 	) {
 		this.trpcF = trpc(init)
-		this.logService = new LogService(init)
 		this.changeUtil = new ChangeUtil<keyof ChangeMain>()
 	}
 
@@ -78,7 +75,12 @@ class BudgetService {
 				})
 			})
 
-			const [_, error] = await trytm(this.logService.receiveChanges(id, sendChanges))
+			const [_, error] = await trytm(
+				this.trpcF.budgets.receiveChanges.mutate({
+					id,
+					changes: sendChanges
+				})
+			)
 			if (error) {
 				this.changes.revert(changeList)
 				errCb(error)
