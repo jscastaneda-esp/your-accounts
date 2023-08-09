@@ -37,7 +37,7 @@
 		name: defaultString.max(40),
 		month: defaultString.matches(new RegExp('^\\d{4}-\\d{2}$')),
 		fixedIncome: defaultNumber.min(0).max(9999999999.99),
-		additionalIncome: defaultNumber.min(0).max(9999999999.99)
+		additionalIncome: defaultNumber.min(-9999999999.99).max(9999999999.99)
 	})
 	const {
 		form,
@@ -59,8 +59,12 @@
 		service.compareData($dataForm, $errors, data)
 	}
 
-	$: estimatedBalance = data.fixedIncome + data.additionalIncome - $totalsBills.total
+	$: estimatedBalance = $dataForm.fixedIncome + $dataForm.additionalIncome - $totalsBills.total
 	$: totalBalance = $totalAvailable - $totalsBills.totalPending
+	$: pendingRegistration =
+		totalBalance -
+		($dataForm.fixedIncome + $dataForm.additionalIncome - $totalsBills.totalMaxPayment) -
+		$totalsBills.totalSavings
 	$: if ($touched) compareData()
 	$: month.set($dataForm.month)
 </script>
@@ -122,13 +126,7 @@
 				<Stat title="Descuadre" value={totalBalance - estimatedBalance} className="text-lg">
 					<i class="bx bxs-objects-vertical-center" />
 				</Stat>
-				<Stat
-					title="Pendiente Registrar"
-					value={totalBalance -
-						(data.fixedIncome + data.additionalIncome - $totalsBills.totalMaxPayment) -
-						$totalsBills.totalSavings}
-					className="text-xl font-bold"
-				>
+				<Stat title="Pendiente Registrar" value={pendingRegistration} className="text-xl font-bold">
 					<i class="bx bxs-shield-minus" />
 				</Stat>
 			</article>
