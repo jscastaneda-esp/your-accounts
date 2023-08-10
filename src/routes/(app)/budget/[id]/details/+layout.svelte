@@ -10,12 +10,12 @@
 	export let data: Budget
 </script>
 
-<section class="py-2">
-	<Tabs>
+<section>
+	<Tabs className="rounded-none">
 		<TabItem
 			href={`/budget/${data.id}/details`}
 			active={$page.route.id === '/(app)/budget/[id]/details'}
-			text="Disponible"
+			text="Disponibles"
 		>
 			<i class="bx bxs-wallet-alt" />
 		</TabItem>
@@ -27,8 +27,6 @@
 			<i class="bx bxs-file" />
 		</TabItem>
 	</Tabs>
-
-	<div class="divider -mt-1 -mb-1" />
 
 	<slot />
 </section>

@@ -22,8 +22,7 @@ export enum ChangeActionEnum {
 export enum ChangeSectionEnum {
 	BUDGET_MAIN = 'BUDGET_MAIN',
 	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE',
-	BUDGET_BILL = 'BUDGET_BILL',
-	BUDGET_BILL_SHARED = 'BUDGET_BILL_SHARED'
+	BUDGET_BILL = 'BUDGET_BILL'
 }
 
 export enum ContextNameEnum {

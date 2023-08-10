@@ -39,23 +39,15 @@ export type BudgetBill = {
 	description: string
 	amount: number
 	payment: number
-	shared: boolean
 	dueDate: string | number
 	complete: boolean
 	category: BudgetBillCategory
-	totalShared: number
 }
 
 export type BudgetBillTransaction = {
 	description: string
 	amount: number
 	createdAt: Date
-}
-
-export type BudgetBillShared = {
-	id: number
-	description: string
-	amount: number
 }
 
 export type BudgetStatistics = {
@@ -82,10 +74,10 @@ export type ChangeStore<T> = {
 }
 
 export type TotalsBills = {
-	totalPending: number
-	pendingBills: number
-	totalPayment: number
 	total: number
-	totalMaxPayment: number
+	totalPending: number
 	totalSavings: number
+	totalPayment: number
+	pendingBills: number
+	totalMaxPayment: number
 }

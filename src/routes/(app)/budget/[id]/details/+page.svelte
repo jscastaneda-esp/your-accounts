@@ -86,41 +86,44 @@
 	)
 </script>
 
-<form class="my-2 bg-base-100" use:form>
-	<Table className="max-h-[calc(100vh-300px)]">
-		<tr slot="head">
-			<th class="text-base">Nombre</th>
-			<th class="text-base">Monto ($)</th>
-			<th />
-		</tr>
+<form class="bg-base-200" use:form>
+	<Table className="max-h-[calc(100vh-210px)]">
 		<svelte:fragment slot="body">
 			{#each $dataForm.availables as available, index (`available_${index}`)}
 				<tr>
 					<td>
-						<Input
-							id={`${prefixFieldName}.${index}.name`}
-							name={`${prefixFieldName}.${index}.name`}
-							placeholder="Nombre"
-							errors={$errors.availables?.[index].name}
-						/>
-					</td>
-					<td>
-						<Input
-							id={`${prefixFieldName}.${index}.amount`}
-							name={`${prefixFieldName}.${index}.amount`}
-							placeholder="Monto"
-							type="number"
-							errors={$errors.availables?.[index].amount}
-						/>
-					</td>
-					<td class="text-center !align-middle">
-						<Button
-							value=""
-							className="btn-error btn-sm"
-							on:click={() => handleDelete(available, index)}
-						>
-							<i class="bx bxs-trash-alt" />
-						</Button>
+						<section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+							<section class="col-span-1 lg:col-start-2">
+								<Input
+									id={`${prefixFieldName}.${index}.name`}
+									name={`${prefixFieldName}.${index}.name`}
+									label="Nombre"
+									errors={$errors.availables?.[index].name}
+								/>
+							</section>
+
+							<section class="col-span-1 lg:col-start-3">
+								<Input
+									id={`${prefixFieldName}.${index}.amount`}
+									name={`${prefixFieldName}.${index}.amount`}
+									label="Monto"
+									type="number"
+									errors={$errors.availables?.[index].amount}
+								/>
+							</section>
+
+							<section
+								class="col-span-1 md:col-span-2 lg:col-span-6 flex justify-center items-center"
+							>
+								<Button
+									value="Eliminar"
+									className="btn-error btn-sm"
+									on:click={() => handleDelete(available, index)}
+								>
+									<i class="bx bxs-trash-alt" />
+								</Button>
+							</section>
+						</section>
 					</td>
 				</tr>
 			{:else}
@@ -130,21 +133,15 @@
 			{/each}
 		</svelte:fragment>
 		<tr slot="foot">
-			<th colspan="3" class="p-0 align-middle">
+			<th colspan="3" class="p-0 align-middle bg-base-200">
 				<Button
 					value="Agregar disponible"
-					className="btn-ghost btn-block min-h-full h-full p-1 rounded-none"
+					className="btn-primary btn-block btn-xs text-sm rounded-none"
 					on:click={handleAdd}
 				>
-					<i class="bx bxs-plus-square" />
+					<i class="bx bxs-plus-square text-lg" />
 				</Button>
 			</th>
 		</tr>
 	</Table>
 </form>
-
-<style lang="postcss">
-	td {
-		@apply align-top;
-	}
-</style>

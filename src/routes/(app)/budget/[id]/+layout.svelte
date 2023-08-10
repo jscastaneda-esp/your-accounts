@@ -67,7 +67,7 @@
 		</ButtonLink>
 	</section>
 
-	<section class="p-2 bg-base-200">
+	<section class="p-2 pt-0">
 		<Tabs>
 			<TabItem
 				href={`/budget/${data.id}`}
@@ -91,8 +91,6 @@
 				<i class="bx bxs-bar-chart-alt-2" />
 			</TabItem>
 		</Tabs>
-
-		<div class="divider -mt-1 -mb-1" />
 
 		<slot />
 	</section>

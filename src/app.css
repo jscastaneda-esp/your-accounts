@@ -28,3 +28,10 @@
 ._toastBtn {
 	padding-right: 0.5rem;
 }
+
+.table :where(thead, tbody) :where(tr:not(:last-child)),
+.table :where(thead, tbody) :where(tr:first-child:last-child) {
+	border-bottom-width: 3px;
+	--tw-border-opacity: 1;
+	border-bottom-color: hsl(var(--b1) / var(--tw-border-opacity));
+}

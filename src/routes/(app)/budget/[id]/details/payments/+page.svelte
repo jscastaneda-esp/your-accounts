@@ -41,7 +41,6 @@
 				description: defaultString.max(200),
 				amount: defaultNumber.min(0).max(9999999999.99),
 				payment: defaultNumber.min(0).max(9999999999.99),
-				shared: defaultBoolean,
 				dueDate: yup.string().max(2),
 				complete: defaultBoolean,
 				category: yup
@@ -84,10 +83,6 @@
 		setFields(`bills.${index}.payment`, bill.payment + payment, true)
 	}
 
-	function handleShared(index: number, totalShared: number) {
-		setFields(`bills.${index}.totalShared`, totalShared, true)
-	}
-
 	function handleDelete(bill: BudgetBill, index: number) {
 		confirmPopup.show(
 			`¿Está seguro que desea eliminar el pago ${bill.description}?`,
@@ -114,29 +109,26 @@
 	$: bills.set($dataForm.bills)
 </script>
 
-<form class="my-2 bg-base-100" use:form>
-	<Table className="max-h-[calc(100vh-300px)]">
-		<tr slot="head">
-			<th class="text-center text-base">Pagos</th>
+<form class="bg-base-200" use:form>
+	<Table className="max-h-[calc(100vh-210px)]">
+		<tr slot="head" class="bg-base-200">
+			<td>
+				<div class="join w-full lg:w-1/2">
+					<span class="kbd join-item">
+						<i class="bx bx-search-alt-2" />
+					</span>
+					<input
+						id="search_bill"
+						name="search_bill"
+						type="search"
+						placeholder="Buscar pagos"
+						bind:value={search}
+						class="input input-bordered w-full join-item"
+					/>
+				</div>
+			</td>
 		</tr>
 		<svelte:fragment slot="body">
-			<tr>
-				<td>
-					<div class="join w-full lg:w-1/2">
-						<span class="kbd join-item">
-							<i class="bx bx-search-alt-2" />
-						</span>
-						<input
-							id="search_bill"
-							name="search_bill"
-							type="search"
-							placeholder="Buscar pago"
-							bind:value={search}
-							class="input input-bordered w-full join-item"
-						/>
-					</div>
-				</td>
-			</tr>
 			{#each $dataForm.bills as bill, index (`bill_${index}`)}
 				<tr
 					class:hidden={search
@@ -146,13 +138,11 @@
 					<td>
 						<DetailsItem
 							data={bill}
-							budgetId={data.id}
 							{index}
 							{monthBudget}
 							{daysMonth}
 							errors={$errors.bills?.[index]}
 							on:pay={({ detail }) => handlePay(bill, index, detail)}
-							on:shared={({ detail }) => handleShared(index, detail)}
 							on:delete={() => handleDelete(bill, index)}
 						/>
 					</td>
@@ -164,21 +154,15 @@
 			{/each}
 		</svelte:fragment>
 		<tr slot="foot">
-			<th class="p-0 align-middle">
+			<th class="p-0 align-middle bg-base-200">
 				<Button
 					value="Agregar pago"
-					className="btn-ghost btn-block min-h-full h-full p-1 rounded-none"
+					className="btn-primary btn-block btn-xs text-sm rounded-none"
 					on:click={handleAdd}
 				>
-					<i class="bx bxs-plus-square" />
+					<i class="bx bxs-plus-square text-lg" />
 				</Button>
 			</th>
 		</tr>
 	</Table>
 </form>
-
-<style lang="postcss">
-	td {
-		@apply text-base;
-	}
-</style>
