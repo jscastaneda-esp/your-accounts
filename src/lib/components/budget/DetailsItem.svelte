@@ -9,44 +9,35 @@
 	import { BudgetBillCategory } from '$lib/enums'
 	import DetailsItemPay from './DetailsItemPay.svelte'
 	import DetailsLogs from './DetailsLogs.svelte'
-	import DetailsItemShared from './DetailsItemShared.svelte'
 	import type { Dayjs } from 'dayjs'
 	import { now } from '$utils/date.utils'
 
 	export let data: BudgetBill
-	export let budgetId: number
 	export let index: number
 	export let monthBudget: Dayjs
 	export let daysMonth: number[]
 	export let errors: {
 		description: FelteError
 		amount: FelteError
-		shared: FelteError
 		complete: FelteError
 	}
 
 	const dispatch = createEventDispatcher<{ pay: number; delete: void }>()
 	const prefixFieldName = `bills.${index}`
 
-	let shared = 0
+	let pending = 0
 	let expired = false
 	let showPay = false
-	let showShare = false
 
 	function handlePay({ detail }: { detail: number }) {
 		dispatch('pay', detail)
 	}
 
-	$: pending = data.complete ? 0 : data.amount - data.payment
-	$: if (isNaN(pending)) {
-		shared = data.totalShared
-	} else if (pending != 0) {
-		shared = pending + data.totalShared
-	} else {
-		shared = data.totalShared
-	}
-	$: if (!data.shared) {
-		data.totalShared = 0
+	$: {
+		pending = data.complete ? 0 : data.amount - data.payment
+		if (pending < 0) {
+			pending = 0
+		}
 	}
 	$: {
 		const nowDate = now()
@@ -77,12 +68,8 @@
 			<i class="bx bxs-coin-stack" />
 		</Stat>
 	</section>
-	<section
-		class="lg:mt-8 tooltip-top text-left"
-		class:tooltip={data.shared}
-		data-tip={`Compartido: ${shared}`}
-	>
-		<Stat title="Pendiente" value={pending} className="text-xl">
+	<section class="lg:mt-8 text-left">
+		<Stat title="Pago pendiente" value={pending} className="text-xl">
 			<i class="bx bxs-timer" />
 		</Stat>
 	</section>
@@ -98,6 +85,7 @@
 		<option value={BudgetBillCategory.SAVING}>Ahorros</option>
 		<option value={BudgetBillCategory.OTHERS}>Otros</option>
 	</Select>
+
 	<Select
 		id={`${prefixFieldName}.dueDate`}
 		name={`${prefixFieldName}.dueDate`}
@@ -111,13 +99,7 @@
 			<option value={day.toString()}>{day}</option>
 		{/each}
 	</Select>
-	<section class="lg:pt-10 pl-2">
-		<Toggle
-			id={`${prefixFieldName}.shared`}
-			name={`${prefixFieldName}.shared`}
-			label="Compartido"
-		/>
-	</section>
+
 	<section class="lg:pt-10 pl-2">
 		<Toggle
 			id={`${prefixFieldName}.complete`}
@@ -128,18 +110,10 @@
 
 	<DetailsLogs billId={data.id} />
 
-	<section class="md:col-span-2 lg:col-span-4 flex flex-col items-center mt-2">
+	<section class="md:col-span-2 lg:col-span-4 flex flex-col items-center mt-1">
 		<section class="join">
 			<ButtonGroup value="Pagar" className="btn-primary" on:click={() => (showPay = !showPay)}>
 				<i class="bx bxs-add-to-queue" />
-			</ButtonGroup>
-			<ButtonGroup
-				value="Compartir"
-				className="btn-secondary"
-				disabled={!data.shared}
-				on:click={() => (showShare = true)}
-			>
-				<i class="bx bxs-share-alt" />
 			</ButtonGroup>
 			<ButtonGroup value="Eliminar" className="btn-error" on:click={() => dispatch('delete')}>
 				<i class="bx bxs-trash-alt" />
@@ -148,7 +122,7 @@
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 		<article
 			tabindex="0"
-			class="collapse border rounded-btn border-base-content bg-base-200 w-fit mt-1"
+			class="collapse bg-gray-700 w-fit mt-1 shadow shadow-primary"
 			class:collapse-open={showPay}
 			class:!invisible={!showPay}
 		>
@@ -160,7 +134,3 @@
 		</article>
 	</section>
 </section>
-
-{#if showShare}
-	<DetailsItemShared billId={data.id} {budgetId} on:shared on:close={() => (showShare = false)} />
-{/if}

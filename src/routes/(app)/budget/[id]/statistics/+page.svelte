@@ -168,7 +168,7 @@
 	}
 </script>
 
-<section class="p-4">
+<section class="p-4 bg-base-200">
 	<section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 		<article>
 			{#if !dataPie?.datasets[0].data.length}

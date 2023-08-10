@@ -10,11 +10,9 @@ type ChangeBill = {
 	description?: string
 	amount?: number
 	payment?: number
-	shared?: boolean
 	dueDate?: string | number
 	complete?: boolean
 	category?: string
-	totalShared?: number
 }
 
 class BudgetBillService {
@@ -39,11 +37,9 @@ class BudgetBillService {
 			id,
 			amount: 0,
 			payment: 0,
-			shared: false,
 			dueDate: '',
 			complete: false,
 			category: null as unknown as BudgetBillCategory,
-			totalShared: 0,
 			...request
 		}
 	}
@@ -78,11 +74,9 @@ class BudgetBillService {
 			description: FelteError
 			amount: FelteError
 			payment: FelteError
-			shared: FelteError
 			dueDate: FelteError
 			complete: FelteError
 			category: FelteError
-			totalShared: FelteError
 		}[],
 		list: BudgetBill[]
 	) {
@@ -151,14 +145,6 @@ class BudgetBillService {
 						newData,
 						oldData,
 						change,
-						'shared',
-						isChanges
-					)
-					isChanges = this.changeUtil.setChange(
-						errorData,
-						newData,
-						oldData,
-						change,
 						'dueDate',
 						isChanges
 					)
@@ -176,14 +162,6 @@ class BudgetBillService {
 						oldData,
 						change,
 						'category',
-						isChanges
-					)
-					isChanges = this.changeUtil.setChange(
-						errorData,
-						newData,
-						oldData,
-						change,
-						'totalShared',
 						isChanges
 					)
 					if (isChanges) {

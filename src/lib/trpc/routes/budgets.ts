@@ -1,6 +1,6 @@
 import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
-import type { Budget, BudgetBillShared, BudgetBillTransaction, BudgetMinimal } from '$lib/types'
+import type { Budget, BudgetBillTransaction, BudgetMinimal } from '$lib/types'
 import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
@@ -71,32 +71,6 @@ const bills = t.router({
 			})
 		}
 		return transactions
-	}),
-	createShared: procedure
-		.input(
-			z.object({
-				description: defaultString,
-				billId: defaultNumber
-			})
-		)
-		.mutation(async () => {
-			await delay(1000)
-			const shared = {
-				id: new Date().getTime()
-			}
-			return shared
-		}),
-	getSharedById: procedure.input(defaultNumber).query(async ({ input }) => {
-		await delay(1000)
-		const shared: BudgetBillShared[] = []
-		if (input == 1) {
-			shared.push({
-				id: 1,
-				description: 'Lau',
-				amount: 100000
-			})
-		}
-		return shared
 	})
 })
 
@@ -168,37 +142,33 @@ export const budgets = t.router({
 			name: 'Test',
 			year: new Date().getFullYear(),
 			month: new Date().getMonth() + 1,
-			fixedIncome: 6370000,
+			fixedIncome: 6470000,
 			additionalIncome: 0,
 			availableBalances: [
 				{
 					id: 1,
 					name: 'Cuenta Ahorros',
-					amount: 6370000
+					amount: 6470000
 				}
 			],
 			bills: [
 				{
 					id: 1,
 					description: 'Pagos financieros',
-					amount: 1000000,
+					amount: 1500000,
 					payment: 0,
-					shared: true,
 					dueDate: '10',
 					complete: false,
-					category: BudgetBillCategory.SERVICES,
-					totalShared: 100000
+					category: BudgetBillCategory.SERVICES
 				},
 				{
 					id: 2,
 					description: 'Pagos personales',
 					amount: 2000000,
 					payment: 0,
-					shared: false,
 					dueDate: '',
 					complete: false,
-					category: BudgetBillCategory.PERSONAL,
-					totalShared: 0
+					category: BudgetBillCategory.PERSONAL
 				}
 			]
 		}

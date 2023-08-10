@@ -19,12 +19,12 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 	const bills = writable<BudgetBill[]>(initialValue)
 
 	const totals = writable<TotalsBills>({
-		totalPending: 0,
-		pendingBills: 0,
-		totalPayment: 0,
 		total: 0,
-		totalMaxPayment: 0,
-		totalSavings: 0
+		totalPending: 0,
+		totalSavings: 0,
+		totalPayment: 0,
+		pendingBills: 0,
+		totalMaxPayment: 0
 	})
 
 	const statistics = writable<BudgetStatistics>({
@@ -37,12 +37,12 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 
 	bills.subscribe((value) => {
 		const currentTotals = {
-			totalPending: 0,
-			pendingBills: 0,
-			totalPayment: 0,
 			total: 0,
-			totalMaxPayment: 0,
-			totalSavings: 0
+			totalPending: 0,
+			totalSavings: 0,
+			totalPayment: 0,
+			pendingBills: 0,
+			totalMaxPayment: 0
 		}
 
 		const categoriesEnum = new Set<BudgetBillCategory>()
@@ -50,9 +50,7 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 		const payments: Record<string, number> = {}
 
 		value.forEach((bill) => {
-			currentTotals.total += bill.amount
-			currentTotals.totalPayment += bill.payment
-
+			// Calculate Statistics
 			if (!categoriesEnum.has(bill.category)) {
 				categoriesEnum.add(bill.category)
 			}
@@ -66,9 +64,23 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 				payments[bill.category] = 0
 			}
 			payments[bill.category] += bill.payment
+			// Calculate Statistics
 
-			const pending = bill.amount - bill.payment
+			// Calculate Totals
+			currentTotals.total += bill.amount
+			currentTotals.totalPayment += bill.payment
+
+			let pending = bill.amount - bill.payment
+			if (pending < 0) {
+				currentTotals.totalMaxPayment += bill.payment
+			} else {
+				currentTotals.totalMaxPayment += bill.amount
+			}
+
 			if (!bill.complete) {
+				if (pending < 0) {
+					pending = 0
+				}
 				currentTotals.totalPending += pending
 			} else {
 				currentTotals.totalSavings += pending
@@ -77,22 +89,7 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 			if (bill.amount > bill.payment && !bill.complete) {
 				currentTotals.pendingBills += 1
 			}
-
-			if (bill.amount < bill.payment) {
-				let isTotalPayment = true
-				if (bill.shared) {
-					if (pending < 0) {
-						currentTotals.totalMaxPayment += bill.payment + pending
-						isTotalPayment = false
-					}
-				}
-
-				if (isTotalPayment) {
-					currentTotals.totalMaxPayment += bill.payment
-				}
-			} else {
-				currentTotals.totalMaxPayment += bill.amount
-			}
+			// Calculate Totals
 		})
 		totals.set(currentTotals)
 

@@ -35,7 +35,7 @@
 </script>
 
 <section class="md:col-span-2 lg:col-span-4 my-3">
-	<Logs title="Movimientos" className="!max-h-44" on:change={handleChange}>
+	<Logs title="Movimientos" className="!max-h-44" background="bg-base-100" on:change={handleChange}>
 		<svelte:fragment slot="columns">
 			<th class="px-4">Monto ($)</th>
 		</svelte:fragment>

@@ -59,17 +59,17 @@
 		service.compareData($dataForm, $errors, data)
 	}
 
-	$: estimatedBalance = $dataForm.fixedIncome + $dataForm.additionalIncome - $totalsBills.total
+	$: totalIncome = $dataForm.fixedIncome + $dataForm.additionalIncome
+	$: estimatedBalance = totalIncome - $totalsBills.total
 	$: totalBalance = $totalAvailable - $totalsBills.totalPending
+	$: totalDiff = totalBalance - estimatedBalance
 	$: pendingRegistration =
-		totalBalance -
-		($dataForm.fixedIncome + $dataForm.additionalIncome - $totalsBills.totalMaxPayment) -
-		$totalsBills.totalSavings
+		totalBalance - (totalIncome - $totalsBills.totalMaxPayment) - $totalsBills.totalSavings
 	$: if ($touched) compareData()
 	$: month.set($dataForm.month)
 </script>
 
-<section class="flex flex-col w-full">
+<section class="flex flex-col w-full bg-base-200">
 	<form
 		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 px-4 pt-4"
 		use:form
@@ -123,7 +123,7 @@
 		</section>
 		<section class="flex justify-center items-center">
 			<article class="stats stats-vertical sm:stats-horizontal sm:grid-cols-2 shadow w-[500px]">
-				<Stat title="Descuadre" value={totalBalance - estimatedBalance} className="text-lg">
+				<Stat title="Descuadre" value={totalDiff} className="text-lg">
 					<i class="bx bxs-objects-vertical-center" />
 				</Stat>
 				<Stat title="Pendiente Registrar" value={pendingRegistration} className="text-xl font-bold">
