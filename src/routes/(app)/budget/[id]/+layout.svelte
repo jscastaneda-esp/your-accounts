@@ -1,16 +1,18 @@
 <script lang="ts">
 	// Enums, Types, Utilities
 	import { onDestroy, onMount, setContext } from 'svelte'
-	import { goto } from '$app/navigation'
+	import { beforeNavigate, goto } from '$app/navigation'
 	import { page } from '$app/stores'
+	import { browser } from '$app/environment'
 	import { confirmPopup } from '$lib/stores/shared'
 	import { changesStore } from '$lib/stores/changes'
 	import { availablesStore, billsDataStore, resumeStore } from '$lib/stores/budget'
 	import { ContextNameEnum } from '$lib/enums'
-	import type { Budget } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import { zeroPad } from '$utils/number.utils'
 	import BudgetService from '$services/budget/budget.service'
+	import type { Budget } from '$lib/types'
+	import type { BeforeNavigate } from '@sveltejs/kit'
 
 	// Components
 	import Tabs from '$components/shared/tabs/Tabs.svelte'
@@ -28,10 +30,40 @@
 	const service = new BudgetService($page, changes)
 
 	let interval: ReturnType<typeof setInterval>
+	let confirmExit = false
 
-	onMount(() => (interval = setInterval(() => handleSave(), 15000)))
+	onMount(() => {
+		interval = setInterval(() => handleSave(), 15000)
 
-	onDestroy(() => clearInterval(interval))
+		if (browser) {
+			addEventListener('beforeunload', beforeUnload)
+			addEventListener('pagehide', exit, false)
+		}
+	})
+
+	onDestroy(exit)
+
+	beforeNavigate(async ({ to, cancel }: BeforeNavigate) => {
+		if ($changes.length && !confirmExit) {
+			cancel()
+
+			if (to) {
+				confirmExit = await new Promise<boolean>((resolve) => {
+					confirmPopup.show(
+						'¿Realmente desea salir?',
+						'Al salir se pueden perder cambios. Se recomienda primero guardar',
+						() => resolve(true),
+						() => resolve(false)
+					)
+				})
+
+				if (confirmExit) {
+					exit()
+					goto(to.url)
+				}
+			}
+		}
+	})
 
 	setContext(ContextNameEnum.CHANGES, { changes })
 	setContext(ContextNameEnum.BUDGET_RESUME, { month })
@@ -44,12 +76,19 @@
 		)
 	}
 
-	function handleExit() {
-		confirmPopup.show(
-			'¿Realmente desea salir?',
-			'Al salir se pueden perder cambios. Se recomienda primero guardar',
-			() => goto('/budget')
-		)
+	function beforeUnload(event: BeforeUnloadEvent) {
+		if ($changes.length) {
+			event.preventDefault()
+			return (event.returnValue = '')
+		}
+	}
+
+	function exit() {
+		changes.clear()
+
+		if (interval) {
+			clearInterval(interval)
+		}
 	}
 </script>
 
@@ -57,12 +96,14 @@
 	<title>Presupuesto | Tus Cuentas</title>
 </svelte:head>
 
+<svelte:window on:beforeunload={beforeUnload} on:pagehide={exit} />
+
 <main class="w-full">
 	<section class="flex justify-between">
 		<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
 			<i class="bx bxs-save" />
 		</ButtonLink>
-		<ButtonLink value="Salir" on:click={handleExit}>
+		<ButtonLink value="Salir" on:click={() => goto('/budget')}>
 			<i class="bx bx-arrow-back" />
 		</ButtonLink>
 	</section>

@@ -21,7 +21,7 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 	const totals = writable<TotalsBills>({
 		total: 0,
 		totalPending: 0,
-		totalSavings: 0,
+		totalSaving: 0,
 		totalPayment: 0,
 		pendingBills: 0,
 		totalMaxPayment: 0
@@ -39,7 +39,7 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 		const currentTotals = {
 			total: 0,
 			totalPending: 0,
-			totalSavings: 0,
+			totalSaving: 0,
 			totalPayment: 0,
 			pendingBills: 0,
 			totalMaxPayment: 0
@@ -83,7 +83,7 @@ export function billsDataStore(initialValue: BudgetBill[]) {
 				}
 				currentTotals.totalPending += pending
 			} else {
-				currentTotals.totalSavings += pending
+				currentTotals.totalSaving += pending
 			}
 
 			if (bill.amount > bill.payment && !bill.complete) {

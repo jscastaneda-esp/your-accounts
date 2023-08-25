@@ -11,7 +11,7 @@
 	import Input from '$components/shared/Input.svelte'
 	import Stat from '$components/shared/Stat.svelte'
 	import ResourceLogs from '$components/shared/logs/ResourceLogs.svelte'
-	import ResumeProgress from '$components/budget/ResumeProgress.svelte'
+	import TotalResume from '$components/budget/TotalResume.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable, Readable } from 'svelte/store'
 	import BudgetService from '$services/budget/budget.service'
@@ -60,11 +60,11 @@
 	}
 
 	$: totalIncome = $dataForm.fixedIncome + $dataForm.additionalIncome
-	$: estimatedBalance = totalIncome - $totalsBills.total
-	$: totalBalance = $totalAvailable - $totalsBills.totalPending
-	$: totalDiff = totalBalance - estimatedBalance
+	$: estimatedSavings = totalIncome - $totalsBills.total
+	$: totalSaving = $totalAvailable - $totalsBills.totalPending
+	$: totalDiff = totalSaving - estimatedSavings
 	$: pendingRegistration =
-		totalBalance - (totalIncome - $totalsBills.totalMaxPayment) - $totalsBills.totalSavings
+		totalSaving - (totalIncome - $totalsBills.totalMaxPayment) - $totalsBills.totalSaving
 	$: if ($touched) compareData()
 	$: month.set($dataForm.month)
 </script>
@@ -103,27 +103,34 @@
 
 	<div class="divider" />
 
-	<section class="grid grid-cols-1 sm:grid-cols-2 justify-center items-center gap-5 px-4">
-		<ResumeProgress name="Pago" estimated={$totalsBills.total} total={$totalsBills.totalPayment} />
-		<ResumeProgress name="Saldo" estimated={estimatedBalance} total={totalBalance} />
+	<section
+		class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-center items-center gap-5 px-4"
+	>
+		<TotalResume
+			titleFrom="Pago Estimado"
+			valueFrom={$totalsBills.total}
+			titleTo="Pago Total"
+			valueTo={$totalsBills.totalPayment}
+		/>
+		<TotalResume
+			titleFrom="Ahorro Estimado"
+			valueFrom={estimatedSavings}
+			titleTo="Ahorro Total"
+			valueTo={totalSaving}
+		/>
+		<TotalResume
+			titleFrom="Disponible"
+			valueFrom={$totalAvailable}
+			titleTo="Pendiente"
+			valueTo={$totalsBills.totalPending}
+			descTo={`${$totalsBills.pendingBills} Pagos pendientes`}
+		>
+			<i class="bx bxs-wallet-alt" slot="iconFrom" />
+			<i class="bx bxs-timer" slot="iconTo" />
+		</TotalResume>
 		<section class="flex justify-center items-center">
-			<article class="stats stats-vertical sm:stats-horizontal sm:grid-cols-2 shadow w-[500px]">
-				<Stat title="Disponible" value={$totalAvailable} className="text-lg">
-					<i class="bx bxs-wallet-alt" />
-				</Stat>
-				<Stat
-					title="Pendiente"
-					value={$totalsBills.totalPending}
-					desc={`${$totalsBills.pendingBills} Pagos pendientes`}
-					className="text-lg"
-				>
-					<i class="bx bxs-timer" />
-				</Stat>
-			</article>
-		</section>
-		<section class="flex justify-center items-center">
-			<article class="stats stats-vertical sm:stats-horizontal sm:grid-cols-2 shadow w-[500px]">
-				<Stat title="Descuadre" value={totalDiff} className="text-lg">
+			<article class="stats stats-vertical 2xl:stats-horizontal 2xl:grid-cols-2 shadow w-[500px]">
+				<Stat title="Diferencia" value={totalDiff} className="text-lg">
 					<i class="bx bxs-objects-vertical-center" />
 				</Stat>
 				<Stat title="Pendiente Registrar" value={pendingRegistration} className="text-xl font-bold">

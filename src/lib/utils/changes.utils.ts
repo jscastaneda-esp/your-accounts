@@ -1,6 +1,6 @@
 import type { Change, FelteError } from '$lib/types'
 
-export default class ChangeUtil<P extends string> {
+export class ChangesUtil<P extends string> {
 	setChange(
 		errorData: Record<string, FelteError>,
 		newData: Record<string, unknown>,
