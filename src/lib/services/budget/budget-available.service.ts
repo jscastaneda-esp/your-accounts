@@ -4,7 +4,7 @@ import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
 import type { Readable } from 'svelte/store'
 import type { BudgetAvailable, Change, ChangeStore, FelteError } from '$lib/types'
 import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
-import ChangeUtil from '$lib/classes/ChangeUtil'
+import { ChangesUtil } from '$utils/changes.utils'
 
 type ChangeAvailable = {
 	name?: string
@@ -13,14 +13,14 @@ type ChangeAvailable = {
 
 class BudgetAvailableService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private changeUtil: ChangeUtil<keyof ChangeAvailable>
+	private changesUtil: ChangesUtil<keyof ChangeAvailable>
 
 	constructor(
 		init: TRPCClientInit,
 		private changes: Readable<Change<unknown>[]> & ChangeStore<unknown>
 	) {
 		this.trpcF = trpc(init)
-		this.changeUtil = new ChangeUtil<keyof ChangeAvailable>()
+		this.changesUtil = new ChangesUtil<keyof ChangeAvailable>()
 	}
 
 	async create(name: string, budgetId: number) {
@@ -76,7 +76,7 @@ class BudgetAvailableService {
 					}
 				}
 
-				isChanges = this.changeUtil.setChange(
+				isChanges = this.changesUtil.setChange(
 					errorData,
 					newData,
 					oldData,
@@ -84,7 +84,7 @@ class BudgetAvailableService {
 					'name',
 					isChanges
 				)
-				isChanges = this.changeUtil.setChange(
+				isChanges = this.changesUtil.setChange(
 					errorData,
 					newData,
 					oldData,

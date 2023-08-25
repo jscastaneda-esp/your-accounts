@@ -1,4 +1,4 @@
-import ChangeUtil from '$lib/classes/ChangeUtil'
+import { ChangesUtil } from '$utils/changes.utils'
 import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { trpc } from '$lib/trpc/client'
 import type { Router } from '$lib/trpc/router'
@@ -17,14 +17,14 @@ type ChangeBill = {
 
 class BudgetBillService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private changeUtil: ChangeUtil<keyof ChangeBill>
+	private changesUtil: ChangesUtil<keyof ChangeBill>
 
 	constructor(
 		init: TRPCClientInit,
 		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
 	) {
 		this.trpcF = trpc(init)
-		this.changeUtil = new ChangeUtil<keyof ChangeBill>()
+		this.changesUtil = new ChangesUtil<keyof ChangeBill>()
 	}
 
 	async create(description: string, budgetId: number) {
@@ -116,7 +116,7 @@ class BudgetBillService {
 						}
 					}
 
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,
@@ -124,7 +124,7 @@ class BudgetBillService {
 						'description',
 						isChanges
 					)
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,
@@ -132,7 +132,7 @@ class BudgetBillService {
 						'amount',
 						isChanges
 					)
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,
@@ -140,7 +140,7 @@ class BudgetBillService {
 						'payment',
 						isChanges
 					)
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,
@@ -148,7 +148,7 @@ class BudgetBillService {
 						'dueDate',
 						isChanges
 					)
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,
@@ -156,7 +156,7 @@ class BudgetBillService {
 						'complete',
 						isChanges
 					)
-					isChanges = this.changeUtil.setChange(
+					isChanges = this.changesUtil.setChange(
 						errorData,
 						newData,
 						oldData,

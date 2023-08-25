@@ -71,12 +71,13 @@ export type ChangeStore<T> = {
 	add: (newChange: Change<T>) => void
 	revert: (newChanges: Change<T>[]) => void
 	delete: (delChanges: Change<T>[]) => void
+	clear: () => void
 }
 
 export type TotalsBills = {
 	total: number
 	totalPending: number
-	totalSavings: number
+	totalSaving: number
 	totalPayment: number
 	pendingBills: number
 	totalMaxPayment: number

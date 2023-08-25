@@ -2,7 +2,7 @@ import type { Change, ChangeStore } from '$lib/types'
 import { writable, type Readable } from 'svelte/store'
 
 export function changesStore(): Readable<Change<unknown>[]> & ChangeStore<unknown> {
-	const { subscribe, update } = writable<Change<unknown>[]>([])
+	const { subscribe, update, set } = writable<Change<unknown>[]>([])
 
 	let count = 1
 
@@ -17,6 +17,7 @@ export function changesStore(): Readable<Change<unknown>[]> & ChangeStore<unknow
 		delete: (delChanges: Change<unknown>[]) =>
 			update((changes) =>
 				changes.filter((change) => !delChanges.some((del) => change.index == del.index))
-			)
+			),
+		clear: () => set([])
 	}
 }

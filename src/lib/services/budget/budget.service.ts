@@ -6,7 +6,7 @@ import type { Readable } from 'svelte/store'
 import type { Budget, Change, ChangeStore, FelteError } from '$lib/types'
 import { groupBy } from '$utils/array.utils'
 import { ChangeSectionEnum, ChangeActionEnum } from '$lib/enums'
-import ChangeUtil from '$lib/classes/ChangeUtil'
+import { ChangesUtil } from '$utils/changes.utils'
 import { trytm } from '@bdsqqq/try'
 import { now } from '$utils/date.utils'
 
@@ -20,14 +20,14 @@ type ChangeMain = {
 
 class BudgetService {
 	private trpcF: ReturnType<typeof createTRPCClient<Router>>
-	private changeUtil: ChangeUtil<keyof ChangeMain>
+	private changesUtil: ChangesUtil<keyof ChangeMain>
 
 	constructor(
 		init: TRPCClientInit,
 		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
 	) {
 		this.trpcF = trpc(init)
-		this.changeUtil = new ChangeUtil<keyof ChangeMain>()
+		this.changesUtil = new ChangesUtil<keyof ChangeMain>()
 	}
 
 	create(cloneId?: number) {
@@ -119,12 +119,12 @@ class BudgetService {
 				const monthParts = newData.month.split('-')
 				const year = Number(monthParts[0])
 				const month = Number(monthParts[1])
-				isChanges = this.changeUtil.setChangeDirect(year, data, change, 'year', isChanges)
-				isChanges = this.changeUtil.setChangeDirect(month, data, change, 'month', isChanges)
+				isChanges = this.changesUtil.setChangeDirect(year, data, change, 'year', isChanges)
+				isChanges = this.changesUtil.setChangeDirect(month, data, change, 'month', isChanges)
 			}
 
-			isChanges = this.changeUtil.setChange(errorData, newData, data, change, 'name', isChanges)
-			isChanges = this.changeUtil.setChange(
+			isChanges = this.changesUtil.setChange(errorData, newData, data, change, 'name', isChanges)
+			isChanges = this.changesUtil.setChange(
 				errorData,
 				newData,
 				data,
@@ -132,7 +132,7 @@ class BudgetService {
 				'fixedIncome',
 				isChanges
 			)
-			isChanges = this.changeUtil.setChange(
+			isChanges = this.changesUtil.setChange(
 				errorData,
 				newData,
 				data,
