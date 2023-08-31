@@ -40,14 +40,14 @@
 	</h2>
 
 	<article class="stats shadow grid-col-3">
-		<Stat title="Disponible" value={project.totalAvailableBalance}>
+		<Stat title="Disponible" value={project.totalAvailable}>
 			<i class="bx bxs-wallet" />
 		</Stat>
-		<Stat title="Pendiente" value={project.totalPendingPayment}>
-			<i class="bx bxs-shield-minus" />
+		<Stat title="Pendiente" value={project.totalPending}>
+			<i class="bx bxs-timer" />
 		</Stat>
-		<Stat title="Saldo" value={project.totalBalance}>
-			<i class="bx bxs-dollar-circle" />
+		<Stat title="Ahorro" value={project.totalSaving}>
+			<i class="bx bxs-coin-stack" />
 		</Stat>
 	</article>
 

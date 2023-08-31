@@ -17,7 +17,7 @@
 			active={$page.route.id === '/(app)/budget/[id]/details'}
 			text="Disponibles"
 		>
-			<i class="bx bxs-wallet-alt" />
+			<i class="bx bxs-wallet" />
 		</TabItem>
 		<TabItem
 			href={`/budget/${data.id}/details/payments`}

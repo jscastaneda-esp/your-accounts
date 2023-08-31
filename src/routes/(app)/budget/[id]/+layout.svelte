@@ -24,7 +24,7 @@
 	const changes = changesStore()
 	const { month } = resumeStore(`${data.year}-${zeroPad(data.month, 2)}`)
 	const { totalAvailable } = availablesStore(
-		data.availableBalances.reduce((previous, current) => previous + current.amount, 0)
+		data.availables.reduce((previous, current) => previous + current.amount, 0)
 	)
 	const { bills, totals, statistics } = billsDataStore(data.bills)
 	const service = new BudgetService($page, changes)

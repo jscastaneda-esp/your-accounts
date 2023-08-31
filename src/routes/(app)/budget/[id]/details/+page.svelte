@@ -27,7 +27,7 @@
 	)
 	const service = new BudgetAvailableService($page, changes)
 
-	let list = data.availableBalances
+	let list = data.availables
 	let countName = list.length + 1
 
 	// Form Definition
