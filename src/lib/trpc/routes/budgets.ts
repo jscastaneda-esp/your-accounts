@@ -97,9 +97,9 @@ export const budgets = t.router({
 				name: 'Test',
 				year: new Date().getFullYear(),
 				month: new Date().getMonth() + 3,
-				totalAvailableBalance: 100000,
-				totalPendingPayment: 10000,
-				totalBalance: 90000,
+				totalAvailable: 100000,
+				totalPending: 10000,
+				totalSaving: 90000,
 				pendingBills: 1
 			},
 			{
@@ -107,9 +107,9 @@ export const budgets = t.router({
 				name: 'Test 2',
 				year: new Date().getFullYear(),
 				month: new Date().getMonth() + 2,
-				totalAvailableBalance: 7000000,
-				totalPendingPayment: 6000000,
-				totalBalance: 1000000,
+				totalAvailable: 7000000,
+				totalPending: 6000000,
+				totalSaving: 1000000,
 				pendingBills: 10
 			},
 			{
@@ -117,9 +117,9 @@ export const budgets = t.router({
 				name: 'Test 3',
 				year: new Date().getFullYear(),
 				month: new Date().getMonth() + 1,
-				totalAvailableBalance: 10000,
-				totalPendingPayment: 60000,
-				totalBalance: -50000,
+				totalAvailable: 10000,
+				totalPending: 60000,
+				totalSaving: -50000,
 				pendingBills: 2
 			},
 			{
@@ -127,9 +127,9 @@ export const budgets = t.router({
 				name: 'Test 4',
 				year: new Date().getFullYear(),
 				month: new Date().getMonth(),
-				totalAvailableBalance: -10500,
-				totalPendingPayment: 40000,
-				totalBalance: -50500,
+				totalAvailable: -10500,
+				totalPending: 40000,
+				totalSaving: -50500,
 				pendingBills: 1
 			}
 		]
@@ -144,7 +144,7 @@ export const budgets = t.router({
 			month: new Date().getMonth() + 1,
 			fixedIncome: 6470000,
 			additionalIncome: 0,
-			availableBalances: [
+			availables: [
 				{
 					id: 1,
 					name: 'Cuenta Ahorros',

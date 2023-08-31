@@ -134,7 +134,7 @@
 			valueTo={$totalsBills.totalPending}
 			descTo={`${$totalsBills.pendingBills} Pagos pendientes`}
 		>
-			<i class="bx bxs-wallet-alt" slot="iconFrom" />
+			<i class="bx bxs-wallet" slot="iconFrom" />
 			<i class="bx bxs-timer" slot="iconTo" />
 		</TotalResume>
 		<section class="flex justify-center items-center">

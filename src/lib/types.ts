@@ -11,9 +11,9 @@ export type BudgetMinimal = {
 	name: string
 	year: number
 	month: number
-	totalAvailableBalance: number
-	totalPendingPayment: number
-	totalBalance: number
+	totalAvailable: number
+	totalPending: number
+	totalSaving: number
 	pendingBills: number
 }
 
@@ -24,7 +24,7 @@ export type Budget = {
 	month: number
 	fixedIncome: number
 	additionalIncome: number
-	availableBalances: BudgetAvailable[]
+	availables: BudgetAvailable[]
 	bills: BudgetBill[]
 }
 
