@@ -62,6 +62,8 @@
 	$: totalIncome = $dataForm.fixedIncome + $dataForm.additionalIncome
 	$: estimatedSavings = totalIncome - $totalsBills.total
 	$: totalSaving = $totalAvailable - $totalsBills.totalPending
+	$: percentageEstimatedSavings = (estimatedSavings * 100) / totalIncome
+	$: percentageTotalSavings = (totalSaving * 100) / totalIncome
 	$: totalDiff = totalSaving - estimatedSavings
 	$: pendingRegistration =
 		totalSaving - (totalIncome - $totalsBills.totalMaxPayment) - $totalsBills.totalSaving
@@ -115,8 +117,15 @@
 		<TotalResume
 			titleFrom="Ahorro Estimado"
 			valueFrom={estimatedSavings}
+			descFrom={(percentageEstimatedSavings > 0
+				? '↗︎'
+				: percentageEstimatedSavings == 0
+				? '⇄'
+				: '↘︎') + ` ${Math.abs(percentageEstimatedSavings).toFixed(1)}%`}
 			titleTo="Ahorro Total"
 			valueTo={totalSaving}
+			descTo={(percentageTotalSavings > 0 ? '↗︎' : percentageTotalSavings == 0 ? '⇄' : '↘︎') +
+				` ${Math.abs(percentageTotalSavings).toFixed(1)}%`}
 		/>
 		<TotalResume
 			titleFrom="Disponible"
