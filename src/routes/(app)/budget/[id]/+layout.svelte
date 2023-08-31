@@ -34,17 +34,17 @@
 
 	onMount(() => {
 		interval = setInterval(() => handleSave(), 15000)
-
-		if (browser) {
-			addEventListener('beforeunload', beforeUnload)
-			addEventListener('pagehide', exit, false)
-		}
 	})
 
 	onDestroy(exit)
 
 	beforeNavigate(async ({ to, cancel }: BeforeNavigate) => {
-		if ($changes.length && !confirmExit) {
+		if (
+			!to?.route.id?.startsWith('/login') &&
+			!to?.url.pathname.startsWith(`/budget/${data.id}`) &&
+			$changes.length &&
+			!confirmExit
+		) {
 			cancel()
 
 			if (to) {
