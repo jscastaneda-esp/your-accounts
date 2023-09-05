@@ -59,7 +59,7 @@
 
 		const [newField, error] = await trytm(service.create(`Disponible ${countName++}`, data.id))
 		if (error) {
-			Toast.error('Se presento un error al crear el disponible', true)
+			Toast.error('Se presento un error al crear el disponible')
 		} else {
 			addField('availables', newField)
 			list.push(newField)

@@ -24,7 +24,7 @@
 		service
 			.getByUserId()
 			.then((response) => (budgets = response))
-			.catch(() => Toast.error('Se presento un error al consultar los proyectos', true))
+			.catch(() => Toast.error('Se presento un error al consultar los proyectos'))
 	})
 
 	async function handleNew(cloneId?: number) {
@@ -32,7 +32,7 @@
 
 		const [response, error] = await trytm(service.create(cloneId))
 		if (error) {
-			Toast.error(`Se presento un error al ${cloneId ? 'duplicar' : 'crear'} el proyecto`, true)
+			Toast.error(`Se presento un error al ${cloneId ? 'duplicar' : 'crear'} el proyecto`)
 		} else {
 			await trytm(goto(`/budget/${response.id}`))
 		}
@@ -57,10 +57,10 @@
 
 				const [_, error] = await trytm(service.delete(budget.id))
 				if (error) {
-					Toast.error('Se presento un error al eliminar el proyecto', true)
+					Toast.error('Se presento un error al eliminar el proyecto')
 				} else {
-					Toast.success('Se elimino exitosamente el proyecto', true)
 					budgets = budgets.filter((project) => project.id != budget.id)
+					Toast.success('Se elimino exitosamente el proyecto')
 				}
 
 				screenLoading.hide()

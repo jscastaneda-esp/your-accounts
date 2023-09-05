@@ -70,7 +70,7 @@
 
 		const [newField, error] = await trytm(service.create(`Pago ${countName++}`, data.id))
 		if (error) {
-			Toast.error('Se presento un error al crear el pago', true)
+			Toast.error('Se presento un error al crear el pago')
 		} else {
 			addField('bills', newField)
 			list.push(newField)

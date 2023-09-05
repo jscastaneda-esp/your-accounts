@@ -56,12 +56,12 @@
 			})
 		)
 		if (error) {
-			Toast.error('Se presento un error al registrar el movimiento', true)
+			Toast.error('Se presento un error al registrar el movimiento')
 		} else {
 			if (operation == '+') {
-				Toast.success('Se realizo el abono con éxito', true)
+				Toast.success('Se realizo el abono con éxito')
 			} else {
-				Toast.success('Se realizo la disminución con éxito', true)
+				Toast.success('Se realizo la disminución con éxito')
 			}
 		}
 
