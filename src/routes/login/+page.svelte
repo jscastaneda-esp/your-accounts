@@ -49,7 +49,7 @@
 		if (isError) {
 			Toast.error(msg, true)
 		} else {
-			Toast.warn(msg, true)
+			Toast.warning(msg, true)
 		}
 	}
 </script>

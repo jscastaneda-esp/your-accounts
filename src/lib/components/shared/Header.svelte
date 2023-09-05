@@ -19,9 +19,9 @@
 		} catch (error) {
 			const [msg, isError] = firebaseService.authFunctions.getError((error as FirebaseError).code)
 			if (isError) {
-				Toast.error(msg)
+				Toast.error(msg, true)
 			} else {
-				Toast.warn(msg)
+				Toast.warning(msg, true)
 			}
 		}
 	}

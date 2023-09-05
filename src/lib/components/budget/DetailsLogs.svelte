@@ -24,7 +24,7 @@
 			loading = true
 			const [result, error] = await trytm(service.getTransactionsById(billId))
 			if (error) {
-				Toast.error('Se presento un error al consultar las transacciones', true)
+				Toast.error('Se presento un error al consultar las transacciones')
 			} else {
 				yesterday = now().subtract(1, 'day')
 				transactions = result

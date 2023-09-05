@@ -3,7 +3,6 @@
 	import { onDestroy, onMount, setContext } from 'svelte'
 	import { beforeNavigate, goto } from '$app/navigation'
 	import { page } from '$app/stores'
-	import { browser } from '$app/environment'
 	import { confirmPopup } from '$lib/stores/shared'
 	import { changesStore } from '$lib/stores/changes'
 	import { availablesStore, billsDataStore, resumeStore } from '$lib/stores/budget'
@@ -72,7 +71,7 @@
 
 	async function handleSave() {
 		service.save(data.id, [...$changes], () =>
-			Toast.error('Se presento un error al guardar la información del presupuesto', true)
+			Toast.error('Se presento un error al guardar la información del presupuesto')
 		)
 	}
 

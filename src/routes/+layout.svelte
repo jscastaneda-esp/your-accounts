@@ -1,22 +1,19 @@
 <script lang="ts">
 	import '../app.css'
 	import 'boxicons/css/boxicons.min.css'
-	import { SvelteToast } from '@zerodevx/svelte-toast'
+	import { Toaster } from 'svelte-sonner'
 	import firebaseService from '$services/firebase.service'
 	import { session } from '$lib/stores/shared'
-	import type { SvelteToastOptions } from '@zerodevx/svelte-toast/stores'
 	import ScreenLoading from '$components/shared/ScreenLoading.svelte'
 	import ConfirmPopup from '$components/shared/popup/ConfirmPopup.svelte'
 
 	firebaseService.authFunctions.onAuthStateChanged((user) => {
 		session.set(user)
 	})
-
-	const toastOptions: SvelteToastOptions = { pausable: true, reversed: true, intro: { y: 192 } }
 </script>
 
 <slot />
 
 <ScreenLoading />
 <ConfirmPopup />
-<SvelteToast options={toastOptions} />
+<Toaster position="bottom-center" theme="dark" visibleToasts={5} closeButton />

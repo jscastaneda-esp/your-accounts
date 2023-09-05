@@ -4,7 +4,11 @@ export default class ConfirmPopupInfo {
 	private _actionOk: Action
 	private _actionCancel: Action
 
-	constructor(public show = false, public question = '', public description?: string) {
+	constructor(
+		public show = false,
+		public question = '',
+		public description?: string
+	) {
 		this._actionOk = () => console.log('OK')
 		this._actionCancel = () => this.reset()
 	}

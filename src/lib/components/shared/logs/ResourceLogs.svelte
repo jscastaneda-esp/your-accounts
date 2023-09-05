@@ -24,7 +24,7 @@
 
 			const [result, error] = await trytm(service.getLogsByResourceId(resourceId))
 			if (error) {
-				Toast.error('Se presento un error al consultar las registros', true)
+				Toast.error('Se presento un error al consultar las registros')
 			} else {
 				yesterday = now().subtract(1, 'day')
 				logs = result
