@@ -35,7 +35,7 @@
 		"felte": "1.2.12",
 		"firebase": "10.3.1",
 		"jsonwebtoken": "9.0.2",
-		"postcss": "8.4.29",
+		"postcss": "8.4.31",
 		"prettier": "3.0.3",
 		"prettier-plugin-svelte": "3.0.3",
 		"superjson": "1.13.1",
