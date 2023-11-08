@@ -45,12 +45,6 @@ export type BudgetBill = {
 	category: BudgetBillCategory
 }
 
-export type BudgetBillTransaction = {
-	description: string
-	amount: number
-	createdAt: Date
-}
-
 export type BudgetStatistics = {
 	categories: string[]
 	data: {

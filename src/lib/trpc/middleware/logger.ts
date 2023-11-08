@@ -5,14 +5,18 @@ export const logger = t.middleware(async ({ type, path, rawInput, next, ctx }) =
 	const input = rawInput ?? 'N/A'
 
 	console.log(
-		`${new Date().toISOString()} - ${requestId} - ([${type}][${path}][`,
-		ctx,
-		']) - Executing with input',
+		`${new Date().toISOString()} - ${requestId} - ([${type}][${path}][${JSON.stringify(
+			ctx
+		)}]) - Executing with input`,
 		JSON.stringify(input, null, '\t')
 	)
 	const result = await next()
 	console.log(
-		`${new Date().toISOString()} - ${requestId} - Execute with result ${result.ok ? 'OK' : 'ERR'}`
+		`${new Date().toISOString()} - ${requestId} - Execute with result ${
+			result.ok ? 'OK' : 'ERR'
+		}, output`,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		JSON.stringify((result as any).data, null, '\t')
 	)
 	return result
 })

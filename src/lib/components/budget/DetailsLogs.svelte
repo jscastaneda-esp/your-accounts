@@ -1,28 +1,31 @@
 <script lang="ts">
-	import type { BudgetBillTransaction } from '$lib/types'
+	import type { Log } from '$lib/types'
 	import Toast from '$utils/toast.utils'
 	import { page } from '$app/stores'
 	import { money } from '$utils/number.utils'
 	import Logs from '$components/shared/logs/Logs.svelte'
-	import BudgetBillService from '$services/budget/budget-bill.service'
 	import { trytm } from '@bdsqqq/try'
 	import { now, showLogDate } from '$utils/date.utils'
 	import type { Dayjs } from 'dayjs'
+	import LogService from '$services/log.service'
+	import { CodeLogEnum } from '$lib/enums'
 
 	export let billId: number
 
 	const awaitLoad = [1, 2, 3, 4]
-	const service = new BudgetBillService($page)
+	const service = new LogService($page)
 
 	let loading = false
-	let transactions: BudgetBillTransaction[] = []
+	let transactions: Log[] = []
 	let yesterday: Dayjs
 
 	async function handleChange({ currentTarget }: Event) {
 		const { checked } = currentTarget as HTMLInputElement
 		if (checked) {
 			loading = true
-			const [result, error] = await trytm(service.getTransactionsById(billId))
+			const [result, error] = await trytm(
+				service.getLogsByResourceId(billId, CodeLogEnum.BUDGET_BILL)
+			)
 			if (error) {
 				Toast.error('Se presento un error al consultar las transacciones')
 			} else {
@@ -54,18 +57,20 @@
 						<td>{showLogDate(yesterday, transaction.createdAt)}</td>
 						<td class="max-h-[26px] text-clip overflow-hidden">{transaction.description}</td>
 						<td>
-							<div
-								class="badge gap-1"
-								class:badge-success={transaction.amount > 0}
-								class:badge-error={transaction.amount < 0}
-							>
-								{#if transaction.amount > 0}
-									<span>↗︎</span>
-								{:else}
-									<span>↘︎</span>
-								{/if}
-								{money(transaction.amount)}
-							</div>
+							{#if transaction.detail}
+								<div
+									class="badge gap-1"
+									class:badge-success={Number(transaction.detail.amount) > 0}
+									class:badge-error={Number(transaction.detail.amount) < 0}
+								>
+									{#if Number(transaction.detail.amount) > 0}
+										<span>↗︎</span>
+									{:else}
+										<span>↘︎</span>
+									{/if}
+									{money(Number(transaction.detail.amount))}
+								</div>
+							{/if}
 						</td>
 					</tr>
 				{:else}
