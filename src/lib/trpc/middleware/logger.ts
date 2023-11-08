@@ -8,7 +8,7 @@ export const logger = t.middleware(async ({ type, path, rawInput, next, ctx }) =
 		`${new Date().toISOString()} - ${requestId} - ([${type}][${path}][`,
 		ctx,
 		']) - Executing with input',
-		JSON.stringify(input)
+		JSON.stringify(input, null, '\t')
 	)
 	const result = await next()
 	console.log(

@@ -3,6 +3,7 @@ import type { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from './
 export type Log = {
 	id: number
 	description: string
+	detail?: Record<string, unknown>
 	createdAt: Date
 }
 
