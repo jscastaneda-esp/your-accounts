@@ -31,3 +31,8 @@ export enum ContextNameEnum {
 	BUDGET_AVAILABLES = 'availables',
 	BUDGET_BILLS = 'bills'
 }
+
+export enum CodeLogEnum {
+	BUDGET = 'budget',
+	BUDGET_BILL = 'budget_bill'
+}

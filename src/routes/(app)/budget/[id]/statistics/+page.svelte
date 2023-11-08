@@ -22,7 +22,7 @@
 
 	ChartJS.register(Title, Tooltip, Legend, ArcElement, BarElement, CategoryScale, LinearScale)
 
-	const CHART_COLORS = {
+	const CHART_COLORS_1 = {
 		red: 'rgb(255, 99, 132)',
 		orange: 'rgb(255, 159, 64)',
 		yellow: 'rgb(255, 205, 86)',
@@ -31,6 +31,16 @@
 		purple: 'rgb(153, 102, 255)',
 		grey: 'rgb(201, 203, 207)',
 		white: 'rgb(255, 255, 255)'
+	}
+	const CHART_COLORS_2 = {
+		red: 'rgba(255, 99, 132, 0.5)',
+		orange: 'rgba(255, 159, 64, 0.5)',
+		yellow: 'rgba(255, 205, 86, 0.5)',
+		green: 'rgba(75, 192, 192, 0.5)',
+		blue: 'rgba(54, 162, 235, 0.5)',
+		purple: 'rgba(153, 102, 255, 0.5)',
+		grey: 'rgba(201, 203, 207, 0.5)',
+		white: 'rgba(255, 255, 255, 0.5)'
 	}
 	const options: ChartOptions = {
 		maintainAspectRatio: false,
@@ -60,7 +70,7 @@
 			...options.plugins,
 			title: {
 				...options.plugins?.title,
-				text: 'Distribución Estimada'
+				text: 'Distribución'
 			},
 			tooltip: {
 				callbacks: {
@@ -119,8 +129,15 @@
 			datasets: [
 				{
 					data: data.amount,
-					backgroundColor: Object.values(CHART_COLORS),
-					borderColor: Object.values(CHART_COLORS)
+					offset: 10,
+					backgroundColor: Object.values(CHART_COLORS_1),
+					borderColor: Object.values(CHART_COLORS_1)
+				},
+				{
+					data: data.payment,
+					offset: 10,
+					backgroundColor: Object.values(CHART_COLORS_2),
+					borderColor: Object.values(CHART_COLORS_2)
 				}
 			]
 		}

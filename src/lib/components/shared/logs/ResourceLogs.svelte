@@ -7,6 +7,7 @@
 	import { trytm } from '@bdsqqq/try'
 	import type { Dayjs } from 'dayjs'
 	import { now, showLogDate } from '$utils/date.utils'
+	import { CodeLogEnum } from '$lib/enums'
 
 	export let resourceId: number
 
@@ -22,7 +23,9 @@
 		if (checked) {
 			loading = true
 
-			const [result, error] = await trytm(service.getLogsByResourceId(resourceId))
+			const [result, error] = await trytm(
+				service.getLogsByResourceId(resourceId, CodeLogEnum.BUDGET)
+			)
 			if (error) {
 				Toast.error('Se presento un error al consultar las registros')
 			} else {
