@@ -63,10 +63,6 @@ class BudgetBillService {
 		cb(value)
 	}
 
-	getTransactionsById(id: number) {
-		return this.trpcF.budgets.bills.getTransactionsById.query(id)
-	}
-
 	compareData(
 		newDatas: BudgetBill[],
 		dataErrors: {

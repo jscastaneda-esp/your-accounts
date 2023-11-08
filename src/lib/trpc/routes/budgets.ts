@@ -1,6 +1,6 @@
 import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { t } from '../t'
-import type { Budget, BudgetBillTransaction, BudgetMinimal } from '$lib/types'
+import type { Budget, BudgetMinimal } from '$lib/types'
 import z, { defaultNumber, defaultString } from '$utils/zod.utils'
 import delay from 'delay'
 import { procedure } from '../middleware'
@@ -47,31 +47,7 @@ const bills = t.router({
 		)
 		.mutation(async () => {
 			await delay(1000)
-		}),
-	getTransactionsById: procedure.input(defaultNumber).query(async () => {
-		await delay(1000)
-		const transactions: BudgetBillTransaction[] = []
-		for (let index = 1; index <= 10; index++) {
-			const createdAt = new Date()
-			if (index > 8) {
-				createdAt.setMonth(createdAt.getMonth() - index)
-			} else if (index > 5) {
-				createdAt.setDate(createdAt.getDate() - index)
-			} else if (index > 3) {
-				createdAt.setHours(createdAt.getHours() - index)
-			} else {
-				createdAt.setSeconds(createdAt.getSeconds() - 10)
-				createdAt.setMinutes(createdAt.getMinutes() - index + 1)
-			}
-
-			transactions.push({
-				description: `Compra ${index}`,
-				amount: (index % 2 == 0 ? index * -1 : index) * 1000,
-				createdAt: createdAt
-			})
-		}
-		return transactions
-	})
+		})
 })
 
 export const budgets = t.router({
