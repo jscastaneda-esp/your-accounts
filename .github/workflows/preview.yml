@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Test and lint
-    uses: jscastaneda-esp/your-accounts/.github/workflows/ci.yml@${{ github.ref_name }}
+    uses: ${{ format('jscastaneda-esp/your-accounts/.github/workflows/ci.yml@{1}', github.ref_name) }}
 
   # deploy:
   #   name: Deploy in preview
