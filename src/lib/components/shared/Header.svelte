@@ -1,30 +1,9 @@
 <script lang="ts">
 	// Svelte
-	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 
 	// Utilities
-	import type { FirebaseError } from 'firebase/app'
-	import firebaseService from '$services/firebase.service'
-	import Toast from '$utils/toast.utils'
-	import { session } from '$lib/stores/shared'
-
-	async function signOut() {
-		try {
-			await firebaseService.authFunctions.signOut()
-			await fetch('/login', {
-				method: 'DELETE'
-			})
-			goto('/login')
-		} catch (error) {
-			const [msg, isError] = firebaseService.authFunctions.getError((error as FirebaseError).code)
-			if (isError) {
-				Toast.error(msg, true)
-			} else {
-				Toast.warning(msg, true)
-			}
-		}
-	}
+	import { signOut } from '@auth/sveltekit/client'
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -68,11 +47,7 @@
 				<label tabindex="0" class="btn btn-ghost btn-circle avatar">
 					<div class="w-10 rounded-full">
 						<!-- svelte-ignore a11y-img-redundant-alt -->
-						<img
-							src={$session?.photoURL ||
-								'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'}
-							alt="Profile Photo"
-						/>
+						<img src={$page.data.session?.user?.image} alt="Profile Photo" />
 					</div>
 				</label>
 				<ul
@@ -80,10 +55,10 @@
 					class="mt-3 p-2 shadow menu menu-sm dropdown-content bg-primary-focus rounded-b-box rounded-tl-box w-60"
 				>
 					<li class="menu-title !text-base-100 bg-primary rounded-tl-box rounded-br-box">
-						<span>{$session?.displayName || 'Pruebas'}</span>
-						<span class="opacity-70">{$session?.email}</span>
+						<span>{$page.data.session?.user?.name || 'Pruebas'}</span>
+						<span class="opacity-70">{$page.data.session?.user?.email}</span>
 					</li>
-					<li><button on:click={signOut}>Cerrar sesión</button></li>
+					<li><button on:click={() => signOut()}>Cerrar sesión</button></li>
 				</ul>
 			</article>
 		</section>

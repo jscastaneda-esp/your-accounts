@@ -1,6 +1,6 @@
 import type { CodeLogEnum } from '$lib/enums'
 import { trpc } from '$lib/trpc/client'
-import type { Router } from '$lib/trpc/router'
+import type { Router } from '$lib/server/trpc/routes'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
 
 class LogService {

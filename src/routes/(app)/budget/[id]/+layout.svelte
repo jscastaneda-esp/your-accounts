@@ -5,7 +5,7 @@
 	import { page } from '$app/stores'
 	import { confirmPopup } from '$lib/stores/shared'
 	import { changesStore } from '$lib/stores/changes'
-	import { availablesStore, billsDataStore, resumeStore } from '$lib/stores/budget'
+	import { availablesStore, billsDataStore, dataStore, resumeStore } from '$lib/stores/budget'
 	import { ContextNameEnum } from '$lib/enums'
 	import Toast from '$utils/toast.utils'
 	import { zeroPad } from '$utils/number.utils'
@@ -21,6 +21,7 @@
 	export let data: Budget
 
 	const changes = changesStore()
+	const { dataS } = dataStore(data)
 	const { month } = resumeStore(`${data.year}-${zeroPad(data.month, 2)}`)
 	const { totalAvailable } = availablesStore(
 		data.availables.reduce((previous, current) => previous + current.amount, 0)
@@ -65,6 +66,7 @@
 	})
 
 	setContext(ContextNameEnum.CHANGES, { changes })
+	setContext(ContextNameEnum.BUDGET_MAIN, { data: dataS })
 	setContext(ContextNameEnum.BUDGET_RESUME, { month })
 	setContext(ContextNameEnum.BUDGET_AVAILABLES, { totalAvailable })
 	setContext(ContextNameEnum.BUDGET_BILLS, { bills, totals, statistics })

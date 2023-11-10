@@ -8,7 +8,7 @@ export const logger = t.middleware(async ({ type, path, rawInput, next, ctx }) =
 		`${new Date().toISOString()} - ${requestId} - ([${type}][${path}][${JSON.stringify(
 			ctx
 		)}]) - Executing with input`,
-		JSON.stringify(input, null, '\t')
+		JSON.stringify(input)
 	)
 	const result = await next()
 	console.log(
@@ -16,7 +16,7 @@ export const logger = t.middleware(async ({ type, path, rawInput, next, ctx }) =
 			result.ok ? 'OK' : 'ERR'
 		}, output`,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		JSON.stringify((result as any).data, null, '\t')
+		JSON.stringify((result as any).data)
 	)
 	return result
 })

@@ -1,8 +1,3 @@
-export enum FirebaseProviderEnum {
-	GOOGLE = 'Google',
-	FACEBOOK = 'Facebook'
-}
-
 export enum BudgetBillCategory {
 	HOUSE = 'house',
 	ENTERTAINMENT = 'entertainment',
@@ -15,18 +10,19 @@ export enum BudgetBillCategory {
 }
 
 export enum ChangeActionEnum {
-	UPDATE = 'UPDATE',
-	DELETE = 'DELETE'
+	UPDATE = 'update',
+	DELETE = 'delete'
 }
 
 export enum ChangeSectionEnum {
-	BUDGET_MAIN = 'BUDGET_MAIN',
-	BUDGET_AVAILABLE = 'BUDGET_AVAILABLE',
-	BUDGET_BILL = 'BUDGET_BILL'
+	BUDGET_MAIN = 'main',
+	BUDGET_AVAILABLE = 'available',
+	BUDGET_BILL = 'bill'
 }
 
 export enum ContextNameEnum {
 	CHANGES = 'changes',
+	BUDGET_MAIN = 'main',
 	BUDGET_RESUME = 'resume',
 	BUDGET_AVAILABLES = 'availables',
 	BUDGET_BILLS = 'bills'

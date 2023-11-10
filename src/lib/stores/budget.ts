@@ -1,7 +1,13 @@
 import type { BudgetBillCategory } from '$lib/enums'
-import type { BudgetBill, BudgetStatistics, TotalsBills } from '$lib/types'
+import type { Budget, BudgetBill, BudgetStatistics, TotalsBills } from '$lib/types'
 import { categoryTranslate } from '$utils/i18n'
 import { writable } from 'svelte/store'
+
+export function dataStore(initialValue: Budget) {
+	return {
+		dataS: writable<Budget>(initialValue)
+	}
+}
 
 export function resumeStore(initialValue: string) {
 	return {

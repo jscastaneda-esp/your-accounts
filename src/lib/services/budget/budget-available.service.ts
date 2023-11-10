@@ -1,5 +1,5 @@
 import { trpc } from '$lib/trpc/client'
-import type { Router } from '$lib/trpc/router'
+import type { Router } from '$lib/server/trpc/routes'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
 import type { Readable } from 'svelte/store'
 import type { BudgetAvailable, Change, ChangeStore, FelteError } from '$lib/types'
@@ -17,7 +17,7 @@ class BudgetAvailableService {
 
 	constructor(
 		init: TRPCClientInit,
-		private changes: Readable<Change<unknown>[]> & ChangeStore<unknown>
+		private changes: Readable<Change[]> & ChangeStore
 	) {
 		this.trpcF = trpc(init)
 		this.changesUtil = new ChangesUtil<keyof ChangeAvailable>()
@@ -56,10 +56,9 @@ class BudgetAvailableService {
 			deletes.forEach((del) => {
 				this.changes.add({
 					...changeBase,
+					id: del.id,
 					action: ChangeActionEnum.DELETE,
-					detail: {
-						id: del.id
-					}
+					detail: {}
 				})
 			})
 		} else {
@@ -71,9 +70,8 @@ class BudgetAvailableService {
 				let isChanges = false
 				const change: Change<ChangeAvailable> = {
 					...changeBase,
-					detail: {
-						id: newData.id
-					}
+					id: newData.id,
+					detail: {}
 				}
 
 				isChanges = this.changesUtil.setChange(

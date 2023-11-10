@@ -46,7 +46,7 @@
 		<Stat title="Pendiente" value={project.totalPending}>
 			<i class="bx bxs-timer" />
 		</Stat>
-		<Stat title="Ahorro" value={project.totalSaving}>
+		<Stat title="Ahorro" value={project.totalAvailable - project.totalPending}>
 			<i class="bx bxs-coin-stack" />
 		</Stat>
 	</article>

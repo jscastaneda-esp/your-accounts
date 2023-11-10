@@ -1,84 +1,54 @@
 <script lang="ts">
 	// Svelte
-	import { onMount } from 'svelte'
-	import { goto } from '$app/navigation'
 	import { PUBLIC_ENV } from '$env/static/public'
+	import type { PageData } from './$types'
 
 	// Components
 	import ButtonBlock from '$components/shared/buttons/ButtonBlock.svelte'
 
 	// Utilities
+	import { signIn } from '@auth/sveltekit/client'
 	import Toast from '$utils/toast.utils'
-	import { screenLoading, session } from '$lib/stores/shared'
-	import LoginService from '$services/login.service'
-	import { trytm } from '@bdsqqq/try'
+	import { onMount } from 'svelte'
 
-	const service = new LoginService()
+	export let data: PageData
 
-	let loading = false
-
-	screenLoading.show()
-	Toast.clear()
-
-	onMount(() =>
-		setTimeout(async () => {
-			if ($session) {
-				await goto('/budget')
-			}
-			screenLoading.hide()
-		}, 1000)
-	)
-
-	async function signIn(type: 'google' | 'test') {
-		loading = true
-
-		if (type === 'google') {
-			await trytm(service.signInGoogle(successCB, errCb))
-		} else {
-			await trytm(service.signInTest(successCB, errCb))
+	onMount(() => {
+		if (data.error) {
+			setTimeout(() => {
+				Toast.error('Se presento un error al iniciar sesión', true)
+			}, 500)
 		}
-
-		loading = false
-	}
-
-	async function successCB() {
-		await goto('/budget')
-	}
-
-	function errCb(msg: string, isError: boolean) {
-		if (isError) {
-			Toast.error(msg, true)
-		} else {
-			Toast.warning(msg, true)
-		}
-	}
+	})
 </script>
 
 <svelte:head>
 	<title>Iniciar Sesión</title>
 </svelte:head>
 
-{#if !$screenLoading}
-	<main
-		class="fixed inset-0 flex justify-center bg-neutral bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
-	>
-		<article class="flex flex-col justify-center">
-			<section class="flex justify-center items-center gap-2 mb-[15px]">
-				<img src="/logo.svg" alt="Logo" class="w-10 h-10" />
-				<span class="text-center text-xl leading-6">Ingresar a Tus Cuentas</span>
-			</section>
+<main
+	class="fixed inset-0 flex justify-center bg-neutral bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
+>
+	<article class="flex flex-col justify-center">
+		<section class="flex justify-center items-center gap-2 mb-[15px]">
+			<img src="/logo.svg" alt="Logo" class="w-10 h-10" />
+			<span class="text-center text-xl leading-6">Ingresar a Tus Cuentas</span>
+		</section>
 
-			<section class="flex flex-col gap-3">
-				<ButtonBlock value="Google" on:click={() => signIn('google')} {loading}>
-					<i class="bx bxl-google" />
+		<section class="flex flex-col gap-3">
+			<ButtonBlock value="Google" on:click={() => signIn('google')}>
+				<i class="bx bxl-google" />
+			</ButtonBlock>
+
+			{#if PUBLIC_ENV != 'production'}
+				<ButtonBlock
+					value="Pruebas"
+					on:click={() =>
+						signIn('credentials', { username: 'test@jsc-developer.com', password: 'P4s5W0rd*' })}
+				>
+					<i class="fas fa-code" />
 				</ButtonBlock>
-
-				{#if PUBLIC_ENV != 'production'}
-					<ButtonBlock value="Pruebas" on:click={() => signIn('test')} {loading}>
-						<i class="fas fa-code" />
-					</ButtonBlock>
-				{/if}
-			</section>
-		</article>
-	</main>
-{/if}
+			{/if}
+		</section>
+	</article>
+</main>

@@ -19,7 +19,7 @@
 
 	export let data: Budget
 
-	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+	const { changes } = getContext<{ changes: Readable<Change[]> & ChangeStore }>(
 		ContextNameEnum.CHANGES
 	)
 	const { month } = getContext<{ month: Writable<string> }>(ContextNameEnum.BUDGET_RESUME)

@@ -14,7 +14,6 @@ export type BudgetMinimal = {
 	month: number
 	totalAvailable: number
 	totalPending: number
-	totalSaving: number
 	pendingBills: number
 }
 
@@ -55,14 +54,15 @@ export type BudgetStatistics = {
 
 export type FelteError = string[] | null
 
-export type Change<T> = {
+export type Change<T extends Record<string, unknown> = Record<string, unknown>> = {
 	index?: number
+	readonly id: number
 	readonly section: ChangeSectionEnum
 	readonly action: ChangeActionEnum
-	detail: { id: number } & T
+	detail: T
 }
 
-export type ChangeStore<T> = {
+export type ChangeStore<T extends Record<string, unknown> = Record<string, unknown>> = {
 	add: (newChange: Change<T>) => void
 	revert: (newChanges: Change<T>[]) => void
 	delete: (delChanges: Change<T>[]) => void

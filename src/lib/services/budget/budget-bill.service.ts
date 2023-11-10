@@ -1,7 +1,7 @@
 import { ChangesUtil } from '$utils/changes.utils'
 import { BudgetBillCategory, ChangeActionEnum, ChangeSectionEnum } from '$lib/enums'
 import { trpc } from '$lib/trpc/client'
-import type { Router } from '$lib/trpc/router'
+import type { Router } from '$lib/server/trpc/routes'
 import type { BudgetBill, Change, ChangeStore, FelteError } from '$lib/types'
 import type { Readable } from 'svelte/store'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
@@ -21,7 +21,7 @@ class BudgetBillService {
 
 	constructor(
 		init: TRPCClientInit,
-		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
+		private changes?: Readable<Change[]> & ChangeStore
 	) {
 		this.trpcF = trpc(init)
 		this.changesUtil = new ChangesUtil<keyof ChangeBill>()
@@ -39,7 +39,7 @@ class BudgetBillService {
 			payment: 0,
 			dueDate: '',
 			complete: false,
-			category: null as unknown as BudgetBillCategory,
+			category: BudgetBillCategory.OTHERS,
 			...request
 		}
 	}
@@ -92,10 +92,9 @@ class BudgetBillService {
 				deletes.forEach((del) => {
 					this.changes?.add({
 						...changeBase,
+						id: del.id,
 						action: ChangeActionEnum.DELETE,
-						detail: {
-							id: del.id
-						}
+						detail: {}
 					})
 				})
 			} else {
@@ -107,9 +106,8 @@ class BudgetBillService {
 					let isChanges = false
 					const change: Change<ChangeBill> = {
 						...changeBase,
-						detail: {
-							id: newData.id
-						}
+						id: newData.id,
+						detail: {}
 					}
 
 					isChanges = this.changesUtil.setChange(

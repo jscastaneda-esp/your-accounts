@@ -17,11 +17,10 @@
 	import BudgetService from '$services/budget/budget.service'
 	import { page } from '$app/stores'
 
-	export let data: Budget
-
-	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+	const { changes } = getContext<{ changes: Readable<Change[]> & ChangeStore }>(
 		ContextNameEnum.CHANGES
 	)
+	const { data } = getContext<{ data: Writable<Budget> }>(ContextNameEnum.BUDGET_MAIN)
 	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(
 		ContextNameEnum.BUDGET_AVAILABLES
 	)
@@ -46,24 +45,24 @@
 		touched
 	} = createForm({
 		initialValues: {
-			id: data.id,
-			name: data.name,
-			month: `${data.year}-${zeroPad(data.month, 2)}`,
-			fixedIncome: data.fixedIncome,
-			additionalIncome: data.additionalIncome
+			id: $data.id,
+			name: $data.name,
+			month: `${$data.year}-${zeroPad($data.month, 2)}`,
+			fixedIncome: $data.fixedIncome,
+			additionalIncome: $data.additionalIncome
 		},
 		extend: [validator({ schema: validationSchema })]
 	})
 
 	function compareData() {
-		service.compareData($dataForm, $errors, data)
+		service.compareData($dataForm, $errors, $data)
 	}
 
 	$: totalIncome = $dataForm.fixedIncome + $dataForm.additionalIncome
 	$: estimatedSavings = totalIncome - $totalsBills.total
 	$: totalSaving = $totalAvailable - $totalsBills.totalPending
-	$: percentageEstimatedSavings = (estimatedSavings * 100) / totalIncome
-	$: percentageTotalSavings = (totalSaving * 100) / totalIncome
+	$: percentageEstimatedSavings = (estimatedSavings * 100) / (totalIncome || 1)
+	$: percentageTotalSavings = (totalSaving * 100) / (totalIncome || 1)
 	$: totalDiff = totalSaving - estimatedSavings
 	$: pendingRegistration =
 		totalSaving - (totalIncome - $totalsBills.totalMaxPayment) - $totalsBills.totalSaving
@@ -151,5 +150,5 @@
 
 	<div class="divider" />
 
-	<ResourceLogs resourceId={data.id} />
+	<ResourceLogs resourceId={$data.id} />
 </section>
