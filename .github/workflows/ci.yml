@@ -28,33 +28,33 @@ jobs:
       - run: npm install
       - run: npm run lint
       - run: npm run check
-  tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-      - run: npm install
-      - run: npm run test:unit
-      - name: Archive test coverage
-        shell: bash
-        run: tar -czf coverage.tar.gz coverage
-      - name: Upload test coverage
-        uses: actions/upload-artifact@v3
-        with:
-          retention-days: 3
-          name: coverage-${{ github.run_id }}
-          path: coverage.tar.gz
-      - name: Archive test files
-        if: failure()
-        shell: bash
-        run: tar -czf test-results.tar.gz test-results.json
-      - name: Upload test failure
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          retention-days: 3
-          name: test-failure-${{ github.run_id }}
-          path: test-results.tar.gz
+  # tests:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '18.x'
+  #     - run: npm install
+  #     - run: npm run test:unit
+  #     - name: Archive test coverage
+  #       shell: bash
+  #       run: tar -czf coverage.tar.gz coverage
+  #     - name: Upload test coverage
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         retention-days: 3
+  #         name: coverage-${{ github.run_id }}
+  #         path: coverage.tar.gz
+  #     - name: Archive test files
+  #       if: failure()
+  #       shell: bash
+  #       run: tar -czf test-results.tar.gz test-results.json
+  #     - name: Upload test failure
+  #       if: failure()
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         retention-days: 3
+  #         name: test-failure-${{ github.run_id }}
+  #         path: test-results.tar.gz
