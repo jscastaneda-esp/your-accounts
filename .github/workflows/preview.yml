@@ -8,48 +8,46 @@ on:
 jobs:
   test:
     name: Test and lint
-    uses: jscastaneda-esp/your-accounts/.github/workflows/ci.yml@main
+    uses: jscastaneda-esp/your-accounts/.github/workflows/ci.yml@${{ github.ref_name }}
 
-  deploy:
-    name: Deploy in preview
-    needs: test
-    runs-on: ubuntu-latest
-    environment:
-      name: Preview
-      url: ${{ steps.vercel-deploy.outputs.PREVIEW_URL }}
-    if: "${{ (!contains(github.event.pull_request.body, '[skip ci]') && !contains(github.ref_name, 'main')) }}"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Deploy to Vercel Action
-        id: vercel-deploy
-        uses: BetaHuhn/deploy-to-vercel-action@v1
-        with:
-          PRODUCTION: false
-          CREATE_COMMENT: false
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          GITHUB_DEPLOYMENT_ENV: Preview
-          BUILD_ENV: |
-            PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
-            PUBLIC_ENV=preview
-            JWT_SECRET=${{ vars.JWT_SECRET }}
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        if: ${{ steps.vercel-deploy.outputs.DEPLOYMENT_CREATED }}
-        with:
-          message: |
-            This pull request has been deployed to Railway.
+  # deploy:
+  #   name: Deploy in preview
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: Preview
+  #     url: ${{ steps.vercel-deploy.outputs.PREVIEW_URL }}
+  #   if: "${{ (!contains(github.event.pull_request.body, '[skip ci]') && !contains(github.ref_name, 'main')) }}"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Deploy to Vercel Action
+  #       id: vercel-deploy
+  #       uses: BetaHuhn/deploy-to-vercel-action@v1
+  #       with:
+  #         PRODUCTION: false
+  #         CREATE_COMMENT: false
+  #         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #         GITHUB_DEPLOYMENT_ENV: Preview
+  #         BUILD_ENV: |
+  #           PUBLIC_ENV=preview
+  #     - name: Comment PR
+  #       uses: thollander/actions-comment-pull-request@v2
+  #       if: ${{ steps.vercel-deploy.outputs.DEPLOYMENT_CREATED }}
+  #       with:
+  #         message: |
+  #           This pull request has been deployed to Railway.
 
-            <table>
-              <tr>
-                <td><strong>✅ Preview:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}' target='_blank'>Verify</a></td>
-                <td><strong>🔍 Inspect:</strong></td>
-                <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}' target='_blank'>To Inspect</a></td>
-              </tr>
-            </table>
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          comment_tag: 'vercel-deploy'
+  #           <table>
+  #             <tr>
+  #               <td><strong>✅ Preview:</strong></td>
+  #               <td><a href='${{ steps.vercel-deploy.outputs.PREVIEW_URL }}' target='_blank'>Verify</a></td>
+  #               <td><strong>🔍 Inspect:</strong></td>
+  #               <td><a href='${{ steps.vercel-deploy.outputs.DEPLOYMENT_INSPECTOR_URL }}' target='_blank'>To Inspect</a></td>
+  #             </tr>
+  #           </table>
+  #         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+  #         comment_tag: 'vercel-deploy'

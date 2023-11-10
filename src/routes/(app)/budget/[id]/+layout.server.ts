@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types'
-import { router } from '$lib/trpc/router'
-import { createContext } from '$lib/trpc/context'
+import { router } from '$lib/server/trpc/routes'
+import { createContext } from '$lib/server/trpc/context'
 import { redirect } from '@sveltejs/kit'
 import { trytm } from '@bdsqqq/try'
 

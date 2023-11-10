@@ -75,7 +75,7 @@
 					</tr>
 				{:else}
 					<tr>
-						<td colspan="2" class="text-center">No se han registrado cambios</td>
+						<td colspan="3" class="text-center">No se han registrado cambios</td>
 					</tr>
 				{/each}
 			{/if}

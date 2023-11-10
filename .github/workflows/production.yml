@@ -30,6 +30,4 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           GITHUB_DEPLOYMENT_ENV: Production
           BUILD_ENV: |
-            PUBLIC_FIREBASE_OPTIONS=${{ vars.FIREBASE_OPTIONS }}
             PUBLIC_ENV=production
-            JWT_SECRET=${{ vars.JWT_SECRET }}

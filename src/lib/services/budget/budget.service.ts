@@ -1,5 +1,5 @@
 import { trpc } from '$lib/trpc/client'
-import type { Router } from '$lib/trpc/router'
+import type { Router } from '$lib/server/trpc/routes'
 import type { TRPCClientInit, createTRPCClient } from 'trpc-sveltekit'
 import { zeroPad } from '$utils/number.utils'
 import type { Readable } from 'svelte/store'
@@ -24,7 +24,7 @@ class BudgetService {
 
 	constructor(
 		init: TRPCClientInit,
-		private changes?: Readable<Change<unknown>[]> & ChangeStore<unknown>
+		private changes?: Readable<Change[]> & ChangeStore
 	) {
 		this.trpcF = trpc(init)
 		this.changesUtil = new ChangesUtil<keyof ChangeMain>()
@@ -33,7 +33,7 @@ class BudgetService {
 	create(cloneId?: number) {
 		const nowDate = now()
 		return this.trpcF.budgets.create.mutate({
-			name: `Presupuesto ${zeroPad(nowDate.month(), 2)}/${nowDate.year()}`,
+			name: `Presupuesto ${zeroPad(nowDate.month() + 1, 2)}/${nowDate.year()}`,
 			cloneId
 		})
 	}
@@ -46,27 +46,26 @@ class BudgetService {
 		return this.trpcF.budgets.delete.mutate(id)
 	}
 
-	async save(id: number, changeList: Change<unknown>[], errCb: (error: unknown) => void) {
+	async save(id: number, changeList: Change[], errCb: (error: unknown) => void) {
 		if (this.changes && changeList.length > 0) {
 			this.changes.delete(changeList)
 
-			const sendChanges: Change<unknown>[] = []
+			const sendChanges: Change[] = []
 			const groupBySection = groupBy(changeList, (change) => change.section)
 			Object.entries(groupBySection).forEach((group) => {
 				const [section, items] = group
 				const groupByAction = groupBy(items, (change) => change.action)
 				Object.entries(groupByAction).forEach((group) => {
 					const [action, items] = group
-					const groupById = groupBy(items, (change) => change.detail.id.toString())
+					const groupById = groupBy(items, (change) => change.id.toString())
 					Object.entries(groupById).forEach((group) => {
 						const [id, items] = group
 
-						const sendChange: Change<unknown> = {
+						const sendChange: Change = {
+							id: Number(id),
 							section: section as ChangeSectionEnum,
 							action: action as ChangeActionEnum,
-							detail: {
-								id: Number(id)
-							}
+							detail: {}
 						}
 
 						items.forEach((item) => (sendChange.detail = { ...sendChange.detail, ...item.detail }))
@@ -108,11 +107,10 @@ class BudgetService {
 		if (this.changes) {
 			let isChanges = false
 			const change: Change<ChangeMain> = {
+				id: data.id,
 				section: ChangeSectionEnum.BUDGET_MAIN,
 				action: ChangeActionEnum.UPDATE,
-				detail: {
-					id: data.id
-				}
+				detail: {}
 			}
 
 			if (!errorData?.month) {

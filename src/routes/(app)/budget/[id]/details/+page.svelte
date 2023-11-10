@@ -19,7 +19,7 @@
 	export let data: Budget
 
 	const prefixFieldName = `availables`
-	const { changes } = getContext<{ changes: Readable<Change<unknown>[]> & ChangeStore<unknown> }>(
+	const { changes } = getContext<{ changes: Readable<Change[]> & ChangeStore }>(
 		ContextNameEnum.CHANGES
 	)
 	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(

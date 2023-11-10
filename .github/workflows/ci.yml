@@ -15,9 +15,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_FIREBASE_OPTIONS: 'firebase config options'
       PUBLIC_ENV: 'ci'
-      JWT_SECRET: 'json web token secret'
+      AUTH_SECRET: 'auth json web token secret'
+      GOOGLE_CLIENT_ID: 'Google Client ID OAuth'
+      GOOGLE_CLIENT_SECRET: 'Google Client Secret OAuth'
+      API_URL: 'Base URL of API'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

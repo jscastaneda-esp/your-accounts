@@ -1,4 +1,3 @@
-import type { User } from 'firebase/auth'
 import { writable } from 'svelte/store'
 import ConfirmPopupInfo, { type Action } from '../classes/ConfirmPopupInfo'
 
@@ -38,5 +37,3 @@ function confirmPopupStore() {
 	}
 }
 export const confirmPopup = confirmPopupStore()
-
-export const session = writable<User | null>(null)
