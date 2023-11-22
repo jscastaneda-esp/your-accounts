@@ -73,11 +73,11 @@
 	<title>Presupuestos | Tus Cuentas</title>
 </svelte:head>
 
-<main class="p-6">
+<section class="mx-2 my-6">
 	{#if budgets}
 		<Button
 			value="Crear presupuesto"
-			className="btn-primary btn-block sm:btn-wide mb-6"
+			className="btn-primary btn-block sm:btn-wide mb-3"
 			on:click={() => handleNew()}
 		>
 			<i class="bx bxs-plus-square" />
@@ -86,7 +86,7 @@
 		<div class="skeleton btn btn-block sm:btn-wide mb-6 bg-slate-400 pointer-events-none" />
 	{/if}
 
-	<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-content-start_evenly gap-4">
+	<article class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-content-start_evenly gap-4">
 		{#if budgets}
 			{#each budgets as project (project.id)}
 				<CardBudget
@@ -113,5 +113,5 @@
 				</Card>
 			{/each}
 		{/if}
-	</section>
-</main>
+	</article>
+</section>

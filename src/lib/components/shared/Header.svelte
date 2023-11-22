@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Svelte
 	import { page } from '$app/stores'
+	import { version } from '$app/environment'
 
 	// Utilities
 	import { signOut } from '@auth/sveltekit/client'
@@ -10,7 +11,7 @@
 <!-- svelte-ignore a11y-label-has-associated-control -->
 <header class="sticky top-0 z-50">
 	<nav class="navbar bg-primary text-primary-content">
-		<section class="navbar-start">
+		<section class="navbar-start py-1">
 			<article class="dropdown lg:hidden">
 				<label tabindex="0" class="btn btn-ghost text-xl">
 					<i class="bx bx-menu" />
@@ -27,10 +28,13 @@
 					</li>
 				</ul>
 			</article>
-			<a class="btn btn-ghost normal-case text-xl align-middle" href="/">
-				<i class="bx bxs-wallet" />
-				Tus Cuentas
-			</a>
+			<article class="indicator">
+				<a class="btn btn-ghost normal-case text-xl align-middle" href="/">
+					<i class="bx bxs-wallet" />
+					Tus Cuentas
+				</a>
+				<span class="indicator-item indicator-bottom badge badge-neutral">v{version}</span>
+			</article>
 		</section>
 		<section class="navbar-center hidden lg:flex">
 			<ul class="menu menu-horizontal px-1">

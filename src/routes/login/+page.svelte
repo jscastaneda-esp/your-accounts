@@ -1,5 +1,6 @@
 <script lang="ts">
 	// Svelte
+	import { version } from '$app/environment'
 	import { PUBLIC_ENV } from '$env/static/public'
 	import type { PageData } from './$types'
 
@@ -30,10 +31,13 @@
 	class="fixed inset-0 flex justify-center bg-neutral bg-[url('/background-image.webp')] bg-no-repeat bg-bottom"
 >
 	<article class="flex flex-col justify-center">
-		<section class="flex justify-center items-center gap-2 mb-[15px]">
-			<img src="/logo.svg" alt="Logo" class="w-10 h-10" />
-			<span class="text-center text-xl leading-6">Ingresar a Tus Cuentas</span>
-		</section>
+		<article class="indicator">
+			<section class="flex justify-center items-center gap-2 mb-[15px]">
+				<img src="/logo.svg" alt="Logo" class="w-10 h-10" />
+				<span class="text-center text-xl leading-6">Ingresar a Tus Cuentas</span>
+			</section>
+			<span class="indicator-item indicator-top badge badge-primary">v{version}</span>
+		</article>
 
 		<section class="flex flex-col gap-3">
 			<ButtonBlock value="Google" on:click={() => signIn('google')}>
