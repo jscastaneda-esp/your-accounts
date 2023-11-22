@@ -99,41 +99,39 @@
 
 <svelte:window on:beforeunload={beforeUnload} on:pagehide={exit} />
 
-<main class="w-full">
-	<section class="flex justify-between">
-		<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
-			<i class="bx bxs-save" />
-		</ButtonLink>
-		<ButtonLink value="Salir" on:click={() => goto('/budget')}>
-			<i class="bx bx-arrow-back" />
-		</ButtonLink>
-	</section>
+<section class="flex justify-between">
+	<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
+		<i class="bx bxs-save" />
+	</ButtonLink>
+	<ButtonLink value="Salir" on:click={() => goto('/budget')}>
+		<i class="bx bx-arrow-back" />
+	</ButtonLink>
+</section>
 
-	<section class="p-2 pt-0">
-		<Tabs>
-			<TabItem
-				href={`/budget/${data.id}`}
-				active={$page.route.id === '/(app)/budget/[id]'}
-				text="Resumen"
-			>
-				<i class="bx bxs-detail" />
-			</TabItem>
-			<TabItem
-				href={`/budget/${data.id}/details`}
-				active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
-				text="Detalle"
-			>
-				<i class="bx bxs-dollar-circle" />
-			</TabItem>
-			<TabItem
-				href={`/budget/${data.id}/statistics`}
-				active={$page.route.id === '/(app)/budget/[id]/statistics'}
-				text="Estadísticas"
-			>
-				<i class="bx bxs-bar-chart-alt-2" />
-			</TabItem>
-		</Tabs>
+<section class="p-2 pt-0">
+	<Tabs>
+		<TabItem
+			href={`/budget/${data.id}`}
+			active={$page.route.id === '/(app)/budget/[id]'}
+			text="Resumen"
+		>
+			<i class="bx bxs-detail" />
+		</TabItem>
+		<TabItem
+			href={`/budget/${data.id}/details`}
+			active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
+			text="Detalle"
+		>
+			<i class="bx bxs-dollar-circle" />
+		</TabItem>
+		<TabItem
+			href={`/budget/${data.id}/statistics`}
+			active={$page.route.id === '/(app)/budget/[id]/statistics'}
+			text="Estadísticas"
+		>
+			<i class="bx bxs-bar-chart-alt-2" />
+		</TabItem>
+	</Tabs>
 
-		<slot />
-	</section>
-</main>
+	<slot />
+</section>
