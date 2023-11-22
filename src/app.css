@@ -7,31 +7,3 @@
 		place-content: start space-evenly;
 	}
 }
-
-:root {
-	--toastContainerTop: 5rem;
-	--toastPadding: 0;
-	--toastMsgPadding: 0;
-	--toastMinHeight: auto;
-	--toastColor: hsl(var(--nc));
-	--toastBorderRadius: 1rem;
-}
-
-@media (max-width: 768px) {
-	:root {
-		--toastContainerTop: auto;
-		--toastContainerBottom: 0.5rem;
-		--toastContainerLeft: calc(50vw - 8rem);
-	}
-}
-
-._toastBtn {
-	padding-right: 0.5rem;
-}
-
-.table :where(thead, tbody) :where(tr:not(:last-child)),
-.table :where(thead, tbody) :where(tr:first-child:last-child) {
-	border-bottom-width: 3px;
-	--tw-border-opacity: 1;
-	border-bottom-color: hsl(var(--b1) / var(--tw-border-opacity));
-}

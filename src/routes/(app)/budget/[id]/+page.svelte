@@ -72,7 +72,7 @@
 
 <section class="flex flex-col w-full bg-base-200">
 	<form
-		class="w-full grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-[6px] gap-x-5 px-4 pt-4"
+		class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[6px] gap-x-5 px-4 pt-4"
 		use:form
 	>
 		<Input id="name" name="name" label="Nombre" errors={$errors.name} />
@@ -102,7 +102,7 @@
 		/>
 	</form>
 
-	<div class="divider" />
+	<div class="divider divider-primary" />
 
 	<section
 		class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-center items-center gap-5 px-4"
@@ -119,8 +119,8 @@
 			descFrom={(percentageEstimatedSavings > 0
 				? '↗︎'
 				: percentageEstimatedSavings == 0
-				? '⇄'
-				: '↘︎') + ` ${Math.abs(percentageEstimatedSavings).toFixed(1)}%`}
+				  ? '⇄'
+				  : '↘︎') + ` ${Math.abs(percentageEstimatedSavings).toFixed(1)}%`}
 			titleTo="Ahorro Total"
 			valueTo={totalSaving}
 			descTo={(percentageTotalSavings > 0 ? '↗︎' : percentageTotalSavings == 0 ? '⇄' : '↘︎') +
@@ -137,7 +137,7 @@
 			<i class="bx bxs-timer" slot="iconTo" />
 		</TotalResume>
 		<section class="flex justify-center items-center">
-			<article class="stats stats-vertical 2xl:stats-horizontal 2xl:grid-cols-2 shadow w-[500px]">
+			<article class="stats stats-vertical shadow w-[500px]">
 				<Stat title="Diferencia" value={totalDiff} className="text-lg">
 					<i class="bx bxs-objects-vertical-center" />
 				</Stat>
@@ -147,8 +147,6 @@
 			</article>
 		</section>
 	</section>
-
-	<div class="divider" />
 
 	<ResourceLogs resourceId={$data.id} />
 </section>

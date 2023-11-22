@@ -1,42 +1,53 @@
 <script lang="ts">
-	import { getContext } from 'svelte'
+	import { getContext, tick } from 'svelte'
+	import type { Readable, Writable } from 'svelte/store'
 	import { createForm } from 'felte'
 	import { validator } from '@felte/validator-yup'
 	import { page } from '$app/stores'
-	import type { Budget, BudgetAvailable, Change, ChangeStore } from '$lib/types'
+	import { BudgetBillCategory, ContextNameEnum } from '$lib/enums'
+	import { confirmPopup, screenLoading } from '$lib/stores/shared'
+	import type { Budget, BudgetBill, Change, ChangeStore } from '$lib/types'
 	import Toast from '$utils/toast.utils'
-	import { screenLoading, confirmPopup } from '$lib/stores/shared'
-	import yup, { defaultNumber, defaultString } from '$utils/yup.utils'
-	import { ContextNameEnum } from '$lib/enums'
-	import type { Readable, Writable } from 'svelte/store'
+	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
 
+	import DetailsItem from '$components/budget/DetailsItem.svelte'
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
-	import Input from '$components/shared/Input.svelte'
-	import BudgetAvailableService from '$services/budget/budget-available.service'
+	import BudgetBillService from '$services/budget/budget-bill.service'
 	import { trytm } from '@bdsqqq/try'
+	import { toDate } from '$utils/date.utils'
 
 	export let data: Budget
 
-	const prefixFieldName = `availables`
 	const { changes } = getContext<{ changes: Readable<Change[]> & ChangeStore }>(
 		ContextNameEnum.CHANGES
 	)
-	const { totalAvailable } = getContext<{ totalAvailable: Writable<number> }>(
-		ContextNameEnum.BUDGET_AVAILABLES
+	const { month } = getContext<{ month: Writable<string> }>(ContextNameEnum.BUDGET_RESUME)
+	const { bills } = getContext<{ bills: { set: (this: void, value: BudgetBill[]) => void } }>(
+		ContextNameEnum.BUDGET_BILLS
 	)
-	const service = new BudgetAvailableService($page, changes)
+	const service = new BudgetBillService($page, changes)
 
-	let list = data.availables
+	let refTable: Table
+	let daysMonth: number[] = []
+	let list = data.bills
 	let countName = list.length + 1
+	let search = ''
 
 	// Form Definition
 	const validationSchema = yup.object().shape({
-		availables: yup.array().of(
+		bills: yup.array().of(
 			yup.object().shape({
 				id: defaultNumber.min(1),
-				name: defaultString.max(40),
-				amount: defaultNumber.min(-9999999999.99).max(9999999999.99)
+				description: defaultString.max(200),
+				amount: defaultNumber.min(0).max(9999999999.99),
+				payment: defaultNumber.min(0).max(9999999999.99),
+				dueDate: yup.string().max(2),
+				complete: defaultBoolean,
+				category: yup
+					.mixed<BudgetBillCategory>()
+					.oneOf(Object.values(BudgetBillCategory))
+					.required()
 			})
 		)
 	})
@@ -46,10 +57,11 @@
 		errors,
 		touched,
 		addField,
-		unsetField
+		unsetField,
+		setFields
 	} = createForm({
 		initialValues: {
-			availables: list
+			bills: list
 		},
 		extend: [validator({ schema: validationSchema })]
 	})
@@ -57,85 +69,100 @@
 	async function handleAdd() {
 		screenLoading.show()
 
-		const [newField, error] = await trytm(service.create(`Disponible ${countName++}`, data.id))
+		const [newField, error] = await trytm(service.create(`Pago ${countName++}`, data.id))
 		if (error) {
-			Toast.error('Se presento un error al crear el disponible')
+			Toast.error('Se presento un error al crear el pago')
 		} else {
-			addField('availables', newField)
+			addField('bills', newField)
 			list.push(newField)
+		}
+
+		if (refTable) {
+			await tick()
+			refTable.scrollBottom()
 		}
 
 		screenLoading.hide()
 	}
 
-	function handleDelete(available: BudgetAvailable, index: number) {
+	function handlePay(bill: BudgetBill, index: number, payment: number) {
+		setFields(`bills.${index}.payment`, bill.payment + payment, true)
+	}
+
+	function handleDelete(bill: BudgetBill, index: number) {
 		confirmPopup.show(
-			`¿Está seguro que desea eliminar el disponible ${available.name}?`,
+			`¿Está seguro que desea eliminar el pago ${bill.description}?`,
 			undefined,
-			() => unsetField(`availables.${index}`)
+			() => unsetField(`bills.${index}`)
 		)
 	}
 
 	function compareData() {
-		service.compareData($dataForm.availables, $errors.availables, list)
+		service.compareData($dataForm.bills, $errors.bills, list)
 	}
 
 	$: if ($touched) compareData()
-	$: totalAvailable.set(
-		$dataForm.availables.reduce((previous, current) => previous + current.amount, 0)
-	)
+	$: monthBudget = toDate($month, 'YYYY-MM')
+	$: {
+		daysMonth = []
+		const daysInMonth = monthBudget.daysInMonth()
+		if (!isNaN(daysInMonth)) {
+			for (let day = 1; day <= daysInMonth; day++) {
+				daysMonth = [...daysMonth, day]
+			}
+		}
+	}
+	$: bills.set($dataForm.bills)
 </script>
 
 <form class="bg-base-200" use:form>
-	<Table className="max-h-[calc(100vh-210px)]">
+	<Table bind:this={refTable} className="max-h-[calc(100vh-210px)]">
+		<tr slot="head" class="bg-base-200">
+			<td>
+				<div class="join w-full lg:w-1/2">
+					<span class="kbd join-item w-10">
+						<i class="bx bx-search-alt-2" />
+					</span>
+					<input
+						id="search_bill"
+						name="search_bill"
+						type="search"
+						placeholder="Buscar pagos"
+						bind:value={search}
+						class="input input-bordered w-full join-item"
+					/>
+				</div>
+			</td>
+		</tr>
 		<svelte:fragment slot="body">
-			{#each $dataForm.availables as available, index (`available_${index}`)}
-				<tr>
+			{#each $dataForm.bills as bill, index (`bill_${index}`)}
+				<tr
+					class:hidden={search
+						? !bill.description.toLowerCase().match(`${search.toLowerCase()}.*`)
+						: false}
+				>
 					<td>
-						<section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-							<section class="col-span-1 lg:col-start-2">
-								<Input
-									id={`${prefixFieldName}.${index}.name`}
-									name={`${prefixFieldName}.${index}.name`}
-									label="Nombre"
-									errors={$errors.availables?.[index].name}
-								/>
-							</section>
-
-							<section class="col-span-1 lg:col-start-3">
-								<Input
-									id={`${prefixFieldName}.${index}.amount`}
-									name={`${prefixFieldName}.${index}.amount`}
-									label="Monto"
-									type="number"
-									errors={$errors.availables?.[index].amount}
-								/>
-							</section>
-
-							<section
-								class="col-span-1 md:col-span-2 lg:col-span-6 flex justify-center items-center"
-							>
-								<Button
-									value="Eliminar"
-									className="btn-error btn-sm"
-									on:click={() => handleDelete(available, index)}
-								>
-									<i class="bx bxs-trash-alt" />
-								</Button>
-							</section>
-						</section>
+						<DetailsItem
+							data={bill}
+							{index}
+							{monthBudget}
+							{daysMonth}
+							errors={$errors.bills?.[index]}
+							on:pay={({ detail }) => handlePay(bill, index, detail)}
+							on:delete={() => handleDelete(bill, index)}
+						/>
 					</td>
 				</tr>
 			{:else}
 				<tr>
-					<th class="align-middle text-center"> Registra tu primer disponible </th>
+					<td class="align-middle text-center"> Registra tu primer pago </td>
 				</tr>
 			{/each}
 		</svelte:fragment>
 		<tr slot="foot">
-			<th colspan="3" class="p-0 align-middle bg-base-200">
+			<th class="p-0 align-middle bg-base-200">
 				<Button
-					value="Agregar disponible"
+					value="Agregar pago"
 					className="btn-primary btn-block btn-xs text-sm rounded-none"
 					on:click={handleAdd}
 				>

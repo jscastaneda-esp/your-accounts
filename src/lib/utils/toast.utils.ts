@@ -7,7 +7,7 @@ class Toast {
 		}
 
 		toast.success(msg, {
-			style: 'background: hsl(var(--su));'
+			style: 'background: var(--fallback-su,oklch(var(--su)/1));'
 		})
 	}
 
@@ -17,7 +17,7 @@ class Toast {
 		}
 
 		toast.info(msg, {
-			style: 'background: hsl(var(--in));'
+			style: 'background: var(--fallback-in,oklch(var(--in)/1));'
 		})
 	}
 
@@ -27,7 +27,7 @@ class Toast {
 		}
 
 		toast.error(msg, {
-			style: 'background: hsl(var(--er));',
+			style: 'background: var(--fallback-er,oklch(var(--er)/1));',
 			duration: Number.POSITIVE_INFINITY
 		})
 	}
@@ -38,7 +38,7 @@ class Toast {
 		}
 
 		toast.warning(msg, {
-			style: 'background: hsl(var(--wa));',
+			style: 'background: var(--fallback-wa,oklch(var(--wa)/1));',
 			duration: Number.POSITIVE_INFINITY
 		})
 	}

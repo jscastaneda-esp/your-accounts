@@ -17,7 +17,7 @@
 	})
 </script>
 
-<fieldset class="form-control w-full" {disabled}>
+<fieldset class="form-control w-full" {disabled} {...$$restProps}>
 	{#if label}
 		<label class="label" for={id}>
 			<span class="label-text">{label}</span>

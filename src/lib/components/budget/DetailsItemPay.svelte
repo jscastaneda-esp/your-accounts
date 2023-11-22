@@ -93,13 +93,13 @@
 			disabled={$data.all || loading}
 		/>
 	</section>
-	<section class="join flex justify-center pt-2 col-span-3 md:col-span-6">
+	<section class="col-span-3 md:col-span-6 w-full pt-2 join grid grid-cols-2 lg:grid-cols-4">
 		{#if loading}
-			<Button value="" loading className="btn-neutral btn-sm" />
+			<Button value="" loading className="btn-neutral btn-sm w-full col-span-2 lg:col-start-2" />
 		{:else}
 			<ButtonGroup
 				value="Abonar"
-				className="btn-primary"
+				className="btn-primary w-full lg:col-start-2"
 				disabled={!$isValid}
 				on:click={() => handlePay('+')}
 			>
@@ -107,7 +107,7 @@
 			</ButtonGroup>
 			<ButtonGroup
 				value="Quitar"
-				className="btn-secondary"
+				className="btn-secondary w-full"
 				disabled={!$isValid}
 				on:click={() => handlePay('-')}
 			>

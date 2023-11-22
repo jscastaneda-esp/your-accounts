@@ -15,16 +15,16 @@
 		<TabItem
 			href={`/budget/${data.id}/details`}
 			active={$page.route.id === '/(app)/budget/[id]/details'}
-			text="Disponibles"
-		>
-			<i class="bx bxs-wallet" />
-		</TabItem>
-		<TabItem
-			href={`/budget/${data.id}/details/payments`}
-			active={$page.route.id === '/(app)/budget/[id]/details/payments'}
 			text="Pagos"
 		>
 			<i class="bx bxs-file" />
+		</TabItem>
+		<TabItem
+			href={`/budget/${data.id}/details/availables`}
+			active={$page.route.id === '/(app)/budget/[id]/details/availables'}
+			text="Disponibles"
+		>
+			<i class="bx bxs-wallet" />
 		</TabItem>
 	</Tabs>
 

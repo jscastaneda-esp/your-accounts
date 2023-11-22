@@ -38,19 +38,19 @@
 	}
 </script>
 
-<section class="px-4 pb-4">
-	<Logs background="bg-base-100" on:change={handleChange}>
+<section class="pb-4 pr-4">
+	<Logs title="Registro de cambios" on:change={handleChange}>
 		<svelte:fragment slot="body">
 			{#if loading}
 				{#each awaitLoad as _}
-					<tr class="animate-pulse">
+					<tr class="skeleton">
 						<td><div class="bg-slate-400 h-5" /></td>
 						<td><div class="bg-slate-400 h-5" /></td>
 					</tr>
 				{/each}
 			{:else}
 				{#each logs as log}
-					<tr class="hover">
+					<tr>
 						<td>{showLogDate(yesterday, log.createdAt)}</td>
 						<td class="max-h-[26px] text-clip overflow-hidden">{log.description}</td>
 					</tr>

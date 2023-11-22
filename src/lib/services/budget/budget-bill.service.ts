@@ -37,7 +37,7 @@ class BudgetBillService {
 			id,
 			amount: 0,
 			payment: 0,
-			dueDate: '',
+			dueDate: '0',
 			complete: false,
 			category: BudgetBillCategory.OTHERS,
 			...request
@@ -94,7 +94,9 @@ class BudgetBillService {
 						...changeBase,
 						id: del.id,
 						action: ChangeActionEnum.DELETE,
-						detail: {}
+						detail: {
+							description: del.description
+						}
 					})
 				})
 			} else {

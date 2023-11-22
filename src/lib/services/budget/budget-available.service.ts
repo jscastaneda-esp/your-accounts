@@ -58,7 +58,9 @@ class BudgetAvailableService {
 					...changeBase,
 					id: del.id,
 					action: ChangeActionEnum.DELETE,
-					detail: {}
+					detail: {
+						name: del.name
+					}
 				})
 			})
 		} else {

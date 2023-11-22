@@ -4,4 +4,6 @@
 </script>
 
 <Header />
-<slot />
+<main class="container mx-auto">
+	<slot />
+</main>
