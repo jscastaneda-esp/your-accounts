@@ -1,29 +1,51 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
 	import Table from '../Table.svelte'
+	import { generateUniqueId } from '$utils/string.utils'
+	import { browser } from '$app/environment'
 
 	export let title = 'Registros'
-	export let background = ''
 	export let className = ''
+
+	let id = 'drawer-logs'
+	let checked = false
+
+	onMount(() => {
+		id = generateUniqueId(id)
+	})
+
+	$: if (browser) {
+		if (checked) {
+			document.body.classList.add('overflow-y-hidden')
+		} else {
+			document.body.classList.remove('overflow-y-hidden')
+		}
+	}
 </script>
 
-<article class="collapse collapse-plus bg-base-200">
-	<input type="checkbox" class="peer" on:change />
-	<header
-		class="collapse-title bg-primary text-primary-content [input:checked~&]:bg-secondary [input:checked~&]:text-secondary-content"
-	>
-		<i class="bx bx-list-ul" />
-		{title}
-	</header>
-	<main class={`collapse-content p-0 ${background}`}>
-		<Table {className}>
-			<tr slot="head">
-				<th class="px-4">Fecha</th>
-				<th class="px-4">Descripción</th>
-				<slot name="columns" />
-			</tr>
-			<svelte:fragment slot="body">
-				<slot name="body" />
-			</svelte:fragment>
-		</Table>
+<article class="drawer drawer-end">
+	<input {id} type="checkbox" class="drawer-toggle" bind:checked on:change />
+	<div class="drawer-content text-right">
+		<label for={id} class="drawer-button btn btn-link p-0">{title}</label>
+	</div>
+	<main class="drawer-side z-[100]">
+		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
+		<section
+			class="w-80 sm:w-3/4 lg:w-[767px] min-h-full max-h-screen card bg-base-200 text-base-content rounded-none"
+		>
+			<article class="card-body">
+				<h2 class="card-title">{title}</h2>
+				<Table className={`${className} max-h-[calc(100vh-100px)]`}>
+					<tr slot="head">
+						<th class="px-4">Fecha</th>
+						<th class="px-4">Descripción</th>
+						<slot name="columns" />
+					</tr>
+					<svelte:fragment slot="body">
+						<slot name="body" />
+					</svelte:fragment>
+				</Table>
+			</article>
+		</section>
 	</main>
 </article>

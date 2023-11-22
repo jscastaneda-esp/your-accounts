@@ -2,17 +2,17 @@ import * as yup from 'yup'
 
 yup.setLocale({
 	mixed: {
-		required: 'Ingresa un contenido válido'
+		required: 'El campo es obligatorio'
 	},
 	string: {
-		email: 'Ingresa un correo electrónico válido',
-		min: ({ min }: { min: number }) => `Ingresa ${min} caracteres como mínimo`,
-		max: ({ max }: { max: number }) => `Ingresa ${max} caracteres como máximo`,
-		matches: () => 'Ingresa un contenido válido'
+		email: 'El campo debe ser un correo electrónico válido',
+		min: ({ min }: { min: number }) => `El campo debe tener al menos ${min} caracteres`,
+		max: ({ max }: { max: number }) => `El campo no debe ser mayor a ${max} caracteres`,
+		matches: () => 'El formato del campo no es válido'
 	},
 	number: {
-		min: ({ min }: { min: number }) => `Ingresa un valor superior o igual a ${min}`,
-		max: ({ max }: { max: number }) => `Ingresa un valor inferior o igual a ${max}`
+		min: ({ min }: { min: number }) => `El campo debe ser ${min} o superior`,
+		max: ({ max }: { max: number }) => `El campo debe ser ${max} o menor`
 	}
 })
 

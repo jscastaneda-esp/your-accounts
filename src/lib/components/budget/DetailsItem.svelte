@@ -48,12 +48,13 @@
 	}
 </script>
 
-<section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-2">
+<section class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-2">
 	<Input
 		id={`${prefixFieldName}.description`}
 		name={`${prefixFieldName}.description`}
 		label="Descripción"
 		errors={errors.description}
+		class="lg:col-span-2"
 	/>
 	<Input
 		id={`${prefixFieldName}.amount`}
@@ -75,7 +76,6 @@
 	</section>
 
 	<Select id={`${prefixFieldName}.category`} name={`${prefixFieldName}.category`} label="Categoría">
-		<option value={null} disabled selected>Seleccione</option>
 		<option value={BudgetBillCategory.HOUSE}>Hogar</option>
 		<option value={BudgetBillCategory.ENTERTAINMENT}>Entretenimiento</option>
 		<option value={BudgetBillCategory.PERSONAL}>Personal</option>
@@ -94,7 +94,7 @@
 		classNameLabel={expired ? 'text-warning' : ''}
 		classNameSelect={expired ? 'select-warning text-warning' : ''}
 	>
-		<option value="" selected>N/A</option>
+		<option value="0" selected>N/A</option>
 		{#each daysMonth as day}
 			<option value={day.toString()}>{day}</option>
 		{/each}
@@ -110,15 +110,24 @@
 
 	<DetailsLogs billId={data.id} />
 
-	<section class="md:col-span-2 lg:col-span-4 flex flex-col items-center mt-1">
-		<section class="join">
-			<ButtonGroup value="Pagar" className="btn-primary" on:click={() => (showPay = !showPay)}>
+	<section class="sm:col-span-2 lg:col-span-5 flex flex-col items-center mt-1 w-full">
+		<section class="w-full join grid grid-cols-2 lg:grid-cols-4">
+			<ButtonGroup
+				value="Pagar"
+				className="btn-primary w-full lg:col-start-2"
+				on:click={() => (showPay = !showPay)}
+			>
 				<i class="bx bxs-add-to-queue" />
 			</ButtonGroup>
-			<ButtonGroup value="Eliminar" className="btn-error" on:click={() => dispatch('delete')}>
+			<ButtonGroup
+				value="Eliminar"
+				className="btn-error w-full"
+				on:click={() => dispatch('delete')}
+			>
 				<i class="bx bxs-trash-alt" />
 			</ButtonGroup>
 		</section>
+
 		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 		<article
 			tabindex="0"

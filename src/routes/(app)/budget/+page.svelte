@@ -16,7 +16,7 @@
 	import { screenLoading, confirmPopup } from '$lib/stores/shared'
 	import BudgetService from '$services/budget/budget.service'
 
-	const awaitLoad = [1, 2, 3, 4]
+	const awaitLoad = [1, 2, 3, 4, 5, 6]
 	const service = new BudgetService($page)
 	let budgets: BudgetMinimal[]
 
@@ -83,12 +83,10 @@
 			<i class="bx bxs-plus-square" />
 		</Button>
 	{:else}
-		<div class="animate-pulse btn btn-block sm:btn-wide mb-6 bg-slate-400" />
+		<div class="skeleton btn btn-block sm:btn-wide mb-6 bg-slate-400 pointer-events-none" />
 	{/if}
 
-	<section
-		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 place-content-start_evenly gap-4"
-	>
+	<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-content-start_evenly gap-4">
 		{#if budgets}
 			{#each budgets as project (project.id)}
 				<CardBudget
@@ -99,7 +97,7 @@
 			{/each}
 		{:else}
 			{#each awaitLoad as _}
-				<Card className="bg-gray-700 animate-pulse">
+				<Card className="bg-gray-700 skeleton">
 					<header class="card-actions justify-end">
 						<div class="btn-square bg-slate-400 h-7 w-7 rounded" />
 					</header>

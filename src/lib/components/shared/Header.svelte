@@ -9,7 +9,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <!-- svelte-ignore a11y-label-has-associated-control -->
 <header class="sticky top-0 z-50">
-	<nav class="navbar bg-primary-focus text-primary-content">
+	<nav class="navbar bg-primary text-primary-content">
 		<section class="navbar-start">
 			<article class="dropdown lg:hidden">
 				<label tabindex="0" class="btn btn-ghost text-xl">
@@ -17,7 +17,7 @@
 				</label>
 				<ul
 					tabindex="0"
-					class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-primary-focus rounded-b-box rounded-tr-box w-52"
+					class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-primary rounded-b-box rounded-tr-box w-52"
 				>
 					<li>
 						<a href="/budget" class:active={$page.route.id?.includes('/(app)/budget') || false}>
@@ -52,7 +52,7 @@
 				</label>
 				<ul
 					tabindex="0"
-					class="mt-3 p-2 shadow menu menu-sm dropdown-content bg-primary-focus rounded-b-box rounded-tl-box w-60"
+					class="mt-3 p-2 shadow menu menu-sm dropdown-content bg-primary rounded-b-box rounded-tl-box w-60"
 				>
 					<li class="menu-title !text-base-100 bg-primary rounded-tl-box rounded-br-box">
 						<span>{$page.data.session?.user?.name || 'Pruebas'}</span>

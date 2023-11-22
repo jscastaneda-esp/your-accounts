@@ -10,7 +10,7 @@
 </script>
 
 <section class="flex justify-center items-center">
-	<article class="stats stats-vertical 2xl:stats-horizontal 2xl:grid-cols-2 shadow w-[500px]">
+	<article class="stats stats-vertical shadow w-[500px]">
 		<Stat title={titleFrom} value={valueFrom} className="text-lg" desc={descFrom}>
 			<slot name="iconFrom">
 				<i class="bx bxs-check-shield" />
