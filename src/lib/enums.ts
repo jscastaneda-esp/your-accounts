@@ -5,6 +5,7 @@ export enum BudgetBillCategory {
 	VEHICLE_TRANSPORTATION = 'vehicle_transportation',
 	EDUCATION = 'education',
 	SERVICES = 'services',
+	FINANCIAL = 'financial',
 	SAVING = 'saving',
 	OTHERS = 'others'
 }

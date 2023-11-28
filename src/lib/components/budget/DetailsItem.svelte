@@ -82,6 +82,7 @@
 		<option value={BudgetBillCategory.VEHICLE_TRANSPORTATION}>Vehículo o Transporte</option>
 		<option value={BudgetBillCategory.EDUCATION}>Educación</option>
 		<option value={BudgetBillCategory.SERVICES}>Servicios</option>
+		<option value={BudgetBillCategory.FINANCIAL}>Financiero</option>
 		<option value={BudgetBillCategory.SAVING}>Ahorros</option>
 		<option value={BudgetBillCategory.OTHERS}>Otros</option>
 	</Select>
