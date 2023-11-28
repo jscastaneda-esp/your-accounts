@@ -14,6 +14,8 @@ export function categoryTranslate(category: string) {
 			return 'Educación'
 		case BudgetBillCategory.SERVICES:
 			return 'Servicios'
+		case BudgetBillCategory.FINANCIAL:
+			return 'Financiero'
 		case BudgetBillCategory.SAVING:
 			return 'Ahorros'
 		case BudgetBillCategory.OTHERS:
