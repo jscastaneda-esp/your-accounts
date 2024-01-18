@@ -5,6 +5,7 @@
 	export let value: number
 	export let desc: string | null = null
 	export let className = ''
+	export let classDescName = ''
 </script>
 
 <article class={`stat p-3 text-base ${className}`}>
@@ -14,7 +15,7 @@
 	<header class="stat-title">{title}</header>
 	<main class="stat-value" class:text-warning={value < 0}>{money(value)}</main>
 	{#if desc}
-		<footer class="stat-desc">{desc}</footer>
+		<footer class={`stat-desc ${classDescName}`}>{desc}</footer>
 	{/if}
 </article>
 

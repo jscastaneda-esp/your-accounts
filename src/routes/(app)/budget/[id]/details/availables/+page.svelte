@@ -96,7 +96,7 @@
 	<Table bind:this={refTable} className="max-h-[calc(100vh-210px)]">
 		<svelte:fragment slot="body">
 			{#each $dataForm.availables as available, index (`available_${index}`)}
-				<tr>
+				<tr class="border-b-primary">
 					<td>
 						<section
 							class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2"
