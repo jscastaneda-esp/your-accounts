@@ -143,9 +143,9 @@
 				>
 					<td>
 						{#await import('$components/budget/DetailsItem.svelte')}
-							<div class="skeleton w-full h-32 bg-gray-700" />
-						{:then DetailsItem}
-							<DetailsItem.default
+							<div class="skeleton w-full h-52 bg-gray-700" />
+						{:then { default: DetailsItem }}
+							<DetailsItem
 								data={bill}
 								{index}
 								{monthBudget}

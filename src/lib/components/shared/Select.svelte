@@ -34,10 +34,12 @@
 	>
 		<slot />
 	</select>
-	{#if errors}
-		<span class="label justify-start gap-1 text-error">
+	<span class="label justify-start gap-1 text-error">
+		{#if errors}
 			<i class="bx bxs-error-alt" />
-			<span class="label-text-alt text-error">{errors}</span>
+		{/if}
+		<span class="label-text-alt" class:text-transparent={!errors} class:text-error={errors}>
+			{errors}
 		</span>
-	{/if}
+	</span>
 </fieldset>

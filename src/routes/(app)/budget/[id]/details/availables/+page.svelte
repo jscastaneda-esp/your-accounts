@@ -12,13 +12,11 @@
 
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
-	import Input from '$components/shared/Input.svelte'
 	import BudgetAvailableService from '$services/budget/budget-available.service'
 	import { trytm } from '@bdsqqq/try'
 
 	export let data: Budget
 
-	const prefixFieldName = `availables`
 	const { changes } = getContext<{ changes: Readable<Change[]> & ChangeStore }>(
 		ContextNameEnum.CHANGES
 	)
@@ -98,34 +96,15 @@
 			{#each $dataForm.availables as available, index (`available_${index}`)}
 				<tr class="border-b-primary">
 					<td>
-						<section
-							class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2"
-						>
-							<Input
-								id={`${prefixFieldName}.${index}.name`}
-								name={`${prefixFieldName}.${index}.name`}
-								label="Nombre"
-								errors={$errors.availables?.[index].name}
-								class="md:col-span-2 lg:col-start-2"
+						{#await import('$components/budget/AvailableItem.svelte')}
+							<div class="skeleton w-full h-32 bg-gray-700" />
+						{:then { default: AvailableItem }}
+							<AvailableItem
+								{index}
+								errors={$errors.availables?.[index]}
+								on:delete={() => handleDelete(available, index)}
 							/>
-
-							<Input
-								id={`${prefixFieldName}.${index}.amount`}
-								name={`${prefixFieldName}.${index}.amount`}
-								label="Monto"
-								type="number"
-								alt="($)"
-								errors={$errors.availables?.[index].amount}
-							/>
-
-							<Button
-								value="Eliminar"
-								className="btn-error btn-sm sm:col-span-2 md:col-span-1 md:col-start-2 lg:col-start-3"
-								on:click={() => handleDelete(available, index)}
-							>
-								<i class="bx bxs-trash-alt" />
-							</Button>
-						</section>
+						{/await}
 					</td>
 				</tr>
 			{:else}

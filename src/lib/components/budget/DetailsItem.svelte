@@ -77,7 +77,7 @@
 			title="Pago pendiente"
 			value={pending}
 			className="text-xl"
-			desc={data.complete || rest < 0 ? `${rest > 0 ? '↗︎' : '↘︎'} ${money(rest)}` : undefined}
+			desc={data.complete || rest < 0 ? `${rest > 0 ? '↘︎' : '↗︎'} ${money(rest)}` : undefined}
 			classDescName={`font-bold text-${rest < 0 && 'primary'}`}
 		>
 			<i class="bx bxs-timer" />
