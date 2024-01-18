@@ -121,17 +121,19 @@
 				: percentageEstimatedSavings == 0
 				  ? '⇄'
 				  : '↘︎') + ` ${Math.abs(percentageEstimatedSavings).toFixed(1)}%`}
+			classNameDescFrom={`font-bold text-${percentageEstimatedSavings < 0 && 'primary'}`}
 			titleTo="Ahorro Total"
 			valueTo={totalSaving}
 			descTo={(percentageTotalSavings > 0 ? '↗︎' : percentageTotalSavings == 0 ? '⇄' : '↘︎') +
 				` ${Math.abs(percentageTotalSavings).toFixed(1)}%`}
+			classNameDescTo={`font-bold text-${percentageTotalSavings < 0 && 'primary'}`}
 		/>
 		<TotalResume
 			titleFrom="Disponible"
 			valueFrom={$totalAvailable}
 			titleTo="Pendiente"
 			valueTo={$totalsBills.totalPending}
-			descTo={`${$totalsBills.pendingBills} Pagos pendientes`}
+			descTo={`${$totalsBills.pendingBills} Pago(s) pendientes`}
 		>
 			<i class="bx bxs-wallet" slot="iconFrom" />
 			<i class="bx bxs-timer" slot="iconTo" />

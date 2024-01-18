@@ -11,6 +11,7 @@
 	import DetailsLogs from './DetailsLogs.svelte'
 	import type { Dayjs } from 'dayjs'
 	import { now } from '$utils/date.utils'
+	import { money } from '$utils/number.utils'
 
 	export let data: BudgetBill
 	export let index: number
@@ -26,6 +27,7 @@
 	const prefixFieldName = `bills.${index}`
 
 	let pending = 0
+	let rest = 0
 	let expired = false
 	let showPay = false
 
@@ -34,7 +36,8 @@
 	}
 
 	$: {
-		pending = data.complete ? 0 : data.amount - data.payment
+		rest = data.amount - data.payment
+		pending = data.complete ? 0 : rest
 		if (pending < 0) {
 			pending = 0
 		}
@@ -70,7 +73,13 @@
 		</Stat>
 	</section>
 	<section class="lg:mt-8 text-left">
-		<Stat title="Pago pendiente" value={pending} className="text-xl">
+		<Stat
+			title="Pago pendiente"
+			value={pending}
+			className="text-xl"
+			desc={data.complete || rest < 0 ? `${rest > 0 ? '↗︎' : '↘︎'} ${money(rest)}` : undefined}
+			classDescName={`font-bold text-${rest < 0 && 'primary'}`}
+		>
 			<i class="bx bxs-timer" />
 		</Stat>
 	</section>
