@@ -10,7 +10,6 @@
 	import Toast from '$utils/toast.utils'
 	import yup, { defaultBoolean, defaultNumber, defaultString } from '$utils/yup.utils'
 
-	import DetailsItem from '$components/budget/DetailsItem.svelte'
 	import Table from '$components/shared/Table.svelte'
 	import Button from '$components/shared/buttons/Button.svelte'
 	import BudgetBillService from '$services/budget/budget-bill.service'
@@ -140,17 +139,22 @@
 					class:hidden={search
 						? !bill.description.toLowerCase().match(`${search.toLowerCase()}.*`)
 						: false}
+					class="border-b-primary"
 				>
 					<td>
-						<DetailsItem
-							data={bill}
-							{index}
-							{monthBudget}
-							{daysMonth}
-							errors={$errors.bills?.[index]}
-							on:pay={({ detail }) => handlePay(bill, index, detail)}
-							on:delete={() => handleDelete(bill, index)}
-						/>
+						{#await import('$components/budget/DetailsItem.svelte')}
+							<div class="skeleton w-full h-32 bg-gray-700" />
+						{:then DetailsItem}
+							<DetailsItem.default
+								data={bill}
+								{index}
+								{monthBudget}
+								{daysMonth}
+								errors={$errors.bills?.[index]}
+								on:pay={({ detail }) => handlePay(bill, index, detail)}
+								on:delete={() => handleDelete(bill, index)}
+							/>
+						{/await}
 					</td>
 				</tr>
 			{:else}
