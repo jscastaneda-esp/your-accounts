@@ -171,13 +171,15 @@ export const budgets = t.router({
 			})
 		)
 		.mutation(({ ctx, input }) => {
-			return $fetch<string>(`/${input.id}`, {
+			return $fetch<string>(`/${input.id}/changes`, {
 				baseURL,
 				method: 'PUT',
 				headers: {
 					Authorization: `Bearer ${(ctx.session?.user as any).accessToken}`
 				},
-				body: input.changes
+				body: {
+					changes: input.changes
+				}
 			}).catch((err) => {
 				console.error(err)
 

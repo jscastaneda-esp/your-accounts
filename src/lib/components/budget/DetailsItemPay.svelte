@@ -14,6 +14,7 @@
 
 	export let billId: number
 	export let pending: number
+	export let show: boolean
 
 	const service = new BudgetBillService($page)
 	const dispatch = createEventDispatcher<{ pay: number }>()
@@ -67,6 +68,8 @@
 
 		loading = false
 	}
+
+	$: if (!show) reset()
 </script>
 
 <form id="add" class="grid grid-cols-3 md:grid-cols-6 gap-x-2 mt-4" use:form>
