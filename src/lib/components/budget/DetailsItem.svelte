@@ -1,3 +1,9 @@
+<script context="module" lang="ts">
+	import { writable } from 'svelte/store'
+
+	const current = writable(0)
+</script>
+
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
 	import type { BudgetBill, FelteError } from '$lib/types'
@@ -29,7 +35,6 @@
 	let pending = 0
 	let rest = 0
 	let expired = false
-	let showPay = false
 
 	function handlePay({ detail }: { detail: number }) {
 		dispatch('pay', detail)
@@ -125,7 +130,13 @@
 			<ButtonGroup
 				value="Pagar"
 				className="btn-primary w-full lg:col-start-2"
-				on:click={() => (showPay = !showPay)}
+				on:click={() => {
+					if ($current != data.id) {
+						$current = data.id
+					} else {
+						$current = 0
+					}
+				}}
 			>
 				<i class="bx bxs-add-to-queue" />
 			</ButtonGroup>
@@ -142,13 +153,11 @@
 		<article
 			tabindex="0"
 			class="collapse bg-gray-700 w-fit mt-1 shadow shadow-primary"
-			class:collapse-open={showPay}
-			class:!invisible={!showPay}
+			class:collapse-open={$current == data.id}
+			class:!invisible={$current != data.id}
 		>
 			<main class="collapse-content">
-				{#if showPay}
-					<DetailsItemPay {pending} billId={data.id} on:pay={handlePay} />
-				{/if}
+				<DetailsItemPay {pending} billId={data.id} show={$current == data.id} on:pay={handlePay} />
 			</main>
 		</article>
 	</section>
