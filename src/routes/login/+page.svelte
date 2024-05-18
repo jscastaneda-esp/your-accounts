@@ -4,15 +4,18 @@
 	import { PUBLIC_ENV } from '$env/static/public'
 	import type { PageData } from './$types'
 
-	// Components
-	import ButtonBlock from '$components/shared/buttons/ButtonBlock.svelte'
-
 	// Utilities
-	import { signIn } from '@auth/sveltekit/client'
+	import { signIn, type SignInOptions } from '@auth/sveltekit/client'
 	import Toast from '$utils/toast.utils'
 	import { onMount } from 'svelte'
+	import Button from '$components/shared/buttons/Button.svelte'
+	import Icon from '$components/shared/Icon.svelte'
+	import { trytm } from '@bdsqqq/try'
+	import Footer from '$components/shared/Footer.svelte'
 
 	export let data: PageData
+
+	let loading = false
 
 	onMount(() => {
 		if (data.error) {
@@ -21,6 +24,19 @@
 			}, 500)
 		}
 	})
+
+	async function onSignIn(provider: 'google' | 'credentials') {
+		loading = true
+
+		const options: SignInOptions = {}
+		if (provider === 'credentials') {
+			options.username = 'test@jsc-developer.com'
+			options.password = 'P4s5W0rd*'
+		}
+
+		await trytm(signIn(provider, options))
+		loading = false
+	}
 </script>
 
 <svelte:head>
@@ -40,19 +56,37 @@
 		</article>
 
 		<section class="flex flex-col gap-3">
-			<ButtonBlock value="Google" on:click={() => signIn('google')}>
-				<i class="bx bxl-google" />
-			</ButtonBlock>
+			<Button
+				value="Google"
+				className="btn-primary"
+				block
+				{loading}
+				on:click={() => onSignIn('google')}
+			>
+				<Icon>
+					<path
+						d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z"
+					/>
+				</Icon>
+			</Button>
 
 			{#if PUBLIC_ENV != 'production'}
-				<ButtonBlock
+				<Button
 					value="Pruebas"
-					on:click={() =>
-						signIn('credentials', { username: 'test@jsc-developer.com', password: 'P4s5W0rd*' })}
+					className="btn-primary"
+					block
+					{loading}
+					on:click={() => onSignIn('credentials')}
 				>
-					<i class="fas fa-code" />
-				</ButtonBlock>
+					<Icon>
+						<path
+							d="M5.59 3.41L7 4.82L3.82 8L7 11.18L5.59 12.6L1 8L5.59 3.41M11.41 3.41L16 8L11.41 12.6L10 11.18L13.18 8L10 4.82L11.41 3.41M22 6V18C22 19.11 21.11 20 20 20H4C2.9 20 2 19.11 2 18V14H4V18H20V6H17.03V4H20C21.11 4 22 4.89 22 6Z"
+						/>
+					</Icon>
+				</Button>
 			{/if}
 		</section>
 	</article>
 </main>
+
+<Footer />

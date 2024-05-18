@@ -15,6 +15,8 @@
 	import BudgetBillService from '$services/budget/budget-bill.service'
 	import { trytm } from '@bdsqqq/try'
 	import { toDate } from '$utils/date.utils'
+	import TextInput from '$components/shared/TextInput.svelte'
+	import Icon from '$components/shared/Icon.svelte'
 
 	export let data: Budget
 
@@ -114,23 +116,24 @@
 	$: bills.set($dataForm.bills)
 </script>
 
-<form class="bg-base-200" use:form>
+<form class="bg-base-300" use:form>
 	<Table bind:this={refTable} className="max-h-[calc(100vh-210px)]">
-		<tr slot="head" class="bg-base-200">
+		<tr slot="head" class="bg-base-300 border-b-primary">
 			<td>
-				<div class="join w-full lg:w-1/2">
-					<span class="kbd join-item w-10">
-						<i class="bx bx-search-alt-2" />
-					</span>
-					<input
-						id="search_bill"
-						name="search_bill"
-						type="search"
-						placeholder="Buscar pagos"
-						bind:value={search}
-						class="input input-bordered w-full join-item"
-					/>
-				</div>
+				<TextInput
+					id="search_bill"
+					name="search_bill"
+					type="search"
+					placeholder="Buscar pagos"
+					bordered
+					bind:value={search}
+				>
+					<Icon slot="icon">
+						<path
+							d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
+						/>
+					</Icon>
+				</TextInput>
 			</td>
 		</tr>
 		<svelte:fragment slot="body">
@@ -164,13 +167,18 @@
 			{/each}
 		</svelte:fragment>
 		<tr slot="foot">
-			<th class="p-0 align-middle bg-base-200">
+			<th class="p-0 align-middle">
 				<Button
 					value="Agregar pago"
 					className="btn-primary btn-block btn-xs text-sm rounded-none"
+					block
 					on:click={handleAdd}
 				>
-					<i class="bx bxs-plus-square text-lg" />
+					<Icon>
+						<path
+							d="M3 16H10V14H3M18 14V10H16V14H12V16H16V20H18V16H22V14M14 6H3V8H14M14 10H3V12H14V10Z"
+						/>
+					</Icon>
 				</Button>
 			</th>
 		</tr>

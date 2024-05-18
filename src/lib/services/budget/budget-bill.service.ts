@@ -48,8 +48,7 @@ class BudgetBillService {
 		description: string,
 		amount: number,
 		operation: '+' | '-',
-		billId: number,
-		cb: (value: number) => void
+		billId: number
 	) {
 		let value: number = amount
 		if (operation == '-') value *= -1
@@ -60,7 +59,7 @@ class BudgetBillService {
 			billId
 		})
 
-		cb(value)
+		return value
 	}
 
 	compareData(

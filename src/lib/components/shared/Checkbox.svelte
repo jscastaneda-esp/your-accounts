@@ -4,7 +4,7 @@
 
 	export let id: string
 	export let name: string
-	export let label: string
+	export let label = ''
 	export let disabled = false
 
 	onMount(() => {
@@ -17,6 +17,6 @@
 		{#if label}
 			<span class="label-text">{label}</span>
 		{/if}
-		<input type="checkbox" {id} {name} class="toggle toggle-primary" on:change />
+		<input {id} {name} type="checkbox" class="checkbox checkbox-sm checkbox-primary" on:change />
 	</label>
 </fieldset>

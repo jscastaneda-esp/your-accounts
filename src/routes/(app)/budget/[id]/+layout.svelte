@@ -16,7 +16,9 @@
 	// Components
 	import Tabs from '$components/shared/tabs/Tabs.svelte'
 	import TabItem from '$components/shared/tabs/TabItem.svelte'
-	import ButtonLink from '$components/shared/buttons/ButtonLink.svelte'
+	import { trytm } from '@bdsqqq/try'
+	import Icon from '$components/shared/Icon.svelte'
+	import Button from '$components/shared/buttons/Button.svelte'
 
 	export let data: Budget
 
@@ -31,6 +33,7 @@
 
 	let interval: ReturnType<typeof setInterval>
 	let confirmExit = false
+	let saving = false
 
 	onMount(() => {
 		interval = setInterval(() => handleSave(), 15000)
@@ -72,15 +75,19 @@
 	setContext(ContextNameEnum.BUDGET_BILLS, { bills, totals, statistics })
 
 	async function handleSave() {
-		service.save(data.id, [...$changes], () =>
+		saving = true
+
+		const [_, err] = await trytm(service.save(data.id, [...$changes]))
+		if (err) {
 			Toast.error('Se presento un error al guardar la información del presupuesto')
-		)
+		}
+
+		saving = false
 	}
 
 	function beforeUnload(event: BeforeUnloadEvent) {
 		if ($changes.length) {
 			event.preventDefault()
-			return (event.returnValue = '')
 		}
 	}
 
@@ -99,37 +106,62 @@
 
 <svelte:window on:beforeunload={beforeUnload} on:pagehide={exit} />
 
-<section class="flex justify-between">
-	<ButtonLink value="Guardar" disabled={$changes.length == 0} on:click={handleSave}>
-		<i class="bx bxs-save" />
-	</ButtonLink>
-	<ButtonLink value="Salir" on:click={() => goto('/budget')}>
-		<i class="bx bx-arrow-back" />
-	</ButtonLink>
+<section class="flex justify-between mt-2 mx-2 md:mx-0">
+	<Button
+		value="Guardar"
+		className="btn-primary"
+		disabled={!saving && $changes.length == 0}
+		loading={saving}
+		outline
+		on:click={handleSave}
+	>
+		<Icon>
+			<path
+				d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"
+			/>
+		</Icon>
+	</Button>
+	<Button value="Salir" className="btn-primary" outline on:click={() => goto('/budget')}>
+		<Icon>
+			<path
+				d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"
+			/>
+		</Icon>
+	</Button>
 </section>
 
-<section class="p-2 pt-0">
+<section class="pt-0">
 	<Tabs>
 		<TabItem
 			href={`/budget/${data.id}`}
-			active={$page.route.id === '/(app)/budget/[id]'}
 			text="Resumen"
+			active={$page.route.id === '/(app)/budget/[id]'}
 		>
-			<i class="bx bxs-detail" />
+			<Icon>
+				<path
+					d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z"
+				/>
+			</Icon>
 		</TabItem>
 		<TabItem
 			href={`/budget/${data.id}/details`}
-			active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
 			text="Detalle"
+			active={$page.route.id?.includes('/(app)/budget/[id]/details') || false}
 		>
-			<i class="bx bxs-dollar-circle" />
+			<Icon>
+				<path
+					d="M3 22V3H21V22L18 20L15 22L12 20L9 22L6 20L3 22M17 9V7H15V9H17M13 9V7H7V9H13M13 11H7V13H13V11M15 13H17V11H15V13Z"
+				/>
+			</Icon>
 		</TabItem>
 		<TabItem
 			href={`/budget/${data.id}/statistics`}
-			active={$page.route.id === '/(app)/budget/[id]/statistics'}
 			text="Estadísticas"
+			active={$page.route.id === '/(app)/budget/[id]/statistics'}
 		>
-			<i class="bx bxs-bar-chart-alt-2" />
+			<Icon>
+				<path d="M2,2H4V20H22V22H2V2M7,10H17V13H7V10M11,15H21V18H11V15M6,4H22V8H20V6H8V8H6V4Z" />
+			</Icon>
 		</TabItem>
 	</Tabs>
 

@@ -6,6 +6,6 @@
 	export let disabled = false
 </script>
 
-<Button {value} className={`join-item btn-sm ${className}`} {disabled} on:click>
+<Button {value} className={`join-item ${className}`} {disabled} on:click>
 	<slot />
 </Button>

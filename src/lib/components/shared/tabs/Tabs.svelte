@@ -2,6 +2,6 @@
 	export let className = ''
 </script>
 
-<nav class={`tabs tabs-boxed flex-nowrap rounded-b-none ${className}`}>
+<div role="tablist" class={`tabs tabs-bordered mt-3 ${className}`}>
 	<slot />
-</nav>
+</div>

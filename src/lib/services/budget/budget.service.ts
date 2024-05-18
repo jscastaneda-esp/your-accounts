@@ -46,7 +46,7 @@ class BudgetService {
 		return this.trpcF.budgets.delete.mutate(id)
 	}
 
-	async save(id: number, changeList: Change[], errCb: (error: unknown) => void) {
+	async save(id: number, changeList: Change[]) {
 		if (this.changes && changeList.length > 0) {
 			this.changes.delete(changeList)
 
@@ -82,7 +82,7 @@ class BudgetService {
 			)
 			if (error) {
 				this.changes.revert(changeList)
-				errCb(error)
+				throw error
 			}
 		}
 	}

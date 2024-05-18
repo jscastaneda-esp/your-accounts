@@ -38,7 +38,7 @@
 	}
 </script>
 
-<section class="pb-4 pr-4">
+<section class="flex justify-end p-4 text-right">
 	<Logs title="Registro de cambios" on:change={handleChange}>
 		<svelte:fragment slot="body">
 			{#if loading}
