@@ -13,9 +13,14 @@
 		<slot />
 	</figure>
 	<header class="stat-title">{title}</header>
-	<main class="stat-value" class:text-warning={value < 0}>{money(value)}</main>
+	<main class="stat-value">{money(value)}</main>
 	{#if desc}
 		<footer class={`stat-desc ${classDescName}`}>{desc}</footer>
+	{/if}
+	{#if $$slots.actions}
+		<footer class="stat-actions mt-2">
+			<slot name="actions" />
+		</footer>
 	{/if}
 </article>
 

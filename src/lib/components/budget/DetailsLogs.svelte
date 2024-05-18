@@ -37,48 +37,46 @@
 	}
 </script>
 
-<section class="sm:col-span-2 lg:col-span-5">
-	<Logs title="Movimientos" on:change={handleChange}>
-		<svelte:fragment slot="columns">
-			<th class="px-4">Monto ($)</th>
-		</svelte:fragment>
-		<svelte:fragment slot="body">
-			{#if loading}
-				{#each awaitLoad as _}
-					<tr class="skeleton">
-						<td><div class="bg-slate-400 h-5" /></td>
-						<td><div class="bg-slate-400 h-5" /></td>
-						<td><div class="bg-slate-400 h-5" /></td>
-					</tr>
-				{/each}
+<Logs title="Movimientos" on:change={handleChange}>
+	<svelte:fragment slot="columns">
+		<th class="px-4">Monto ($)</th>
+	</svelte:fragment>
+	<svelte:fragment slot="body">
+		{#if loading}
+			{#each awaitLoad as _}
+				<tr class="skeleton">
+					<td><div class="bg-slate-400 h-5" /></td>
+					<td><div class="bg-slate-400 h-5" /></td>
+					<td><div class="bg-slate-400 h-5" /></td>
+				</tr>
+			{/each}
+		{:else}
+			{#each transactions as transaction}
+				<tr class="hover">
+					<td>{showLogDate(yesterday, transaction.createdAt)}</td>
+					<td class="max-h-[26px] text-clip overflow-hidden">{transaction.description}</td>
+					<td>
+						{#if transaction.detail}
+							<div
+								class="badge gap-1"
+								class:badge-success={Number(transaction.detail.amount) > 0}
+								class:badge-error={Number(transaction.detail.amount) < 0}
+							>
+								{#if Number(transaction.detail.amount) > 0}
+									<span>↗︎</span>
+								{:else}
+									<span>↘︎</span>
+								{/if}
+								{money(Number(transaction.detail.amount))}
+							</div>
+						{/if}
+					</td>
+				</tr>
 			{:else}
-				{#each transactions as transaction}
-					<tr class="hover">
-						<td>{showLogDate(yesterday, transaction.createdAt)}</td>
-						<td class="max-h-[26px] text-clip overflow-hidden">{transaction.description}</td>
-						<td>
-							{#if transaction.detail}
-								<div
-									class="badge gap-1"
-									class:badge-success={Number(transaction.detail.amount) > 0}
-									class:badge-error={Number(transaction.detail.amount) < 0}
-								>
-									{#if Number(transaction.detail.amount) > 0}
-										<span>↗︎</span>
-									{:else}
-										<span>↘︎</span>
-									{/if}
-									{money(Number(transaction.detail.amount))}
-								</div>
-							{/if}
-						</td>
-					</tr>
-				{:else}
-					<tr>
-						<td colspan="3" class="text-center">No se han registrado cambios</td>
-					</tr>
-				{/each}
-			{/if}
-		</svelte:fragment>
-	</Logs>
-</section>
+				<tr>
+					<td colspan="3" class="text-center">No se han registrado cambios</td>
+				</tr>
+			{/each}
+		{/if}
+	</svelte:fragment>
+</Logs>

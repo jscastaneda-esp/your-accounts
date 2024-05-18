@@ -7,7 +7,7 @@ export function money(value: number) {
 
 	const isNegative = value < 0
 	if (isNegative) {
-		return `$(${pesosCOLocale.format(value * -1)})`
+		return `- $${pesosCOLocale.format(value * -1)}`
 	} else {
 		return `$${pesosCOLocale.format(value)}`
 	}

@@ -2,13 +2,12 @@
 	import type { FelteError } from '$lib/types'
 	import { generateUniqueId } from '$utils/string.utils'
 	import { onMount } from 'svelte'
+	import Icon from './Icon.svelte'
 
 	export let id: string
 	export let name: string
 	export let label: string | null = null
-	export let alt: string | null = null
-	export let classNameLabel = ''
-	export let classNameSelect = ''
+	export let className = ''
 	export let disabled = false
 	export let errors: FelteError = null
 
@@ -17,29 +16,27 @@
 	})
 </script>
 
-<fieldset class="form-control w-full" {disabled}>
-	{#if label}
-		<label class="label" for={id}>
-			<span class={`label-text ${classNameLabel}`}>{label}</span>
-			{#if alt}
-				<span class={`label-text-alt ${classNameLabel}`}>{alt}</span>
-			{/if}
-		</label>
-	{/if}
+<fieldset class="form-control w-full" {disabled} {...$$restProps}>
 	<select
 		{id}
 		{name}
-		class={`select select-bordered w-full ${classNameSelect}`}
+		class="select select-sm select-ghost w-full {className}"
 		class:select-error={errors}
 	>
+		<option disabled selected>{label}</option>
 		<slot />
 	</select>
-	<span class="label justify-start gap-1 text-error">
-		{#if errors}
-			<i class="bx bxs-error-alt" />
-		{/if}
-		<span class="label-text-alt" class:text-transparent={!errors} class:text-error={errors}>
-			{errors}
+	{#if errors}
+		<span class="label justify-start gap-1 text-error">
+			<Icon>
+				<path
+					d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+				/>
+			</Icon>
+
+			<span class="label-text-alt text-error">
+				{errors}
+			</span>
 		</span>
-	</span>
+	{/if}
 </fieldset>

@@ -78,7 +78,7 @@
 						const { dataset, parsed } = context
 						const total = dataset.data.reduce((previous, current) => previous + current)
 						const percentage = (parsed / total) * 100
-						return `${percentage.toFixed(1)}% (${parsed})`
+						return `${dataset.label}: ${percentage.toFixed(1)}% (${money(parsed)})`
 					}
 				}
 			}
@@ -91,6 +91,14 @@
 			title: {
 				...options.plugins?.title,
 				text: 'Balance'
+			},
+			tooltip: {
+				callbacks: {
+					label: function (context: TooltipItem<'bar'>) {
+						const { dataset, raw } = context
+						return `${dataset.label}: (${money(raw as number)})`
+					}
+				}
 			}
 		},
 		scales: {
@@ -128,12 +136,14 @@
 			labels: categories,
 			datasets: [
 				{
+					label: 'ESTIMADO',
 					data: data.amount,
 					offset: 10,
 					backgroundColor: Object.values(CHART_COLORS_1),
 					borderColor: Object.values(CHART_COLORS_1)
 				},
 				{
+					label: 'PAGO',
 					data: data.payment,
 					offset: 10,
 					backgroundColor: Object.values(CHART_COLORS_2),
@@ -185,7 +195,7 @@
 	}
 </script>
 
-<section class="p-4 bg-base-200">
+<section class="p-4 bg-base-300">
 	<section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 		<article>
 			{#if !dataPie?.datasets[0].data.length}

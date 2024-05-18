@@ -3,8 +3,9 @@
 	import Table from '../Table.svelte'
 	import { generateUniqueId } from '$utils/string.utils'
 	import { browser } from '$app/environment'
+	import Icon from '../Icon.svelte'
 
-	export let title = 'Registros'
+	export let title: string
 	export let className = ''
 
 	let id = 'drawer-logs'
@@ -25,8 +26,13 @@
 
 <article class="drawer drawer-end">
 	<input {id} type="checkbox" class="drawer-toggle" bind:checked on:change />
-	<div class="drawer-content text-right">
-		<label for={id} class="drawer-button btn btn-link p-0">{title}</label>
+	<div class="drawer-content">
+		<label for={id} class="drawer-button btn btn-sm btn-secondary">
+			<Icon>
+				<path d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z" />
+			</Icon>
+			{title}
+		</label>
 	</div>
 	<main class="drawer-side z-[100]">
 		<label for={id} aria-label="close sidebar" class="drawer-overlay"></label>
@@ -35,7 +41,7 @@
 		>
 			<article class="card-body">
 				<h2 class="card-title">{title}</h2>
-				<Table className={`${className} max-h-[calc(100vh-100px)]`}>
+				<Table className={`${className} max-h-[calc(100vh-100px)] bg-base-300`}>
 					<tr slot="head">
 						<th class="px-4">Fecha</th>
 						<th class="px-4">Descripción</th>
