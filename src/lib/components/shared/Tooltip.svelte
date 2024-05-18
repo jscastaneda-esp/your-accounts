@@ -6,9 +6,27 @@
 </script>
 
 <div
-	class="{className} tooltip tooltip-{direction} tooltip-primary"
+	class="{className} tooltip {direction} tooltip-primary"
 	class:pointer-events-none={disabled}
 	data-tip={text}
 >
 	<slot />
 </div>
+
+<style lang="postcss">
+	.top {
+		@apply tooltip-left;
+	}
+
+	.right {
+		@apply tooltip-right;
+	}
+
+	.bottom {
+		@apply tooltip-bottom;
+	}
+
+	.left {
+		@apply tooltip-left;
+	}
+</style>
