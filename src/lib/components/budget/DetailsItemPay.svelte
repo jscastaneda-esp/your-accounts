@@ -52,9 +52,9 @@
 				reset()
 
 				if (operation == '+') {
-					Toast.success('Se realizo el abono con éxito')
+					Toast.success('Se registro el ingreso con éxito')
 				} else {
-					Toast.success('Se realizo la disminución con éxito')
+					Toast.success('Se registro el retiro con éxito')
 				}
 			}
 		}

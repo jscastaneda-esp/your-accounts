@@ -6,9 +6,7 @@ class Toast {
 			this.clear()
 		}
 
-		toast.success(msg, {
-			style: 'background: var(--fallback-su,oklch(var(--su)/1));'
-		})
+		toast.success(msg)
 	}
 
 	static info(msg: string, clear = false) {
@@ -16,9 +14,7 @@ class Toast {
 			this.clear()
 		}
 
-		toast.info(msg, {
-			style: 'background: var(--fallback-in,oklch(var(--in)/1));'
-		})
+		toast.info(msg)
 	}
 
 	static error(msg: string, clear = false) {
@@ -27,7 +23,6 @@ class Toast {
 		}
 
 		toast.error(msg, {
-			style: 'background: var(--fallback-er,oklch(var(--er)/1));',
 			duration: Number.POSITIVE_INFINITY
 		})
 	}
@@ -38,7 +33,6 @@ class Toast {
 		}
 
 		toast.warning(msg, {
-			style: 'background: var(--fallback-wa,oklch(var(--wa)/1));',
 			duration: Number.POSITIVE_INFINITY
 		})
 	}
